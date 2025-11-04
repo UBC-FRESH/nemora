@@ -10,6 +10,7 @@ def test_registry_command_lists_distributions() -> None:
     result = runner.invoke(app, ["registry"])
     assert result.exit_code == 0
     assert "weibull" in result.stdout.lower()
+    assert "Complete-form Weibull" in result.stdout
 
 
 def test_version_option() -> None:

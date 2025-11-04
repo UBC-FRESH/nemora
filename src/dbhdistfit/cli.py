@@ -35,9 +35,12 @@ def registry() -> None:
     table = Table(title="Registered Distributions")
     table.add_column("Name")
     table.add_column("Parameters")
+    table.add_column("Description", overflow="fold")
     for name in list_distributions():
         dist = get_distribution(name)
-        table.add_row(dist.name, ", ".join(dist.parameters))
+        params = ", ".join(dist.parameters)
+        notes = dist.notes or ""
+        table.add_row(dist.name, params, notes)
     console.print(table)
 
 

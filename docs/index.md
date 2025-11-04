@@ -6,5 +6,6 @@
 
 overview
 roadmap
+reference/index
 api/index
 ```

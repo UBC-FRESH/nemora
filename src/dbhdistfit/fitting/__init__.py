@@ -24,6 +24,76 @@ class FitConfig:
     weights: np.ndarray | None = None
 
 
+def _moment_summary(x: np.ndarray, y: np.ndarray) -> tuple[float, float, float, float, float]:
+    if x.size == 0:
+        return 1.0, 1.0, 1.0, 1.0, 1.0
+    weights = np.clip(y, 1e-8, None)
+    total = float(weights.sum())
+    mean = float(np.sum(weights * x) / total) if total > 0 else float(np.mean(x))
+    variance = float(np.sum(weights * np.square(x - mean)) / total) if total > 0 else float(np.var(x))
+    variance = max(variance, 1e-6)
+    std = float(np.sqrt(variance))
+    xmin = float(np.min(x))
+    xmax = float(np.max(x))
+    return mean, variance, std, xmin, xmax
+
+
+def _positive(value: float, fallback: float = 1.0) -> float:
+    return float(value) if value > 0 else float(fallback)
+
+
+def _default_bounds(parameters: tuple[str, ...]) -> Dict[str, tuple[float | None, float | None]]:
+    lower_positive = {"a", "b", "beta", "p", "q", "sigma2", "d", "u", "v", "df", "s"}
+    bounds: Dict[str, tuple[float | None, float | None]] = {}
+    for name in parameters:
+        if name in lower_positive:
+            bounds[name] = (1e-6, None)
+    return bounds
+
+
+def default_fit_config(name: str, x: np.ndarray, y: np.ndarray) -> FitConfig:
+    """Construct a heuristic FitConfig for the requested distribution."""
+    dist = get_distribution(name)
+    mean, variance, std, xmin, xmax = _moment_summary(x, y)
+    scale = float(np.max(y)) if y.size else 1.0
+    initial: Dict[str, float] = {}
+
+    if "s" in dist.parameters:
+        initial["s"] = _positive(scale, 1.0)
+
+    for param in dist.parameters:
+        if param == "s":
+            continue
+        guess = 1.0
+        if param == "a":
+            guess = 2.0
+        elif param == "b":
+            if name.lower() in {"pareto", "p"}:
+                guess = _positive(min(xmin * 0.9, xmax), 1.0)
+            else:
+                guess = _positive(xmax * 1.1, 1.0)
+        elif param == "beta":
+            guess = _positive(max(mean, std), 1.0)
+        elif param in {"p", "q"}:
+            guess = 2.0
+        elif param == "mu":
+            guess = float(np.log(_positive(mean, 1.0)))
+        elif param == "sigma2":
+            guess = _positive(std**2, 0.5)
+        elif param == "d":
+            guess = 2.0
+        elif param == "u":
+            guess = 5.0
+        elif param == "v":
+            guess = 10.0
+        elif param == "df":
+            guess = 6.0
+        initial[param] = _positive(guess, 1.0)
+
+    bounds = _default_bounds(dist.parameters)
+    return FitConfig(distribution=name, initial=initial, bounds=bounds or None)
+
+
 def _curve_fit_distribution(
     x: np.ndarray,
     y: np.ndarray,
@@ -105,6 +175,8 @@ def fit_inventory(
     results: list[FitResult] = []
     for name in distributions:
         dist = get_distribution(name)
-        config = configs.get(name, FitConfig(distribution=name, initial={}))
+        config = configs.get(name)
+        if config is None:
+            config = default_fit_config(name, x, y)
         results.append(fitter(x, y, dist, config))
     return results

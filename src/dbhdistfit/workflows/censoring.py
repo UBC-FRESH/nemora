@@ -6,12 +6,8 @@ from typing import Iterable, Mapping
 
 import numpy as np
 
-from ..fitting import FitConfig, fit_inventory, fit_with_lmfit
+from ..fitting import FitConfig, default_fit_config, fit_inventory, fit_with_lmfit
 from ..typing import FitResult, InventorySpec
-
-
-def _default_initial(scale: float) -> dict[str, float]:
-    return {"s": scale}
 
 
 def fit_censored_inventory(
@@ -19,7 +15,7 @@ def fit_censored_inventory(
     density: np.ndarray,
     *,
     support: tuple[float, float],
-    distributions: Iterable[str] = ("weibull", "gamma"),
+    distributions: Iterable[str] | None = None,
     configs: Mapping[str, FitConfig] | None = None,
 ) -> list[FitResult]:
     """Fit complete-form PDFs to censored tallies with a two-stage scaler."""
@@ -33,11 +29,14 @@ def fit_censored_inventory(
         tallies=values,
         metadata={"support": support},
     )
+    chosen = tuple(distributions) if distributions is not None else ("weibull", "gamma")
     configs = dict(configs or {})
-    for name in distributions:
+    for name in chosen:
         config = configs.get(name)
         if config is None:
-            config = FitConfig(distribution=name, initial=_default_initial(scale_guess))
+            config = default_fit_config(name, dbh, values)
             configs[name] = config
+        if "s" in config.initial:
+            config.initial["s"] = config.initial.get("s", scale_guess) or scale_guess
         config.bounds = config.bounds or {"s": (1e-6, None)}
-    return fit_inventory(inventory, distributions, configs, fitter=fit_with_lmfit)
+    return fit_inventory(inventory, chosen, configs, fitter=fit_with_lmfit)
