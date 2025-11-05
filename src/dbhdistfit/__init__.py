@@ -4,10 +4,12 @@ from __future__ import annotations
 
 from importlib import metadata
 
+__version__ = "0.0.0"
+
 try:
     __version__ = metadata.version("dbhdistfit")
 except metadata.PackageNotFoundError:  # pragma: no cover - local dev fallback
-    __version__ = "0.0.0"
+    pass
 
 from .typing import FitResult, FitSummary, InventorySpec  # noqa: F401
 from .workflows.hps import fit_hps_inventory  # noqa: F401
