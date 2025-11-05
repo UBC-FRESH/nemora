@@ -78,7 +78,7 @@ dbhdistfit fetch-reference-data --dry-run
 ```
 
 Run with `--no-dry-run` (and a working DataLad installation) to automatically install the dataset into
-the specified output directory.
+the specified output directory. If DataLad is not present, install it with `pip install "datalad[full]"`.
 
 ### Sample bundle
 

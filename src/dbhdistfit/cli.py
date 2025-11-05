@@ -135,7 +135,7 @@ def fetch_reference_data(
     except ImportError as exc:  # pragma: no cover
         console.print(
             "[red]DataLad is not installed.[/red] Install it or rerun with --dry-run for"
-            " instructions."
+            ' instructions. For pip users, install via `pip install "datalad[full]"`.'
         )
         raise typer.Exit(code=1) from exc
 

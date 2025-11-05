@@ -48,7 +48,7 @@ dev = [
   "jupyter>=1.0",
 ]
 data = [
-  "datalad>=0.19",  # optional reference dataset helper
+  "datalad[full]>=0.19",  # optional reference dataset helper
 ]
 cli = ["click>=8.1"]
 r = ["reticulate"]  # placeholder for R-side integration metadata
