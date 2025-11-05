@@ -42,6 +42,9 @@ html_sidebars = {
         "searchbox.html",
     ]
 }
+html_css_files = [
+    "css/custom.css",
+]
 
 autosummary_generate = True
 autodoc_typehints = "description"

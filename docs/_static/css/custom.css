@@ -1,0 +1,10 @@
+figure.docutils img {
+  border: 1px solid #d0d7de;
+  border-radius: 4px;
+}
+
+figure.docutils {
+  background: #f9fbfc;
+  padding: 1rem;
+  margin: 1.5rem 0;
+}
