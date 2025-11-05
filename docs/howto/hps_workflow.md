@@ -99,7 +99,16 @@ table.
   the PSP tallies to ensure the command-line workflow mirrors the Python API.
 - `examples/hps_bc_psp_demo.ipynb` demonstrates the workflow on the public BC PSP dataset, while
   `examples/hps_parity_reference.ipynb` runs the parity analysis on the manuscript meta-plot dataset
-  included under `examples/data/reference_hps/binned_meta_plots.csv`.
+  included under `examples/data/reference_hps/binned_meta_plots.csv` (see Figure 1). The notebook also
+  exports `docs/_static/reference_hps_parity_table.csv` summarising RSS, AICc, chi-square, and
+  parameter deltas for each meta-plot.
+
+.. figure:: /_static/reference_hps_parity.png
+   :alt: Comparison of size-biased and weighted fits for the manuscript meta-plots.
+   :width: 100%
+
+   Figure 1 — Size-biased control vs. weighted `dbhdistfit` curves for the manuscript meta-plots. The
+   dashed line shows residuals on the HPS tally scale.
 
 ## Diagnostics
 
