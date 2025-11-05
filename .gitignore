@@ -32,6 +32,8 @@ docs/_build/
 data/
 datasets/
 tmp/
+!examples/data/
+!examples/data/**
 
 # Editors
 .DS_Store

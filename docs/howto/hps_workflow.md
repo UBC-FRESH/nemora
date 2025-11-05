@@ -98,8 +98,8 @@ table.
 - `tests/test_cli.py::test_fit_hps_command_outputs_weibull_first` exercises the Typer CLI against
   the PSP tallies to ensure the command-line workflow mirrors the Python API.
 - `examples/hps_bc_psp_demo.ipynb` demonstrates the workflow on the public BC PSP dataset, while
-  `examples/hps_parity_reference.ipynb` is reserved for future reproduction against the manuscript
-  dataset housed in `tmp/dbhdistfit-papers/dbhdistfit-hps/`.
+  `examples/hps_parity_reference.ipynb` runs the parity analysis on the manuscript meta-plot dataset
+  included under `examples/data/reference_hps/binned_meta_plots.csv`.
 
 ## Diagnostics
 
