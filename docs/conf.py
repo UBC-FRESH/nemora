@@ -12,7 +12,7 @@ project = "dbhdistfit"
 author = "UBC FRESH Lab"
 copyright = f"{datetime.now():%Y}, {author}"
 
-release = "0.0.0"
+release = "0.0.1"
 try:
     release = importlib.metadata.version("dbhdistfit")
 except importlib.metadata.PackageNotFoundError:  # pragma: no cover - docs build

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from importlib import metadata
 
-__version__ = "0.0.0"
+__version__ = "0.0.1"
 
 try:
     __version__ = metadata.version("dbhdistfit")
