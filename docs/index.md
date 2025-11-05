@@ -5,6 +5,7 @@
 :caption: Overview
 
 overview
+contributing-guide
 roadmap
 howto/index
 reference/index

@@ -7,7 +7,7 @@ requirements firm up and is intended to stay in sync with day-to-day development
 - [x] Establish repo scaffolding, licensing, packaging metadata, and CI skeleton.
 - [x] Bootstrap core package layout (distributions, fitting, workflows, CLI).
 - [x] Populate extended distribution registry (28+ GB family members) with tests.
-- [ ] Document coding standards, contribution flow, and review checklist.
+- [x] Document coding standards, contribution flow, and review checklist.
 
 ## Phase 1 — Core Functionality
 - [ ] Implement size-biased HPS workflow parity with reference manuscripts.

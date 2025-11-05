@@ -30,8 +30,11 @@ ROADMAP.md         # Working readiness plan
 python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
+pre-commit install
 dbhdistfit --help
 ```
+
+See `CONTRIBUTING.md` for coding standards, testing, and review checklists.
 
 Documentation is built with Sphinx under `docs/`. A Read the Docs configuration will follow once
 the initial API stabilises.
