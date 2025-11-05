@@ -90,6 +90,17 @@ namespace_packages = true
 explicit_package_bases = true
 mypy_path = ["src"]
 
+[[tool.mypy.overrides]]
+module = [
+  "pandas",
+  "pandas.*",
+  "scipy",
+  "scipy.*",
+  "lmfit",
+  "lmfit.*",
+]
+ignore_missing_imports = true
+
 [tool.sphinx]
 builder = "html"
 warning_is_error = false
