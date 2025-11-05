@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
+from inspect import Parameter, Signature
+from typing import Any, cast
 
 import numpy as np
 from lmfit import Model
@@ -139,8 +141,18 @@ def fit_with_lmfit(
 ) -> FitResult:
     """Fit using lmfit Model for more advanced scenarios (e.g., truncation)."""
 
+    param_names = list(distribution.parameters)
+
     def func(x_vals: np.ndarray, **params: float) -> np.ndarray:
         return distribution.pdf(x_vals, params)
+
+    signature = Signature(
+        parameters=[
+            Parameter("x_vals", kind=Parameter.POSITIONAL_OR_KEYWORD),
+            *(Parameter(name, kind=Parameter.KEYWORD_ONLY) for name in param_names),
+        ]
+    )
+    cast(Any, func).__signature__ = signature
 
     model = Model(func)
     params = model.make_params()
@@ -151,16 +163,22 @@ def fit_with_lmfit(
             lower, upper = config.bounds[name]
             params[name].set(min=lower, max=upper)
     weights = config.weights
-    result = model.fit(y, params, x=x, weights=weights)
+    result = model.fit(y, params, x_vals=x, weights=weights)
     param_dict = {name: result.params[name].value for name in distribution.parameters}
     cov = result.covar
-    rss = float(np.sum(np.square(result.residual)))
+    fitted = result.best_fit
+    residuals = result.residual
+    rss = float(np.sum(np.square(residuals)))
     return FitResult(
         distribution=distribution.name,
         parameters=param_dict,
         covariance=cov,
         gof={"rss": rss, "aic": float(result.aic), "bic": float(result.bic)},
-        diagnostics={"result": result},
+        diagnostics={
+            "result": result,
+            "fitted": fitted,
+            "residuals": residuals,
+        },
     )
 
 
