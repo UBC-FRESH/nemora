@@ -55,6 +55,44 @@ def _default_bounds(parameters: tuple[str, ...]) -> dict[str, tuple[float | None
     return bounds
 
 
+def _residual_summary(residuals: np.ndarray) -> dict[str, float]:
+    if residuals.size == 0:
+        return {}
+    abs_res = np.abs(residuals)
+    return {
+        "mean": float(np.mean(residuals)),
+        "std": float(np.std(residuals, ddof=0)),
+        "max_abs": float(np.max(abs_res)),
+        "median_abs": float(np.median(abs_res)),
+    }
+
+
+def _gof_metrics(
+    y: np.ndarray,
+    fitted: np.ndarray,
+    residuals: np.ndarray,
+    rss: float,
+    param_count: int,
+) -> dict[str, float]:
+    metrics: dict[str, float] = {"rss": float(rss)}
+    n = y.size
+    if n == 0:
+        return metrics
+
+    rss_safe = max(float(rss), 1e-12)
+    k = max(param_count, 1)
+    metrics["aic"] = float(n * np.log(rss_safe / n) + 2 * k)
+    denom = n - k - 1
+    if denom > 0:
+        metrics["aicc"] = float(metrics["aic"] + (2 * k * (k + 1)) / denom)
+    metrics["bic"] = float(n * np.log(rss_safe / n) + k * np.log(n))
+
+    expected = np.clip(fitted, 1e-8, None)
+    chisq = float(np.sum(np.square(residuals) / expected))
+    metrics["chisq"] = chisq
+    return metrics
+
+
 def default_fit_config(name: str, x: np.ndarray, y: np.ndarray) -> FitConfig:
     """Construct a heuristic FitConfig for the requested distribution."""
     dist = get_distribution(name)
@@ -124,12 +162,18 @@ def _curve_fit_distribution(
     fitted = distribution.pdf(x, param_dict)
     residuals = y - fitted
     rss = float(np.sum(np.square(residuals)))
+    gof = _gof_metrics(y, fitted, residuals, rss, len(distribution.parameters))
+    diagnostics = {
+        "fitted": fitted,
+        "residuals": residuals,
+        "residual_summary": _residual_summary(residuals),
+    }
     return FitResult(
         distribution=distribution.name,
         parameters=param_dict,
         covariance=cov,
-        gof={"rss": rss},
-        diagnostics={"fitted": fitted, "residuals": residuals},
+        gof=gof,
+        diagnostics=diagnostics,
     )
 
 
@@ -169,15 +213,22 @@ def fit_with_lmfit(
     fitted = result.best_fit
     residuals = result.residual
     rss = float(np.sum(np.square(residuals)))
+    gof = _gof_metrics(y, fitted, residuals, rss, len(distribution.parameters))
+    # Overwrite AIC/BIC with lmfit's values when available to keep parity.
+    if hasattr(result, "aic"):
+        gof["aic"] = float(result.aic)
+    if hasattr(result, "bic"):
+        gof["bic"] = float(result.bic)
     return FitResult(
         distribution=distribution.name,
         parameters=param_dict,
         covariance=cov,
-        gof={"rss": rss, "aic": float(result.aic), "bic": float(result.bic)},
+        gof=gof,
         diagnostics={
             "result": result,
             "fitted": fitted,
             "residuals": residuals,
+            "residual_summary": _residual_summary(residuals),
         },
     )
 

@@ -11,11 +11,13 @@ requirements firm up and is intended to stay in sync with day-to-day development
 
 ## Phase 1 — Core Functionality
 - [x] Implement size-biased HPS workflow parity with reference manuscripts.
-- [ ] Automate figure/table regeneration for reference HPS parity (export assets from parity notebook into `docs/`).
-- [ ] Implement censored/two-stage workflow with reproducible baselines.
-- [ ] Add goodness-of-fit metrics (AICc, chi-square, residual diagnostics) to parity reports and docs.
-- [ ] Provide DataLad dataset hooks for sample tallies and automate fetch in CLI.
+- [x] Automate figure/table regeneration for reference HPS parity (export assets from parity notebook into `docs/`).
+- [x] Implement censored/two-stage workflow with reproducible baselines.
+- [x] Add goodness-of-fit metrics (AICc, chi-square, residual diagnostics) to parity reports and docs.
+- [x] Provide DataLad dataset hooks for sample tallies and automate fetch in CLI.
 - [ ] Flesh out Python API docs and examples (Python scripts + notebooks).
+- [x] Expose distribution filtering / parameter preview options in the CLI UX.
+- [ ] Add worked censored + DataLad-backed tutorials alongside notebook-based workflows.
 
 ## Phase 2 — Extensibility & Interfaces
 - [ ] Implement user-defined distribution registration (entry points + config).

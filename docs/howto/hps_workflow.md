@@ -31,7 +31,15 @@ dbhdistfit registry
 dbhdistfit fit-hps data/hps_tally.csv --baf 2.0
 ```
 
-Pass additional `--distribution` options (planned) to try alternative PDFs as the CLI evolves.
+Pass additional `--distribution` options to try alternative PDFs as the CLI evolves. The command
+prints RSS, small-sample AIC (`AICc`), Pearson chi-square, and the maximum absolute residual for each
+candidate distribution so you can compare fits at a glance.
+Use `--distribution` (repeatable) to limit the candidate list and `--show-parameters` to include the
+fitted parameter estimates. For example:
+
+```bash
+dbhdistfit fit-hps data/hps_tally.csv --baf 2.0 -d weibull -d gamma --show-parameters
+```
 
 To explore the public PSP example bundle prepared with
 `scripts/prepare_hps_dataset.py`, start with one of the manifests in
@@ -57,6 +65,15 @@ results = fit_hps_inventory(
 
 best = min(results, key=lambda r: r.gof["rss"])
 print(best.distribution, best.parameters)
+
+for result in results:
+    gof = result.gof
+    summary = result.diagnostics.get("residual_summary", {})
+    print(
+        f"{result.distribution:8s} RSS={gof.get('rss', float('nan')):,.2f} "
+        f"AICc={gof.get('aicc', float('nan')):,.2f} Chi^2={gof.get('chisq', float('nan')):,.2f} "
+        f"Max|res|={summary.get('max_abs', float('nan')):.3f}"
+    )
 ```
 
 `fit_hps_inventory` expands tallies to stand tables, applies the HPS compression factors as
