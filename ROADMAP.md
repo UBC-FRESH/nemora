@@ -15,9 +15,9 @@ requirements firm up and is intended to stay in sync with day-to-day development
 - [x] Implement censored/two-stage workflow with reproducible baselines.
 - [x] Add goodness-of-fit metrics (AICc, chi-square, residual diagnostics) to parity reports and docs.
 - [x] Provide DataLad dataset hooks for sample tallies and automate fetch in CLI.
-- [ ] Flesh out Python API docs and examples (Python scripts + notebooks).
+- [x] Flesh out Python API docs and examples (Python scripts + notebooks).
 - [x] Expose distribution filtering / parameter preview options in the CLI UX.
-- [ ] Add worked censored + DataLad-backed tutorials alongside notebook-based workflows.
+- [x] Add worked censored + DataLad-backed tutorials alongside notebook-based workflows.
 
 ## Phase 2 — Extensibility & Interfaces
 - [ ] Implement user-defined distribution registration (entry points + config).
@@ -31,6 +31,7 @@ requirements firm up and is intended to stay in sync with day-to-day development
 - [ ] Complete Sphinx documentation (how-tos, theory, API reference).
 - [ ] Configure Read the Docs build + link to GitHub releases.
 - [ ] Add benchmarking harness for long-run fitting workloads.
+- [ ] Add CI smoke tests for `dbhdistfit fetch-reference-data --dry-run`.
 
 ## Phase 4 — Community & Deployment
 - [ ] Prepare v0.1.0 release notes and changelog.

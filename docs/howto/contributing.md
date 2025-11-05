@@ -1,6 +1,6 @@
 # Contributing Workflow
 
-This short guide complements {doc}`../reference/distributions` and the repository-level
+This short guide complements the [distribution reference](../reference/distributions.md) and the repository-level
 `CONTRIBUTING.md`, showing how to prepare your environment and validate changes before opening a
 pull request.
 

@@ -86,6 +86,25 @@ If DataLad is not present:
 The command also attempts to enable the `arbutus-s3` sibling by default. Pass
 `--enable-remote ""` to skip, or another sibling name if your configuration differs.
 
+#### Installing with DataLad
+
+```bash
+pip install "dbhdistfit[data]"
+dbhdistfit fetch-reference-data --no-dry-run
+# if the remote requires enabling manually:
+cd reference-data
+datalad siblings
+datalad siblings --name arbutus-s3 --action enable
+datalad get -r .
+```
+
+The dataset is a standard git-annex repository. The top-level tree contains `examples/data`
+artifacts used by the parity notebooks (e.g. `reference_hps/binned_meta_plots.csv`, the meta-plot
+table referenced below).
+
+You can point the notebooks (or scripted workflows) directly at the files under `reference-data/`
+once they are present locally.
+
 ### Sample bundle
 
 The repository ships a small bundle generated with:
@@ -104,6 +123,35 @@ Outputs:
 - Tallies: `examples/hps_baf12/*.csv`
 - Manifest: `examples/hps_baf12_manifest.csv`
 - Raw downloads cached (gitignored) under `data/external/psp/raw`.
+
+## Worked censored workflow
+
+The censored/two-stage regression in `tests/test_censored_workflow.py` loads the
+`binned_meta_plots.csv` file shipped with the DataLad dataset (or the copy committed in `examples/`).
+Reuse that test as a template for exploratory analysis:
+
+```python
+import pandas as pd
+
+from dbhdistfit.workflows.censoring import fit_censored_inventory
+
+full_meta = pd.read_csv("examples/data/reference_hps/binned_meta_plots.csv")
+censored = (
+    full_meta[full_meta["dbh_cm"] >= 20.0]
+    .groupby("dbh_cm", as_index=False)
+    .agg({"tally": "sum", "expansion_factor": "mean"})
+)
+
+dbh = censored["dbh_cm"].to_numpy()
+stand_table = censored["tally"].to_numpy() * censored["expansion_factor"].to_numpy()
+
+results = fit_censored_inventory(dbh, stand_table, support=(20.0, float("inf")))
+```
+
+The resulting `FitResult` objects expose the same GOF metrics and residual summaries used in the PSP
+examples. Combine them with the reporting pattern described in the
+[programmatic HPS analysis guide](hps_api.md) or the parity notebook to regenerate the manuscript
+figures.
 
 ## Automation Status
 

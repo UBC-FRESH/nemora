@@ -2,8 +2,8 @@
 
 This guide walks through fitting the horizontal point sampling (HPS) workflow using the
 `dbhdistfit` CLI and Python API. It extends the weighted estimator described in the UBC FRESH Lab
-manuscript and relies on the probability distributions catalogued in
-{doc}`reference/distributions`.
+manuscript and relies on the probability distributions catalogued in the
+[distribution reference](../reference/distributions.md).
 
 ## Prerequisites
 
@@ -82,7 +82,7 @@ specialised scenarios.
 
 ### Reference Fit (BC PSP 4000002-PSP1)
 
-Using the public bundle prepared in {doc}`howto/hps_dataset`, `fit_hps_inventory`
+Using the public bundle prepared in the [HPS dataset guide](hps_dataset.md), `fit_hps_inventory`
 identifies the Weibull distribution as the best fit for plot `4000002_PSP1_v1_p1`
 with BAF 12. This mirrors the methodology from the EarthArXiv preprint of the HPS
 manuscript (Paradis, 2025). The regression test in `tests/test_hps_parity.py`
@@ -119,6 +119,8 @@ table.
   included under `examples/data/reference_hps/binned_meta_plots.csv` (see Figure 1). The notebook also
   exports `docs/_static/reference_hps_parity_table.csv` summarising RSS, AICc, chi-square, and
   parameter deltas for each meta-plot.
+- For a pure-Python walkthrough (no notebooks), see the
+  [programmatic HPS guide](hps_api.md).
 
 .. figure:: /_static/reference_hps_parity.png
    :alt: Comparison of size-biased and weighted fits for the manuscript meta-plots.
@@ -153,5 +155,5 @@ for each candidate distribution.
 - Expose distribution filters and parameter previews in the CLI.
 - Add worked examples for censored inventories and DataLad-backed datasets.
 - Integrate notebook tutorials mirroring the published reproducibility bundles.
-- Expand FAIR dataset coverage (see {doc}`howto/hps_dataset`) with additional PSP plots and
+- Expand FAIR dataset coverage (see [HPS dataset guide](hps_dataset.md)) with additional PSP plots and
   censored variants to support end-to-end parity tests.

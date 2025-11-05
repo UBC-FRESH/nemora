@@ -1,6 +1,6 @@
 # `dbhdistfit` module
 
-```{autopackage} dbhdistfit
+```{automodule} dbhdistfit
 :members:
 :undoc-members:
 :show-inheritance:
