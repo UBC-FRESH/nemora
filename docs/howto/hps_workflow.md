@@ -81,6 +81,13 @@ Re-run the check locally with:
 pytest tests/test_hps_parity.py
 ```
 
+### Censored Meta-Plot Demo
+
+For a pooled view, the notebook `examples/hps_parity_demo.ipynb` aggregates every PSP sample,
+censors stems below 9 cm, and fits the censored workflow. Run the notebook (or
+`pytest tests/test_censored_workflow.py`) to verify the gamma fit parameters recorded in the
+summary table.
+
 ## Diagnostics
 
 - Inspect `result.diagnostics["residuals"]` for shape or bias.

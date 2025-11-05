@@ -92,3 +92,5 @@ Outputs:
 - [x] Pytest fixtures covering selection + tally logic (`tests/fixtures/hps`).
 - [x] PSP sample bundle committed under `examples/hps_baf12` with manifest and provenance notes.
 - [x] Regression guard for the reference Weibull fit (`tests/test_hps_parity.py`).
+- [x] Censored meta-plot fixture + regression (`tests/fixtures/hps/meta_censored.csv`,
+      `tests/test_censored_workflow.py`).
