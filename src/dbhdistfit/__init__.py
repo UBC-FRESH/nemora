@@ -12,8 +12,8 @@ except metadata.PackageNotFoundError:  # pragma: no cover - local dev fallback
     pass
 
 from .typing import FitResult, FitSummary, InventorySpec  # noqa: F401
-from .workflows.hps import fit_hps_inventory  # noqa: F401
 from .workflows.censoring import fit_censored_inventory  # noqa: F401
+from .workflows.hps import fit_hps_inventory  # noqa: F401
 
 __all__ = [
     "__version__",

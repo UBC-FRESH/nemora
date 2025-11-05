@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
-from typing import Callable, Dict, Iterable, Mapping
 
 import numpy as np
 
@@ -18,11 +18,11 @@ class Distribution:
     parameters: tuple[str, ...]
     pdf: Pdf
     cdf: Pdf | None = None
-    bounds: Dict[str, tuple[float | None, float | None]] | None = None
+    bounds: dict[str, tuple[float | None, float | None]] | None = None
     notes: str | None = None
 
 
-_REGISTRY: Dict[str, Distribution] = {}
+_REGISTRY: dict[str, Distribution] = {}
 
 
 def list_distributions() -> Iterable[str]:

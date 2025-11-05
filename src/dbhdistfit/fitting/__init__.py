@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
-from typing import Callable, Dict, Iterable, Mapping
 
 import numpy as np
 from lmfit import Model
@@ -12,15 +12,14 @@ from scipy.optimize import curve_fit
 from ..distributions import Distribution, get_distribution
 from ..typing import FitResult, InventorySpec
 
-
 Objective = Callable[[np.ndarray, np.ndarray, Mapping[str, float]], float]
 
 
 @dataclass(slots=True)
 class FitConfig:
     distribution: str
-    initial: Dict[str, float]
-    bounds: Dict[str, tuple[float | None, float | None]] | None = None
+    initial: dict[str, float]
+    bounds: dict[str, tuple[float | None, float | None]] | None = None
     weights: np.ndarray | None = None
 
 
@@ -30,7 +29,10 @@ def _moment_summary(x: np.ndarray, y: np.ndarray) -> tuple[float, float, float, 
     weights = np.clip(y, 1e-8, None)
     total = float(weights.sum())
     mean = float(np.sum(weights * x) / total) if total > 0 else float(np.mean(x))
-    variance = float(np.sum(weights * np.square(x - mean)) / total) if total > 0 else float(np.var(x))
+    if total > 0:
+        variance = float(np.sum(weights * np.square(x - mean)) / total)
+    else:
+        variance = float(np.var(x))
     variance = max(variance, 1e-6)
     std = float(np.sqrt(variance))
     xmin = float(np.min(x))
@@ -42,9 +44,9 @@ def _positive(value: float, fallback: float = 1.0) -> float:
     return float(value) if value > 0 else float(fallback)
 
 
-def _default_bounds(parameters: tuple[str, ...]) -> Dict[str, tuple[float | None, float | None]]:
+def _default_bounds(parameters: tuple[str, ...]) -> dict[str, tuple[float | None, float | None]]:
     lower_positive = {"a", "b", "beta", "p", "q", "sigma2", "d", "u", "v", "df", "s"}
-    bounds: Dict[str, tuple[float | None, float | None]] = {}
+    bounds: dict[str, tuple[float | None, float | None]] = {}
     for name in parameters:
         if name in lower_positive:
             bounds[name] = (1e-6, None)
@@ -56,7 +58,7 @@ def default_fit_config(name: str, x: np.ndarray, y: np.ndarray) -> FitConfig:
     dist = get_distribution(name)
     mean, variance, std, xmin, xmax = _moment_summary(x, y)
     scale = float(np.max(y)) if y.size else 1.0
-    initial: Dict[str, float] = {}
+    initial: dict[str, float] = {}
 
     if "s" in dist.parameters:
         initial["s"] = _positive(scale, 1.0)
@@ -167,7 +169,10 @@ def fit_inventory(
     distributions: Iterable[str],
     configs: Mapping[str, FitConfig],
     *,
-    fitter: Callable[[np.ndarray, np.ndarray, Distribution, FitConfig], FitResult] = _curve_fit_distribution,
+    fitter: Callable[
+        [np.ndarray, np.ndarray, Distribution, FitConfig],
+        FitResult,
+    ] = _curve_fit_distribution,
 ) -> list[FitResult]:
     """Fit a collection of candidate distributions to an inventory."""
     x = np.asarray(inventory.bins, dtype=float)

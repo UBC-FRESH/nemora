@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
@@ -16,9 +15,17 @@ from .workflows.hps import fit_hps_inventory
 app = typer.Typer(help="DBH distribution fitting toolkit.")
 console = Console()
 
+DBH_FILE_ARGUMENT = typer.Argument(
+    ...,
+    exists=True,
+    readable=True,
+    help="CSV with `dbh_cm` and `tally` columns.",
+)
+BAF_OPTION = typer.Option(..., "--baf", help="Basal area factor used for the HPS tally.")
+
 
 @app.callback(invoke_without_command=True)
-def main(
+def cli_callback(
     ctx: typer.Context,
     verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable verbose output."),
     version: bool = typer.Option(False, "--version", help="Show version and exit."),
@@ -46,8 +53,8 @@ def registry() -> None:
 
 @app.command()
 def fit_hps(
-    dbh_file: Path = typer.Argument(..., exists=True, readable=True, help="CSV with dbh_cm,tally columns."),
-    baf: float = typer.Option(..., "--baf", help="Basal area factor used for the HPS tally."),
+    dbh_file: Path = DBH_FILE_ARGUMENT,
+    baf: float = BAF_OPTION,
 ) -> None:
     """Fit distributions to HPS tallies stored in a CSV file."""
     import pandas as pd

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Dict
+from collections.abc import Mapping
 
 import numpy as np
 from scipy.special import beta as beta_fn
@@ -31,8 +31,10 @@ def _gb1_core(arr: np.ndarray, a: float, b: float, p: float, q: float, s: float)
     with np.errstate(divide="ignore", invalid="ignore", over="ignore"):
         inner = 1.0 - np.power(arr / b, a)
         inner = np.clip(inner, 0.0, None)
-        base = s * (np.abs(a) * np.power(arr, a * p - 1.0) * np.power(inner, q - 1.0)) / (
-            np.power(b, a * p) * beta_fn(p, q)
+        base = (
+            s
+            * (np.abs(a) * np.power(arr, a * p - 1.0) * np.power(inner, q - 1.0))
+            / (np.power(b, a * p) * beta_fn(p, q))
         )
     out = np.zeros_like(arr)
     out[mask] = base[mask]
@@ -55,8 +57,10 @@ def _gb2_core(arr: np.ndarray, a: float, b: float, p: float, q: float, s: float)
 
 def _gg_core(arr: np.ndarray, a: float, beta: float, p: float, s: float) -> np.ndarray:
     with np.errstate(divide="ignore", invalid="ignore", over="ignore"):
-        base = s * (a * np.power(arr, a * p - 1.0) * np.exp(-np.power(arr / beta, a))) / (
-            np.power(beta, a * p) * gamma_fn(p)
+        base = (
+            s
+            * (a * np.power(arr, a * p - 1.0) * np.exp(-np.power(arr / beta, a)))
+            / (np.power(beta, a * p) * gamma_fn(p))
         )
     mask = arr > 0
     out = np.zeros_like(arr)
@@ -84,7 +88,7 @@ def gg_pdf(x: np.ndarray | float, *, a: float, beta: float, p: float, s: float =
 
 
 def _wrap(func, param_order: tuple[str, ...]):
-    def wrapper(x: np.ndarray | float, params: Dict[str, float]) -> np.ndarray:
+    def wrapper(x: np.ndarray | float, params: Mapping[str, float]) -> np.ndarray:
         kwargs = {name: params[name] for name in param_order}
         return func(x, **kwargs)
 
