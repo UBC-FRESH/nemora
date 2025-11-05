@@ -68,7 +68,7 @@ specialised scenarios.
 Using the public bundle prepared in {doc}`howto/hps_dataset`, `fit_hps_inventory`
 identifies the Weibull distribution as the best fit for plot `4000002_PSP1_v1_p1`
 with BAF 12. This mirrors the methodology from the EarthArXiv preprint of the HPS
-manuscript (Matthews et al., 2024). The regression test in `tests/test_hps_parity.py`
+manuscript (Paradis, 2025). The regression test in `tests/test_hps_parity.py`
 locks these targets:
 
 | Metric | Value |
@@ -87,8 +87,9 @@ pytest tests/test_hps_parity.py
 
 For a pooled view, the notebook `examples/hps_parity_demo.ipynb` aggregates every PSP sample,
 censors stems below 9 cm, and fits the censored workflow—again matching the censored analysis
-outlined in the EarthArXiv manuscript. Run the notebook (or `pytest tests/test_censored_workflow.py`)
-to verify the gamma fit parameters recorded in the summary table.
+outlined in the EarthArXiv manuscript (Paradis, 2025). Run the notebook (or
+`pytest tests/test_censored_workflow.py`) to verify the gamma fit parameters recorded in the
+summary table.
 
 ## Diagnostics
 

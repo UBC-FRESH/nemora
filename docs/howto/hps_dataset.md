@@ -50,7 +50,7 @@ heights but are optional for the initial HPS tally pipeline.
 Use `scripts/prepare_hps_dataset.py` to automate the recipe above. The script
 downloads (or reuses cached) PSP CSVs, filters to first-measurement BAF 12 plots,
 and writes per-plot tallies plus a manifest, following the data preparation steps
-documented in the EarthArXiv preprint.
+documented in the EarthArXiv preprint by Paradis (2025).
 
 ```bash
 python scripts/prepare_hps_dataset.py \
