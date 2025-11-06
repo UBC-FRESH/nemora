@@ -18,7 +18,7 @@ from urllib.request import urlopen
 
 import pandas as pd
 
-from dbhdistfit.dataprep import (
+from nemora.dataprep import (
     SelectionCriteria,
     aggregate_hps_tallies,
     load_plot_selections,

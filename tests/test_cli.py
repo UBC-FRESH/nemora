@@ -7,9 +7,9 @@ import pandas as pd
 import pytest
 from typer.testing import CliRunner
 
-from dbhdistfit import __version__
-from dbhdistfit.cli import _check_datalad_results, app
-from dbhdistfit.workflows import fit_hps_inventory
+from nemora import __version__
+from nemora.cli import _check_datalad_results, app
+from nemora.workflows import fit_hps_inventory
 
 runner = CliRunner()
 
@@ -175,7 +175,7 @@ def test_fetch_reference_data_dry_run_message() -> None:
     result = runner.invoke(app, ["fetch-reference-data"])  # default dry-run
     assert result.exit_code == 0
     assert "reference dataset" in result.stdout.lower()
-    assert "dbhdistfit-data" in result.stdout
+    assert "nemora-data" in result.stdout
     assert "dry-run" in result.stdout.lower()
 
 
@@ -193,7 +193,7 @@ def test_check_datalad_results_handles_dataset_objects() -> None:
 
 
 def test_fetch_reference_data_falls_back_to_git(monkeypatch, tmp_path) -> None:
-    from dbhdistfit import cli as cli_module
+    from nemora import cli as cli_module
 
     calls: dict[str, Any] = {}
 

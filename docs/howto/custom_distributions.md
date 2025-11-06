@@ -1,6 +1,6 @@
 # Register Custom Distributions
 
-`dbhdistfit` ships with a core registry (Weibull, Gamma, Johnson SB, Birnbaum-Saunders, and the
+`nemora` ships with a core registry (Weibull, Gamma, Johnson SB, Birnbaum-Saunders, and the
 generalized beta and generalized secant families). Generalised secant entries are available as
 `gsmN` for `N >= 2` (e.g. `gsm3`, `gsm5`) and can be extended via the same plugin hooks. The registry can be
 extended at runtime. You can plug in additional probability density functions either by calling the
@@ -14,7 +14,7 @@ from typing import Mapping
 
 import numpy as np
 
-from dbhdistfit.distributions import Distribution, register_distribution
+from nemora.distributions import Distribution, register_distribution
 
 
 def truncated_normal_pdf(x: np.ndarray, params: Mapping[str, float]) -> np.ndarray:
@@ -35,24 +35,24 @@ register_distribution(
 )
 ```
 
-Once registered, the new distribution appears in `dbhdistfit registry` and is available to the HPS
+Once registered, the new distribution appears in `nemora registry` and is available to the HPS
 workflow.
 
 ## Entry points (recommended for plugins)
 
-Third-party packages can expose a callable via the `dbhdistfit.distributions` entry-point group. The
+Third-party packages can expose a callable via the `nemora.distributions` entry-point group. The
 callable should return either a single `Distribution` or an iterable of them. Example
 `pyproject.toml` snippet:
 
 ```toml
-[project.entry-points."dbhdistfit.distributions"]
+[project.entry-points."nemora.distributions"]
 truncnorm = "my_plugin.distributions:create_truncnorm"
 ```
 
 Within `my_plugin/distributions.py`:
 
 ```python
-from dbhdistfit.distributions import Distribution
+from nemora.distributions import Distribution
 
 from ._pdf import truncated_normal_pdf
 
@@ -66,7 +66,7 @@ def create_truncnorm() -> Distribution:
     )
 ```
 
-`dbhdistfit` discovers the entry point at import time and registers the distribution automatically.
+`nemora` discovers the entry point at import time and registers the distribution automatically.
 
 ## YAML configuration
 
@@ -96,10 +96,10 @@ warnings via the logger to aid debugging.
 ## Inspecting the registry
 
 ```bash
-dbhdistfit registry
+nemora registry
 ```
 
-The CLI lists built-in and plugin distributions in alphabetical order. Use `dbhdistfit --verbose
+The CLI lists built-in and plugin distributions in alphabetical order. Use `nemora --verbose
 distribution-name` (planned) to inspect parameters and metadata.
 
 ## Testing custom distributions

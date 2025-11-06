@@ -3,7 +3,7 @@ requires = ["hatchling>=1.18"]
 build-backend = "hatchling.build"
 
 [project]
-name = "dbhdistfit"
+name = "nemora"
 description = "Tools for fitting diameter-at-breast-height distributions to forest inventory tallies."
 authors = [{ name = "UBC FRESH Lab", email = "fresh.lab@ubc.ca" }]
 readme = "README.md"
@@ -56,22 +56,22 @@ cli = ["click>=8.1"]
 r = ["reticulate"]  # placeholder for R-side integration metadata
 
 [project.scripts]
-dbhdistfit = "dbhdistfit.cli:main"
+nemora = "nemora.cli:main"
 
 [tool.hatch.version]
-path = "src/dbhdistfit/__init__.py"
+path = "src/nemora/__init__.py"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/dbhdistfit"]
+packages = ["src/nemora"]
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "-ra --cov=dbhdistfit --cov-report=term-missing"
+addopts = "-ra --cov=nemora --cov-report=term-missing"
 testpaths = ["tests"]
 
 [tool.coverage.run]
 branch = true
-source = ["dbhdistfit"]
+source = ["nemora"]
 
 [tool.coverage.report]
 show_missing = true

@@ -74,14 +74,14 @@ If you prefer to mirror the manuscript dataset directly, the CLI exposes a helpe
 DataLad commands required to install the reference data:
 
 ```bash
-dbhdistfit fetch-reference-data --dry-run
+nemora fetch-reference-data --dry-run
 ```
 
 Run with `--no-dry-run` (and a working DataLad installation) to automatically install the dataset.
 If DataLad is not present:
 
 - From a source checkout, use `pip install -e ".[data]"` to pull in the optional extra.
-- From PyPI, use `pip install --upgrade "dbhdistfit[data]"` (which installs `datalad[full]`).
+- From PyPI, use `pip install --upgrade "nemora[data]"` (which installs `datalad[full]`).
 
 The command also attempts to enable the `arbutus-s3` sibling by default. Pass
 `--enable-remote ""` to skip, or another sibling name if your configuration differs.
@@ -89,8 +89,8 @@ The command also attempts to enable the `arbutus-s3` sibling by default. Pass
 #### Installing with DataLad
 
 ```bash
-pip install "dbhdistfit[data]"
-dbhdistfit fetch-reference-data --no-dry-run
+pip install "nemora[data]"
+nemora fetch-reference-data --no-dry-run
 # if the remote requires enabling manually:
 cd reference-data
 datalad siblings
@@ -133,7 +133,7 @@ Reuse that test as a template for exploratory analysis:
 ```python
 import pandas as pd
 
-from dbhdistfit.workflows.censoring import fit_censored_inventory
+from nemora.workflows.censoring import fit_censored_inventory
 
 full_meta = pd.read_csv("examples/data/reference_hps/binned_meta_plots.csv")
 censored = (

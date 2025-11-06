@@ -1,0 +1,18 @@
+Package: nemorar
+Title: Interface to the nemora Python Toolkit
+Version: 0.0.0.9000
+Authors@R: c(
+    person(given = "UBC FRESH Lab", email = "fresh.lab@ubc.ca", role = c("aut", "cre"))
+  )
+Description: Lightweight reticulate wrapper exposing the nemora Python package to R users.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Depends:
+    R (>= 4.2)
+Imports:
+    reticulate
+Suggests:
+    testthat (>= 3.1.0)
+Config/testthat/edition: 3
+RoxygenNote: 7.3.1

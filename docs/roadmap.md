@@ -1,7 +1,7 @@
 # Readiness Roadmap
 
 The canonical roadmap lives at the repository root (see
-[ROADMAP.md](https://github.com/UBC-FRESH/dbhdistfit/blob/main/ROADMAP.md)). It is mirrored here for
+[ROADMAP.md](https://github.com/UBC-FRESH/nemora/blob/main/ROADMAP.md)). It is mirrored here for
 convenience once the documentation build pipeline is wired to sync top-level planning artefacts.
 
 ```{warning}

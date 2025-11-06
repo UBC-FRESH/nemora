@@ -1,6 +1,6 @@
-# Contributing to dbhdistfit
+# Contributing to nemora
 
-Thanks for your interest in improving `dbhdistfit`! This guide outlines the standards and workflow
+Thanks for your interest in improving `nemora`! This guide outlines the standards and workflow
 for contributing code, documentation, and examples.
 
 ## Development Environment
@@ -27,7 +27,7 @@ for contributing code, documentation, and examples.
 
 - Python 3.10+ only. Prefer type hints and dataclasses where appropriate.
 - Keep line length ≤ 100 characters; rely on `ruff format`.
-- Favour modular design: reusable utilities live in `src/dbhdistfit/`.
+- Favour modular design: reusable utilities live in `src/nemora/`.
 - Add docstrings to public functions and classes; extend Sphinx docs when APIs change.
 - Include tests for new functionality (`tests/` or platform-specific subdirectories).
 - Reference distribution registrations must include sample params in registry tests.

@@ -1,4 +1,4 @@
-# dbhdistfit Readiness Roadmap
+# nemora Readiness Roadmap
 
 This roadmap tracks the milestones required to deliver a production-ready release. It will evolve as
 requirements firm up and is intended to stay in sync with day-to-day development.
@@ -34,7 +34,7 @@ requirements firm up and is intended to stay in sync with day-to-day development
 - [ ] Document parameter/return details for public APIs (docstrings and developer notes).
 - [ ] Add API reference pages to the Sphinx documentation.
 - [ ] Deliver Typer CLI parity with FHOPS feature set (fit, compare, report commands).
-- [ ] Build R `dbhdistfitr` wrapper with unit tests and pkgdown-ready docs.
+- [ ] Build R `nemorar` wrapper with unit tests and pkgdown-ready docs.
 - [ ] Add CLI/GUI example scripts and integrate with FHOPS-style logging UX.
 - [ ] Document comparative positioning against ForestFit and related toolkits.
 - [ ] Add regression fixtures for grouped Weibull parity (HPS manuscript PSP and ForestFit spruce–fir
@@ -64,12 +64,12 @@ requirements firm up and is intended to stay in sync with day-to-day development
 - [ ] Complete Sphinx documentation (how-tos, theory, API reference).
 - [ ] Configure Read the Docs build + link to GitHub releases.
 - [ ] Add benchmarking harness for long-run fitting workloads.
-- [ ] Add CI smoke tests for `dbhdistfit fetch-reference-data --dry-run`.
+- [ ] Add CI smoke tests for `nemora fetch-reference-data --dry-run`.
 
 ## Phase 4 — Community & Deployment
 - [ ] Prepare v0.1.0 release notes and changelog.
 - [ ] Publish package to PyPI; automate release workflow.
-- [ ] Finalise CRAN submission plan for `dbhdistfitr`.
+- [ ] Finalise CRAN submission plan for `nemorar`.
 - [ ] Draft contributor guide, code of conduct, and issue templates.
 - [ ] Announce public release (blog post, mailing lists).
 

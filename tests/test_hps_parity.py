@@ -3,7 +3,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from dbhdistfit.workflows.hps import fit_hps_inventory
+from nemora.workflows.hps import fit_hps_inventory
 
 
 def load_example(path: Path) -> tuple[np.ndarray, np.ndarray]:

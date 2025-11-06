@@ -6,7 +6,7 @@ how to turn `FitResult` objects into tidy reports for downstream analysis.
 
 ## Prerequisites
 
-- Install `dbhdistfit` in an environment with pandas and numpy available (`pip install -e ".[dev]"`).
+- Install `nemora` in an environment with pandas and numpy available (`pip install -e ".[dev]"`).
 - Obtain an HPS tally CSV with `dbh_cm`, `tally`, and the associated basal area factor (`baf`)
   metadata. The repository ships examples under `examples/hps_baf12/`.
 
@@ -15,8 +15,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from dbhdistfit.typing import FitSummary, InventorySpec
-from dbhdistfit.workflows import fit_hps_inventory
+from nemora.typing import FitSummary, InventorySpec
+from nemora.workflows import fit_hps_inventory
 
 csv_path = Path("examples/hps_baf12/4000002_PSP1_v1_p1.csv")
 data = pd.read_csv(csv_path)
@@ -93,8 +93,8 @@ notebooks.
 
 ## Next steps
 
-- Run `dbhdistfit fit-hps --show-parameters` for a CLI view that mirrors the report above.
+- Run `nemora fit-hps --show-parameters` for a CLI view that mirrors the report above.
 - Use [the HPS dataset guide](hps_dataset.md) to fetch the manuscript dataset via
-  `dbhdistfit fetch-reference-data` when DataLad is available.
+  `nemora fetch-reference-data` when DataLad is available.
 - Combine the scripted workflow with `matplotlib` or `polars` to build automated QA reports for
   multiple plots.

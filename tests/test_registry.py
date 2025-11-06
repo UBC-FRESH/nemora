@@ -6,13 +6,13 @@ from typing import Any
 import numpy as np
 import pytest
 
-from dbhdistfit.distributions import (
+from nemora.distributions import (
     GENERALIZED_BETA_DISTRIBUTIONS,
     clear_registry,
     get_distribution,
     list_distributions,
 )
-from dbhdistfit.distributions import base as base_registry
+from nemora.distributions import base as base_registry
 
 
 def _dummy_pdf(x: np.ndarray, params: Mapping[str, float]) -> np.ndarray:
@@ -21,7 +21,7 @@ def _dummy_pdf(x: np.ndarray, params: Mapping[str, float]) -> np.ndarray:
 
 def _reload_registry() -> None:
     """Reload the distributions module to restore built-ins after tests."""
-    import dbhdistfit.distributions as dist_module
+    import nemora.distributions as dist_module
 
     importlib.reload(dist_module)
 

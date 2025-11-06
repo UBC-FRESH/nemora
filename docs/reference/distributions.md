@@ -1,8 +1,8 @@
 # Distribution Registry
 
-`dbhdistfit` registers every probability density function (PDF) in the generalized beta family that
+`nemora` registers every probability density function (PDF) in the generalized beta family that
 was validated in the legacy workflows, together with the canonical Weibull and Gamma forms. All
-distributions are exposed through the registry functions in `dbhdistfit.distributions` and can be
+distributions are exposed through the registry functions in `nemora.distributions` and can be
 used interchangeably by the fitting workflows and CLI.
 
 ## Parameter Conventions

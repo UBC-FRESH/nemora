@@ -1,6 +1,6 @@
 # Overview
 
-`dbhdistfit` streamlines fitting probability density functions to diameter-at-breast-height (DBH)
+`nemora` streamlines fitting probability density functions to diameter-at-breast-height (DBH)
 inventories. The package packages workflows for:
 
 - horizontal point sampling (HPS) tallies with size-bias corrections handled through weighting, and
@@ -16,12 +16,12 @@ This documentation is pre-alpha. Expect rapid iteration while the API stabilises
 ## Relationship to prior work
 Several R libraries—most prominently
 [`ForestFit`](https://cran.r-project.org/package=ForestFit)—already support extensive parametric and
-mixture-based DBH modelling. `dbhdistfit` is positioned as a complementary, workflow-oriented
+mixture-based DBH modelling. `nemora` is positioned as a complementary, workflow-oriented
 toolkit:
 
 - Horizontal point sampling (HPS) weighting, censored workflows, and manuscript parity datasets are
   included out of the box.
-- The Python-first stack (Typer CLI, pandas integration, and planned `dbhdistfitr` bridge) enables
+- The Python-first stack (Typer CLI, pandas integration, and planned `nemorar` bridge) enables
   the same pipelines to run in notebooks, batch jobs, or mixed-language projects.
 - Candidate features that originated in ForestFit (finite mixtures, JSB variations, EM initialisers)
   are tracked in `candidate-import-from-ForestFit-features.md` so upstream credit is explicit while

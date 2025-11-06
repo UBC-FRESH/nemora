@@ -1,4 +1,4 @@
-# dbhdistfit Documentation
+# nemora Documentation
 
 ```{toctree}
 :maxdepth: 2

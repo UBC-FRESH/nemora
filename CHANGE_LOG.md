@@ -24,7 +24,7 @@
 - Expanded ROADMAP Phase 1 checkboxes with granular task queues, documenting every notebook/test milestone and queuing follow-up work for censored baselines and DataLad-backed tutorials.
 
 ### DataLad integration & CLI enhancements
-- Implemented `dbhdistfit fetch-reference-data`, added optional `data` extras (installing `datalad[full]`), hardened remote enablement (defaulting to `arbutus-s3`), and ensured CLI messaging reports missing annex siblings gracefully, with fallbacks when users opt out of DataLad.
+- Implemented `nemora fetch-reference-data`, added optional `data` extras (installing `datalad[full]`), hardened remote enablement (defaulting to `arbutus-s3`), and ensured CLI messaging reports missing annex siblings gracefully, with fallbacks when users opt out of DataLad.
 - Troubleshot DataLad installation edge cases: guided users to `pip install datalad[full]`, added `.gitignore` rules, documented remote-enabling commands, and validated the command after upstream repository fixes corrected annex config.
 - Expanded CLI outputs with GOF metrics (RSS, AICc, chi-square, KS, CvM, AD), residual summaries, and parameter tables; stabilized regression tests after output format changes by parsing table output and adjusting expectations for updated RSS values.
 - Exercised CLI tests (`tests/test_cli.py`) and added PSP stand-table fixture checks to ensure CLI output matches API behaviour and preserves distribution ordering.
@@ -54,7 +54,14 @@
 - Replaced the Birnbaum–Saunders fallback with a moment-closed solution (`method_detail="moment"`) so grouped fits now return `grouped-em` outputs by default; regression coverage includes a synthetic fixture to guard the new path and docs note the behaviour in the HPS workflow guide.
 
 ### ForestFit knowledge capture & planning
-- Audited the ForestFit R package (source, CRAN manual, arXiv preprint), catalogued transferable features in `candidate-import-from-ForestFit-features.md`, and planned transparent crediting for any ported methods; noted which algorithms (grouped Johnson SB, moment-based starts) map cleanly to dbhdistfit.
+- Audited the ForestFit R package (source, CRAN manual, arXiv preprint), catalogued transferable features in `candidate-import-from-ForestFit-features.md`, and planned transparent crediting for any ported methods; noted which algorithms (grouped Johnson SB, moment-based starts) map cleanly to nemora.
 - Relocated uploaded literature to `reference-papers/`, created supporting notes (`notes/weibull_em_references.md`, `notes/weibull_em_next_steps.md`), and cross-linked roadmap tasks to specific ForestFit-derived techniques for prioritisation.
 - Extended Phase 2 roadmap with docstring/API documentation milestones, mixture/hybrid modelling plans, and detailed “Detailed Next Steps Notes” updates to ensure development remains sequential.
 - Established `CHANGE_LOG.md`, backfilled historical summaries from the conversation log, and expanded `CODING_AGENT.md` instructions to require consulting recorded history before proposing new work.
+
+## 2025-11-06 — Project Renaming
+
+- Renamed the project from `dbhdistfit` to `nemora`, updating package/module paths, CLI entry points, documentation, and supporting scripts.
+- Switched the Typer CLI to `nemora`, refreshed installation instructions (`pip install "nemora[data]"`), and retargeted the DataLad helper to the new repository namespace.
+- Renamed the R reticulate wrapper scaffold to `nemorar` and rewired all tests/docs to import `nemora`.
+- Adjusted packaging metadata (`pyproject.toml`), coverage/pytest settings, and Sphinx configuration to match the new module namespace.

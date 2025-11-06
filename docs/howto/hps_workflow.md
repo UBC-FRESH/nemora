@@ -1,7 +1,7 @@
 # Fit HPS Inventories
 
 This guide walks through fitting the horizontal point sampling (HPS) workflow using the
-`dbhdistfit` CLI and Python API. It extends the weighted estimator described in the UBC FRESH Lab
+`nemora` CLI and Python API. It extends the weighted estimator described in the UBC FRESH Lab
 manuscript and relies on the probability distributions catalogued in the
 [distribution reference](../reference/distributions.md).
 
@@ -9,7 +9,7 @@ manuscript and relies on the probability distributions catalogued in the
 
 - An HPS tally file with columns `dbh_cm` (bin midpoints) and `tally` (per-plot counts).
 - The basal area factor (`BAF`) used during cruise design.
-- Python environment with `dbhdistfit` installed. One approach:
+- Python environment with `nemora` installed. One approach:
 
 ```bash
 python -m venv .venv
@@ -22,13 +22,13 @@ pip install -e ".[dev]"
 1. Inspect available distributions:
 
 ```bash
-dbhdistfit registry
+nemora registry
 ```
 
 2. Fit the HPS inventory with the default candidate set (`weibull`, `gamma`):
 
 ```bash
-dbhdistfit fit-hps data/hps_tally.csv --baf 2.0
+nemora fit-hps data/hps_tally.csv --baf 2.0
 ```
 
 Pass additional `--distribution` options to try alternative PDFs as the CLI evolves. The command
@@ -36,12 +36,12 @@ prints RSS, small-sample AIC (`AICc`), Pearson chi-square, Kolmogorov–Smirnov,
 Anderson–Darling statistics (plus residual summaries) for each candidate distribution so you can
 compare fits at a glance.
 Generalised secant mixtures are exposed as `gsmN` (for any integer `N ≥ 2`), so a command such as
-`dbhdistfit fit-hps ... -d gsm3 -d gsm6` will evaluate both three- and six-component blends.
+`nemora fit-hps ... -d gsm3 -d gsm6` will evaluate both three- and six-component blends.
 Use `--distribution` (repeatable) to limit the candidate list and `--show-parameters` to include the
 fitted parameter estimates. For example:
 
 ```bash
-dbhdistfit fit-hps data/hps_tally.csv --baf 2.0 -d weibull -d gamma --show-parameters
+nemora fit-hps data/hps_tally.csv --baf 2.0 -d weibull -d gamma --show-parameters
 ```
 
 The grouped Weibull solver defaults to `auto`, which refines the least-squares seed with a Newton
@@ -61,14 +61,14 @@ To explore the public PSP example bundle prepared with
 `examples/hps_baf12`:
 
 ```bash
-dbhdistfit fit-hps examples/hps_baf12/4000002_PSP1_v1_p1.csv --baf 12
+nemora fit-hps examples/hps_baf12/4000002_PSP1_v1_p1.csv --baf 12
 ```
 
 ## Python API Example
 
 ```python
 import pandas as pd
-from dbhdistfit.workflows import fit_hps_inventory
+from nemora.workflows import fit_hps_inventory
 
 data = pd.read_csv("data/hps_tally.csv")
 results = fit_hps_inventory(
@@ -143,7 +143,7 @@ table.
 :alt: Comparison of size-biased and weighted fits for the manuscript meta-plots.
 :width: 100%
 
-Figure 1 — Size-biased control vs. weighted `dbhdistfit` curves for the manuscript meta-plots. The
+Figure 1 — Size-biased control vs. weighted `nemora` curves for the manuscript meta-plots. The
 dashed line shows residuals on the HPS tally scale.
 ```
 

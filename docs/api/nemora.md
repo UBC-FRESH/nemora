@@ -1,6 +1,6 @@
-# `dbhdistfit` module
+# `nemora` module
 
-```{automodule} dbhdistfit
+```{automodule} nemora
 :members:
 :undoc-members:
 :show-inheritance:

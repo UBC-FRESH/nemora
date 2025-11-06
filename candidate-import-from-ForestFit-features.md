@@ -1,8 +1,8 @@
 # Candidate Features Inspired by ForestFit
 
-This working note records ForestFit capabilities that look directly applicable to `dbhdistfit`.
+This working note records ForestFit capabilities that look directly applicable to `nemora`.
 For each item we outline what the feature does in ForestFit, how it could map into the current Python
-architecture, and why importing (or re-implementing) the idea would strengthen `dbhdistfit`. The goal
+architecture, and why importing (or re-implementing) the idea would strengthen `nemora`. The goal
 is to credit the original work while planning concrete ports into our workflow-driven toolkit.
 
 ## Finite mixtures for grouped and ungrouped tallies
@@ -12,8 +12,8 @@ is to credit the original work while planning concrete ports into our workflow-d
   Weibull, Birnbaum–Saunders, exponential families) with support for both raw DBH vectors and grouped
   frequency tables. Built-in GOF metrics (AIC, BIC, Anderson–Darling, Cramér–von Mises, KS) are
   computed per component configuration.
-- **dbhdistfit port plan:**
-  - Add a `dbhdistfit.fitting.mixture` module that wraps a generic EM routine. Components would reuse
+- **nemora port plan:**
+  - Add a `nemora.fitting.mixture` module that wraps a generic EM routine. Components would reuse
     the existing distribution registry (so any registered PDF/CDF can participate).
   - Provide grouped-data adapters mirroring our HPS workflow (bin midpoints + tallies) so mixtures
     plug directly into `fit_hps_inventory` once an `--mixture` option is introduced.
@@ -26,7 +26,7 @@ is to credit the original work while planning concrete ports into our workflow-d
 ## Mixture distribution utilities (density / CDF / simulation)
 - **ForestFit reference:** `dmixture`, `pmixture`, `rmixture` for evaluating and simulating mixture
   PDFs.
-- **Port plan:** expose analogous helpers under `dbhdistfit.distributions.mixture` so that fitted
+- **Port plan:** expose analogous helpers under `nemora.distributions.mixture` so that fitted
   mixtures can be interrogated outside the optimisation context (e.g., for Monte Carlo stand-table
   generation or GOF visualisations).
 - **Integration points:** wrappers would build on the component registry and accept arbitrary
@@ -61,14 +61,14 @@ is to credit the original work while planning concrete ports into our workflow-d
   for Bayesian posterior sampling and credible intervals.
 - **Port plan:** prototype a lightweight Bayesian interface using PyMC or NumPyro wrappers around the
   same distributions, outputting posterior summaries alongside our deterministic fits. The hook would
-  live in a new `dbhdistfit.fitting.bayes` module with optional dependencies.
+  live in a new `nemora.fitting.bayes` module with optional dependencies.
 - **Benefit:** Provides uncertainty quantification paths familiar to ForestFit users while keeping the
   workflow inside the Python stack (important for students who want probabilistic assessments).
 
 ## Height–diameter curve library
 - **ForestFit reference:** `fitcurve()` supports a suite of classical H–D models (Weibull,
   Chapman–Richards, Logistic, Gompertz, etc.) with automatic plotting.
-- **Port plan:** create a companion `dbhdistfit.curves` subpackage housing these formulations, using
+- **Port plan:** create a companion `nemora.curves` subpackage housing these formulations, using
   SciPy’s `curve_fit` or lmfit. We can expose them through notebooks and optionally integrate with
   HPS expansion factors for coupled inventory analysis.
 - **Why:** Many practitioners need consistent H–D models alongside DBH distributions; folding them in
@@ -79,7 +79,7 @@ is to credit the original work while planning concrete ports into our workflow-d
   Kolmogorov–Smirnov statistics tailored for grouped data, plus residual plots.
 - **Port plan:** expand `FitResult.gof` to include these statistics (either via SciPy or manual
   computation) and emit grouped residual tables suitable for plotting. Shared code can live in a
-  `dbhdistfit.metrics` module.
+  `nemora.metrics` module.
 - **Rationale:** matches the diagnostic suite practitioners expect from ForestFit, and complements our
   existing RSS/AICc reports.
 
@@ -88,7 +88,7 @@ is to credit the original work while planning concrete ports into our workflow-d
 - **Port plan:** mirror these as optional DataLad resources (with attribution) or link to them from
   the docs, providing cross-language examples. When licensing permits, convert a subset into the
   `examples/` directory for parity testing.
-- **Rationale:** ensures users can replicate ForestFit tutorials inside dbhdistfit, lowering the
+- **Rationale:** ensures users can replicate ForestFit tutorials inside nemora, lowering the
   barrier to migration or side-by-side comparisons.
 
 ---
@@ -111,7 +111,7 @@ users can see which ForestFit ideas have been carried across.
     least-squares (Knoebel–Burkhart) solution, then applies damped Newton updates on the grouped score.
   - Covariance matrices are obtained from the observed information (negative Hessian of `ℓ(θ)`), which
     is evaluated numerically when a closed-form is inconvenient.
-- **Action items for dbhdistfit:**
+- **Action items for nemora:**
   1. Implement the grouped log-likelihood and its gradient for the three-parameter Weibull, reusing the
      bin edges we already compute. Accept an optional location lock (`α = min(DBH) - c`) to match the
      ForestFit conditional MLE workflow. Verify derivatives against automatic differentiation (e.g.,

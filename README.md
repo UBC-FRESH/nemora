@@ -1,6 +1,6 @@
-# dbhdistfit
+# nemora
 
-`dbhdistfit` is an open-source toolkit for fitting diameter-at-breast-height (DBH) probability
+`nemora` is an open-source toolkit for fitting diameter-at-breast-height (DBH) probability
 distributions to forest inventory tally data. It packages the workflows developed by the UBC FRESH
 Lab for handling both horizontal point sampling (HPS) and fixed-area plot inventories, including
 size-bias corrections, left/right censoring, and extensible distribution libraries.
@@ -9,13 +9,13 @@ size-bias corrections, left/right censoring, and extensible distribution librari
 - Weighted HPS fitting that reproduces size-biased estimators using standard-form PDFs.
 - Two-stage scaling workflow for censored or truncated tallies without bespoke PDF forms.
 - Catalogue of 28+ forestry-relevant distributions, with user-defined plugin support.
-- Python API, Typer-powered CLI, and an R wrapper (`dbhdistfitr`) built on reticulate.
+- Python API, Typer-powered CLI, and an R wrapper (`nemorar`) built on reticulate.
 - Reproducible examples (Jupyter, Python scripts, bash) linked to DataLad managed tallies.
 - Sphinx documentation with theory notes, API reference, and worked examples.
 - Experimental finite-mixture fitting (two-component EM) for grouped stand tables.
 
 ## Relationship to other tools
-`dbhdistfit` complements earlier diameter-distribution toolkits—most notably the R package
+`nemora` complements earlier diameter-distribution toolkits—most notably the R package
 [`ForestFit`](https://cran.r-project.org/package=ForestFit)—by focusing on workflow integration and
 cross-language accessibility:
 
@@ -36,12 +36,12 @@ will surface mixture and piecewise models inspired by the same body of research.
 
 ## Project Layout
 ```
-src/dbhdistfit/    # Core Python package (distributions, weighting, fitting, workflows)
+src/nemora/    # Core Python package (distributions, weighting, fitting, workflows)
 docs/              # Sphinx documentation sources
 tests/             # Pytest suites and fixtures
 examples/          # Jupyter notebooks, scripts, CLI samples
 config/            # Distribution registry and package defaults
-r/dbhdistfitr/     # R wrapper (reticulate bridge) scaffolding
+r/nemorar/     # R wrapper (reticulate bridge) scaffolding
 .github/workflows/ # CI pipelines
 ROADMAP.md         # Working readiness plan
 ```
@@ -52,7 +52,7 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
 pre-commit install
-dbhdistfit --help
+nemora --help
 ```
 
 See `CONTRIBUTING.md` for coding standards, testing, and review checklists.

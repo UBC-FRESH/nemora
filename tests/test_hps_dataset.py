@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from dbhdistfit.dataprep import (
+from nemora.dataprep import (
     aggregate_hps_tallies,
     load_plot_selections,
 )

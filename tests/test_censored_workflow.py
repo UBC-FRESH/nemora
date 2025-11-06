@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from dbhdistfit.workflows.censoring import fit_censored_inventory
+from nemora.workflows.censoring import fit_censored_inventory
 
 
 def test_censored_meta_plot_prefers_gamma_distribution() -> None:

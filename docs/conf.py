@@ -8,13 +8,13 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
-project = "dbhdistfit"
+project = "nemora"
 author = "UBC FRESH Lab"
 copyright = f"{datetime.now():%Y}, {author}"
 
 release = "0.0.1"
 try:
-    release = importlib.metadata.version("dbhdistfit")
+    release = importlib.metadata.version("nemora")
 except importlib.metadata.PackageNotFoundError:  # pragma: no cover - docs build
     pass
 
