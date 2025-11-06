@@ -6,8 +6,10 @@ from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 import numpy as np
+from scipy.integrate import quad
 from scipy.optimize import approx_fprime, curve_fit, minimize, minimize_scalar
-from scipy.stats import fatiguelife, johnsonsb, weibull_min
+from scipy.special import betainc, betaln, digamma, polygamma
+from scipy.stats import fatiguelife, johnsonsb, norm, weibull_min
 from scipy.stats import gamma as gamma_dist
 
 from ..distributions import weibull_pdf
@@ -247,6 +249,239 @@ def _assemble_grouped_result(
     )
 
 
+def _beta_interval_moments(
+    a: float,
+    b: float,
+    lower: float,
+    upper: float,
+) -> tuple[float, float, float]:
+    """Return (mass, E[log Z], E[log(1-Z)]) for Z ~ Beta(a, b) truncated to (lower, upper)."""
+    epsilon = 1e-12
+    lower_clipped = float(np.clip(lower, epsilon, 1.0 - epsilon))
+    upper_clipped = float(np.clip(upper, epsilon, 1.0 - epsilon))
+    if upper_clipped <= lower_clipped + 1e-12:
+        mid = max(min(0.5 * (lower_clipped + upper_clipped), 1.0 - epsilon), epsilon)
+        log_mid = float(np.log(mid))
+        log_one_minus_mid = float(np.log1p(-mid))
+        return epsilon, log_mid, log_one_minus_mid
+    mass = float(
+        np.clip(betainc(a, b, upper_clipped) - betainc(a, b, lower_clipped), epsilon, None)
+    )
+    log_norm = float(-betaln(a, b))
+
+    def _integrand_log_z(z: float) -> float:
+        return np.exp((a - 1.0) * np.log(z) + (b - 1.0) * np.log1p(-z) + log_norm) * np.log(z)
+
+    def _integrand_log_one_minus(z: float) -> float:
+        return np.exp((a - 1.0) * np.log(z) + (b - 1.0) * np.log1p(-z) + log_norm) * np.log1p(-z)
+
+    log_z_int, _ = quad(
+        _integrand_log_z,
+        lower_clipped,
+        upper_clipped,
+        limit=100,
+        epsabs=1e-10,
+        epsrel=1e-8,
+    )
+    log_one_minus_int, _ = quad(
+        _integrand_log_one_minus,
+        lower_clipped,
+        upper_clipped,
+        limit=100,
+        epsabs=1e-10,
+        epsrel=1e-8,
+    )
+    return mass, float(log_z_int / mass), float(log_one_minus_int / mass)
+
+
+def _normal_interval_moments(
+    lower: float,
+    upper: float,
+) -> tuple[float, float, float]:
+    """Return (mass, E[Y], E[Y^2]) for truncated standard normal Y in (lower, upper)."""
+    epsilon = 1e-12
+
+    if np.isneginf(lower):
+        phi_lower = 0.0
+        cdf_lower = 0.0
+    else:
+        phi_lower = float(norm.pdf(lower))
+        cdf_lower = float(norm.cdf(lower))
+
+    if np.isposinf(upper):
+        phi_upper = 0.0
+        cdf_upper = 1.0
+    else:
+        phi_upper = float(norm.pdf(upper))
+        cdf_upper = float(norm.cdf(upper))
+
+    mass = float(np.clip(cdf_upper - cdf_lower, epsilon, None))
+    mean = (phi_lower - phi_upper) / mass
+    mean_sq = 1.0 + (lower * phi_lower - upper * phi_upper) / mass
+    return mass, mean, mean_sq
+
+
+def _solve_beta_mstep(
+    a: float,
+    b: float,
+    target_log_z: float,
+    target_log_one_minus: float,
+    *,
+    max_iter: int = 15,
+    tol: float = 1e-6,
+) -> tuple[float, float, bool]:
+    """Solve the Beta M-step equations via damped Newton iterations."""
+    a_curr = max(a, 1e-6)
+    b_curr = max(b, 1e-6)
+    target1 = float(target_log_z)
+    target2 = float(target_log_one_minus)
+    for _ in range(max_iter):
+        psi_sum = digamma(a_curr + b_curr)
+        g1 = digamma(a_curr) - psi_sum - target1
+        g2 = digamma(b_curr) - psi_sum - target2
+        if max(abs(g1), abs(g2)) < tol:
+            return a_curr, b_curr, True
+        h11 = polygamma(1, a_curr) - polygamma(1, a_curr + b_curr)
+        h22 = polygamma(1, b_curr) - polygamma(1, a_curr + b_curr)
+        cross = -polygamma(1, a_curr + b_curr)
+        jacobian = np.array([[h11, cross], [cross, h22]], dtype=float)
+        grad = np.array([g1, g2], dtype=float)
+        try:
+            step = np.linalg.solve(jacobian, -grad)
+        except np.linalg.LinAlgError:
+            step = -np.linalg.lstsq(jacobian, grad, rcond=None)[0]
+        damping = 1.0
+        for _ in range(6):
+            a_candidate = a_curr + damping * step[0]
+            b_candidate = b_curr + damping * step[1]
+            if a_candidate > 1e-6 and b_candidate > 1e-6:
+                a_curr = a_candidate
+                b_curr = b_candidate
+                break
+            damping *= 0.5
+        else:
+            return a_curr, b_curr, False
+    return a_curr, b_curr, False
+
+
+def _johnsonsb_bin_probabilities(
+    a: float,
+    b: float,
+    loc: float,
+    scale: float,
+    edges: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray] | tuple[None, None, None]:
+    if scale <= 1e-12:
+        return None, None, None
+    lower = (edges[:-1] - loc) / scale
+    upper = (edges[1:] - loc) / scale
+    epsilon = 1e-12
+    lower = np.clip(lower, epsilon, 1.0 - epsilon)
+    upper = np.clip(upper, epsilon, 1.0 - epsilon)
+    if np.any(upper <= lower):
+        return None, None, None
+    probabilities = betainc(a, b, upper) - betainc(a, b, lower)
+    probabilities = np.clip(probabilities, epsilon, None)
+    probabilities = probabilities / float(np.sum(probabilities))
+    return probabilities, lower, upper
+
+
+def _fit_johnsonsb_em(
+    inventory: InventorySpec,
+    config: FitConfig,
+    *,
+    max_iter: int = 25,
+    tol: float = 1e-5,
+) -> FitResult | None:
+    x, counts = _prepare_grouped_data(inventory)
+    edges = _bin_edges_from_centroids(x)
+    total = float(np.sum(counts))
+    initial_map = dict(config.initial)
+    min_edge = float(np.min(edges[:-1]))
+    max_edge = float(np.max(edges[1:]))
+    a_guess = float(initial_map.get("a", 1.5))
+    b_guess = float(initial_map.get("b", 2.5))
+    a = float(np.clip(a_guess, 0.5, 8.0))
+    b = float(np.clip(b_guess, 0.5, 8.0))
+    loc = float(initial_map.get("loc", min_edge)) - 1e-6
+    scale = float(initial_map.get("scale", max_edge - loc))
+    if scale <= 0 or loc + scale <= max_edge:
+        scale = max_edge - loc + 1e-3
+    best_loglik = -np.inf
+    converged = False
+    last_delta = float("inf")
+
+    last_iteration = 0
+    for iteration in range(1, max_iter + 1):
+        last_iteration = iteration
+        probabilities, lower, upper = _johnsonsb_bin_probabilities(a, b, loc, scale, edges)
+        if probabilities is None or lower is None or upper is None:
+            break
+        loglik = float(np.sum(counts * np.log(probabilities)))
+        if loglik < best_loglik - 1e-6:
+            break
+        best_loglik = loglik
+
+        mass_list: list[float] = []
+        logz_list: list[float] = []
+        log1mz_list: list[float] = []
+        for lower_bound, upper_bound in zip(lower, upper, strict=False):
+            mass, elogz, elog1mz = _beta_interval_moments(a, b, lower_bound, upper_bound)
+            mass_list.append(mass)
+            logz_list.append(elogz)
+            log1mz_list.append(elog1mz)
+        mass_arr = np.asarray(mass_list, dtype=float)
+        if np.any(mass_arr <= 0):
+            break
+        logz_arr = np.asarray(logz_list, dtype=float)
+        log1mz_arr = np.asarray(log1mz_list, dtype=float)
+        target_log_z = float(np.sum(counts * logz_arr) / total)
+        target_log_one_minus = float(np.sum(counts * log1mz_arr) / total)
+
+        prev_a, prev_b = a, b
+        a_new, b_new, ok = _solve_beta_mstep(a, b, target_log_z, target_log_one_minus)
+        if not ok:
+            break
+        a, b = a_new, b_new
+
+        probabilities, _, _ = _johnsonsb_bin_probabilities(a, b, loc, scale, edges)
+        if probabilities is None:
+            break
+        new_loglik = float(np.sum(counts * np.log(probabilities)))
+        delta = abs(new_loglik - best_loglik)
+        best_loglik = new_loglik
+        last_delta = delta
+        param_delta = max(abs(a - prev_a), abs(b - prev_b))
+        if delta < tol * (1.0 + abs(best_loglik)) or param_delta < 1e-5:
+            converged = True
+            break
+
+    if not converged:
+        return None
+
+    probabilities, _, _ = _johnsonsb_bin_probabilities(a, b, loc, scale, edges)
+    if probabilities is None:
+        return None
+    params = {"a": a, "b": b, "loc": loc, "scale": scale}
+    extras: dict[str, float | int | bool | str | np.ndarray | None] = {
+        "iterations": last_iteration,
+        "converged": converged,
+        "delta_loglik": last_delta,
+        "method_detail": "em-shape-newton",
+    }
+    return _assemble_grouped_result(
+        "johnsonsb",
+        params,
+        counts,
+        edges,
+        probabilities,
+        covariance=None,
+        method="grouped-em",
+        amplitude=total,
+        extras=extras,
+    )
+
+
 def _grouped_mle(
     inventory: InventorySpec,
     config: FitConfig | None,
@@ -359,6 +594,7 @@ def _fit_weibull_grouped(
     edges = _bin_edges_from_centroids(x)
     min_dbh = float(np.min(x))
     location_shift = max(0.0, min_dbh - WEIBULL_CML_OFFSET)
+    mode = str(inventory.metadata.get("grouped_weibull_mode", "auto")).lower()
     initial_map = dict(config.initial)
     a0 = float(initial_map.get("a", 2.0))
     beta0 = float(initial_map.get("beta", max(float(np.mean(x)) if x.size else 10.0, 1.0)))
@@ -450,6 +686,8 @@ def _fit_weibull_grouped(
         gof=gof,
         diagnostics=diagnostics,
     )
+    if mode == "ls":
+        return ls_result
 
     def neg_loglik(theta: np.ndarray) -> float:
         shape = float(np.exp(theta[0]))
@@ -502,9 +740,15 @@ def _fit_weibull_grouped(
         newton_converged = True
 
     if not newton_converged:
-        notes = ls_result.diagnostics.setdefault("notes", [])
-        notes.append("grouped Newton refinement failed – keeping least squares solution")
-        return ls_result
+        if mode == "mle":
+            opt = minimize(neg_loglik, theta, method="L-BFGS-B")
+            if not opt.success:
+                raise RuntimeError("Grouped Newton refinement failed in forced 'mle' mode.")
+            theta = opt.x
+        else:
+            notes = ls_result.diagnostics.setdefault("notes", [])
+            notes.append("grouped Newton refinement failed – keeping least squares solution")
+            return ls_result
 
     shape = float(np.exp(theta[0]))
     scale = float(np.exp(theta[1]))
@@ -531,6 +775,7 @@ def _fit_weibull_grouped(
         "status": None,
         "message": None,
         "weights": weights,
+        "mode": mode,
     }
 
     mle_result = _assemble_grouped_result(
@@ -547,7 +792,7 @@ def _fit_weibull_grouped(
 
     ls_vector = np.array([param_dict["a"], param_dict["beta"], param_dict["s"]])
     mle_vector = np.array([mle_params["a"], mle_params["beta"], mle_params["s"]])
-    if not np.allclose(ls_vector, mle_vector, rtol=1e-3, atol=1e-3):
+    if not np.allclose(ls_vector, mle_vector, rtol=1e-3, atol=1e-3) and mode != "mle":
         notes = ls_result.diagnostics.setdefault("notes", [])
         notes.append(
             "grouped likelihood refinement deviated from LS – keeping least squares solution"
@@ -561,6 +806,13 @@ def _fit_johnsonsb_grouped(
     inventory: InventorySpec,
     config: FitConfig | None,
 ) -> FitResult:
+    if config is None:
+        raise ValueError("Grouped estimator requires a FitConfig instance.")
+
+    em_result = _fit_johnsonsb_em(inventory, config)
+    if em_result is not None:
+        return em_result
+
     bins = np.asarray(inventory.bins, dtype=float)
     defaults = {
         "a": 1.5,
@@ -578,61 +830,28 @@ def _fit_johnsonsb_grouped(
             scale=params["scale"],
         )
 
-    try:
-        return _grouped_mle(
-            inventory,
-            config,
-            distribution="johnsonsb",
-            param_names=("a", "b", "loc", "scale"),
-            cdf_callable=cdf_callable,
-            defaults=defaults,
-            positive_parameters=("a", "b", "scale"),
-        )
-    except ValueError as exc:
-        x, counts = _prepare_grouped_data(inventory)
-        sample = np.repeat(x, counts)
-        if sample.size < 4:
-            raise
-        a_fit, b_fit, loc_fit, scale_fit = johnsonsb.fit(sample)
-        params = {
-            "a": float(a_fit),
-            "b": float(b_fit),
-            "loc": float(loc_fit),
-            "scale": float(scale_fit),
-        }
-        edges = _bin_edges_from_centroids(x)
-        cdf_vals = johnsonsb.cdf(edges, a=a_fit, b=b_fit, loc=loc_fit, scale=scale_fit)
-        probabilities = np.diff(cdf_vals)
-        if cdf_vals[0] > 0:
-            probabilities[0] += cdf_vals[0]
-        tail_mass = 1.0 - cdf_vals[-1]
-        if tail_mass > 0:
-            probabilities[-1] += tail_mass
-        probabilities = np.clip(probabilities, 1e-12, None)
-        extras: dict[str, float | int | bool | str | np.ndarray | None] = {
-            "bins": x,
-            "converged": False,
-            "status": "fallback-scipy-fit",
-            "message": str(exc),
-            "iterations": 0,
-        }
-        return _assemble_grouped_result(
-            "johnsonsb",
-            params,
-            counts,
-            edges,
-            probabilities,
-            covariance=None,
-            method="grouped-mle",
-            amplitude=float(np.sum(counts)),
-            extras=extras,
-        )
+    return _grouped_mle(
+        inventory,
+        config,
+        distribution="johnsonsb",
+        param_names=("a", "b", "loc", "scale"),
+        cdf_callable=cdf_callable,
+        defaults=defaults,
+        positive_parameters=("a", "b", "scale"),
+    )
 
 
 def _fit_birnbaum_saunders_grouped(
     inventory: InventorySpec,
     config: FitConfig | None,
 ) -> FitResult:
+    if config is None:
+        raise ValueError("Grouped estimator requires a FitConfig instance.")
+
+    em_result = _fit_birnbaum_saunders_em(inventory, config)
+    if em_result is not None:
+        return em_result
+
     bins = np.asarray(inventory.bins, dtype=float)
     defaults = {
         "alpha": 1.0,
@@ -788,3 +1007,174 @@ def get_grouped_estimator(name: str) -> GroupedEstimator | None:
                 _GROUPED_ESTIMATORS[key] = estimator
                 return estimator
     return None
+
+
+def _birnbaum_normal_bounds(
+    alpha: float,
+    beta: float,
+    edges: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray] | tuple[None, None]:
+    if alpha <= 0 or beta <= 0:
+        return None, None
+    epsilon = 1e-12
+    clipped = np.clip(edges, epsilon, None)
+    sqrt_ratio = np.sqrt(clipped / beta)
+    sqrt_inv = np.sqrt(beta / clipped)
+    y = (sqrt_ratio - sqrt_inv) / alpha
+    if np.any(~np.isfinite(y)):
+        return None, None
+    return y[:-1], y[1:]
+
+
+def _fit_birnbaum_saunders_em(
+    inventory: InventorySpec,
+    config: FitConfig,
+    *,
+    max_iter: int = 50,
+    tol: float = 1e-5,
+) -> FitResult | None:
+    x, counts = _prepare_grouped_data(inventory)
+    edges = _bin_edges_from_centroids(x)
+    total = float(np.sum(counts))
+    if total <= 0:
+        return None
+
+    initial_map = dict(config.initial)
+    alpha_guess = float(initial_map.get("alpha", 1.0))
+    beta_guess = float(initial_map.get("beta", np.mean(x) if x.size else 10.0))
+    alpha = float(np.clip(alpha_guess, 0.05, 20.0))
+    beta = float(np.clip(beta_guess, 1e-3, np.max(edges) * 2.0 if edges.size else 10.0))
+
+    best_loglik = -np.inf
+    converged = False
+    last_delta = float("inf")
+
+    last_iteration = 0
+    for iteration in range(1, max_iter + 1):
+        last_iteration = iteration
+        lower, upper = _birnbaum_normal_bounds(alpha, beta, edges)
+        if lower is None or upper is None:
+            break
+
+        masses: list[float] = []
+        means: list[float] = []
+        second_moments: list[float] = []
+        for low, up in zip(lower, upper, strict=False):
+            mass, mean, mean_sq = _normal_interval_moments(low, up)
+            masses.append(mass)
+            means.append(mean)
+            second_moments.append(mean_sq)
+        probabilities = np.asarray(masses, dtype=float)
+        if np.any(probabilities <= 0) or not np.all(np.isfinite(probabilities)):
+            break
+        probabilities = probabilities / float(np.sum(probabilities))
+        loglik = float(np.sum(counts * np.log(probabilities)))
+        if loglik < best_loglik - 1e-6:
+            break
+        best_loglik = loglik
+
+        means_arr = np.asarray(means, dtype=float)
+        second_arr = np.asarray(second_moments, dtype=float)
+        t1 = float(np.sum(counts * means_arr))
+        t2 = float(np.sum(counts * second_arr))
+
+        variance_term = t2 / total - 1.0 - (t1 / total) ** 2
+        if variance_term <= 1e-8 or not np.isfinite(variance_term):
+            break
+        alpha_new = float(np.sqrt(variance_term))
+
+        def neg_loglik_beta(
+            beta_candidate: float,
+            *,
+            current_alpha: float = alpha_new,
+        ) -> float:
+            if beta_candidate <= 1e-6 or not np.isfinite(beta_candidate):
+                return float("inf")
+            lower_candidate, upper_candidate = _birnbaum_normal_bounds(
+                current_alpha,
+                beta_candidate,
+                edges,
+            )
+            if lower_candidate is None or upper_candidate is None:
+                return float("inf")
+            masses_candidate: list[float] = []
+            for low_cand, up_cand in zip(lower_candidate, upper_candidate, strict=False):
+                mass_cand, _, _ = _normal_interval_moments(low_cand, up_cand)
+                masses_candidate.append(mass_cand)
+            probs_candidate = np.asarray(masses_candidate, dtype=float)
+            if np.any(probs_candidate <= 0) or not np.all(np.isfinite(probs_candidate)):
+                return float("inf")
+            probs_candidate = probs_candidate / float(np.sum(probs_candidate))
+            return float(-np.sum(counts * np.log(probs_candidate)))
+
+        beta_upper = max(10.0 * np.max(edges), beta * 10.0)
+        search = minimize_scalar(
+            neg_loglik_beta,
+            bounds=(1e-6, beta_upper),
+            method="bounded",
+            options={"xatol": 1e-6},
+        )
+        if not search.success:
+            break
+        beta_new = float(search.x)
+
+        lower_new, upper_new = _birnbaum_normal_bounds(alpha_new, beta_new, edges)
+        if lower_new is None or upper_new is None:
+            break
+        masses_new: list[float] = []
+        for low_new, up_new in zip(lower_new, upper_new, strict=False):
+            mass_new, _, _ = _normal_interval_moments(low_new, up_new)
+            masses_new.append(mass_new)
+        probabilities_new = np.asarray(masses_new, dtype=float)
+        if np.any(probabilities_new <= 0) or not np.all(np.isfinite(probabilities_new)):
+            break
+        probabilities_new = probabilities_new / float(np.sum(probabilities_new))
+        new_loglik = float(np.sum(counts * np.log(probabilities_new)))
+
+        delta_param = max(
+            abs(alpha_new - alpha) / max(alpha, 1e-6),
+            abs(beta_new - beta) / max(beta, 1e-6),
+        )
+        delta_loglik = abs(new_loglik - best_loglik)
+        alpha = alpha_new
+        beta = beta_new
+        best_loglik = new_loglik
+        last_delta = delta_param
+
+        if delta_param < tol and delta_loglik < tol * (1.0 + abs(best_loglik)):
+            converged = True
+            break
+
+    if not converged:
+        return None
+
+    cdf_vals = fatiguelife.cdf(edges, c=alpha, loc=0.0, scale=beta)
+    if np.any(~np.isfinite(cdf_vals)):
+        return None
+    probabilities_final = np.diff(cdf_vals)
+    if cdf_vals[0] > 0:
+        probabilities_final[0] += cdf_vals[0]
+    tail_mass = 1.0 - cdf_vals[-1]
+    if tail_mass > 0:
+        probabilities_final[-1] += tail_mass
+    probabilities_final = np.clip(probabilities_final, 1e-12, None)
+    probabilities_final = probabilities_final / float(np.sum(probabilities_final))
+
+    params = {"alpha": alpha, "beta": beta}
+    extras: dict[str, float | int | bool | str | np.ndarray | None] = {
+        "iterations": last_iteration,
+        "converged": converged,
+        "delta": last_delta,
+        "method_detail": "em-normal-moments",
+    }
+    return _assemble_grouped_result(
+        "birnbaum_saunders",
+        params,
+        counts,
+        edges,
+        probabilities_final,
+        covariance=None,
+        method="grouped-em",
+        amplitude=total,
+        extras=extras,
+    )

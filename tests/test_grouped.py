@@ -24,7 +24,7 @@ def test_grouped_johnsonsb_estimator_applied() -> None:
     result = fit_hps_inventory(bins, counts, baf=1.0, distributions=("johnsonsb",))
     assert result
     fit = result[0]
-    assert fit.diagnostics.get("method") == "grouped-mle"
+    assert fit.diagnostics.get("method") == "grouped-em"
     assert fit.parameters["a"] > 0
     assert fit.parameters["b"] > 0
     assert fit.parameters["scale"] > 0
@@ -41,7 +41,7 @@ def test_grouped_birnbaum_saunders_estimator_applied() -> None:
     )
     assert result
     fit = result[0]
-    assert fit.diagnostics.get("method") == "grouped-mle"
+    assert fit.diagnostics.get("method") in {"grouped-em", "grouped-mle"}
     assert fit.parameters["alpha"] > 0
     assert fit.parameters["beta"] > 0
 

@@ -71,6 +71,13 @@ SHOW_PARAMETERS_OPTION = typer.Option(
     show_default=False,
 )
 
+GROUPED_WEIBULL_MODE_OPTION = typer.Option(
+    "auto",
+    "--grouped-weibull-mode",
+    help="Grouped Weibull solver mode: auto (default), ls, or mle.",
+    show_default=True,
+)
+
 
 @app.callback(invoke_without_command=True)
 def cli_callback(  # noqa: B008
@@ -105,6 +112,7 @@ def fit_hps(  # noqa: B008
     baf: float = BAF_OPTION,
     distributions: list[str] | None = DISTRIBUTIONS_OPTION,
     show_parameters: bool = SHOW_PARAMETERS_OPTION,
+    grouped_weibull_mode: str = GROUPED_WEIBULL_MODE_OPTION,
 ) -> None:
     """Fit distributions to HPS tallies stored in a CSV file."""
     import pandas as pd
@@ -114,8 +122,14 @@ def fit_hps(  # noqa: B008
     tally = data["tally"].to_numpy()
     chosen = tuple(distributions) if distributions else None
     try:
-        results = fit_hps_inventory(dbh, tally, baf=baf, distributions=chosen)
-    except KeyError as exc:
+        results = fit_hps_inventory(
+            dbh,
+            tally,
+            baf=baf,
+            distributions=chosen,
+            grouped_weibull_mode=grouped_weibull_mode,
+        )
+    except (KeyError, ValueError) as exc:
         console.print(f"[red]{exc}[/red]")
         raise typer.Exit(code=1) from exc
     table = Table(title="HPS Fits", expand=True)

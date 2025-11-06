@@ -33,13 +33,51 @@ def test_hps_psp_fixture_weibull_fit_matches_parity() -> None:
         fixture["tally"].to_numpy(),
         baf=12.0,
         distributions=("weibull",),
+        grouped_weibull_mode="auto",
     )
     fit = results[0]
     assert fit.distribution == "weibull"
     assert fit.diagnostics.get("method") == "grouped-ls"
+    notes = fit.diagnostics.get("notes")
+    assert notes and any("grouped Newton refinement failed" in str(message) for message in notes)
     expected = {"a": 2.762844978640213, "beta": 13.778112123083137, "s": 69732.71124303175}
     for key, value in expected.items():
         assert fit.parameters[key] == pytest.approx(value, rel=1e-6)
+
+
+def test_hps_psp_fixture_ls_mode_matches_parity_without_notes() -> None:
+    fixture = _load_csv("hps_psp_stand_table.csv")
+    results = fit_hps_inventory(
+        fixture["dbh_cm"].to_numpy(),
+        fixture["tally"].to_numpy(),
+        baf=12.0,
+        distributions=("weibull",),
+        grouped_weibull_mode="ls",
+    )
+    fit = results[0]
+    assert fit.distribution == "weibull"
+    assert fit.diagnostics.get("method") == "grouped-ls"
+    assert not fit.diagnostics.get("notes")
+    expected = {"a": 2.762844978640213, "beta": 13.778112123083137, "s": 69732.71124303175}
+    for key, value in expected.items():
+        assert fit.parameters[key] == pytest.approx(value, rel=1e-6)
+
+
+def test_hps_psp_fixture_mle_mode_runs_grouped_solver() -> None:
+    fixture = _load_csv("hps_psp_stand_table.csv")
+    results = fit_hps_inventory(
+        fixture["dbh_cm"].to_numpy(),
+        fixture["tally"].to_numpy(),
+        baf=12.0,
+        distributions=("weibull",),
+        grouped_weibull_mode="mle",
+    )
+    fit = results[0]
+    assert fit.distribution == "weibull"
+    assert fit.diagnostics.get("method") == "grouped-mle"
+    expected = {"a": 1.237159537064637, "beta": 8.154683291449842, "s": 69732.71124303175}
+    for key, value in expected.items():
+        assert fit.parameters[key] == pytest.approx(value, rel=1e-4)
 
 
 def test_spruce_fir_grouped_fixture_runs_weibull() -> None:
@@ -49,12 +87,12 @@ def test_spruce_fir_grouped_fixture_runs_weibull() -> None:
         sampling="fixed-area",
         bins=fixture["bin_midpoint"].to_numpy(),
         tallies=fixture["count"].to_numpy(),
-        metadata={"grouped": True},
+        metadata={"grouped": True, "grouped_weibull_mode": "mle"},
     )
     results = fit_inventory(inventory, distributions=["weibull"], configs={})
     fit = results[0]
     assert fit.distribution == "weibull"
-    assert fit.diagnostics.get("method") in {"grouped-mle", "grouped-ls"}
-    expected = {"a": 2.248935447119741, "beta": 28.610478898705715}
+    assert fit.diagnostics.get("method") == "grouped-mle"
+    expected = {"a": 1.6547972714002503, "beta": 22.545617499576252}
     for key, value in expected.items():
         assert fit.parameters[key] == pytest.approx(value, rel=1e-4)

@@ -44,6 +44,14 @@ fitted parameter estimates. For example:
 dbhdistfit fit-hps data/hps_tally.csv --baf 2.0 -d weibull -d gamma --show-parameters
 ```
 
+The grouped Weibull solver defaults to `auto`, which refines the least-squares seed with a Newton
+update and quietly falls back to the stable least-squares solution if the grouped maximum-likelihood
+step drifts. Use `--grouped-weibull-mode ls` to pin the legacy behaviour or
+`--grouped-weibull-mode mle` to require the grouped likelihood path (the command will exit with an
+error if the refinement fails under the forced `mle` mode).
+To stay numerically stable, the solver applies the conditional offset from the manuscript:
+the Weibull support is shifted by `min(DBH) – 0.5 cm` before evaluating grouped probabilities.
+
 To explore the public PSP example bundle prepared with
 `scripts/prepare_hps_dataset.py`, start with one of the manifests in
 `examples/hps_baf12`:
@@ -81,7 +89,8 @@ for result in results:
 
 `fit_hps_inventory` expands tallies to stand tables, applies the HPS compression factors as
 weights, and auto-generates starting values. Override the defaults through `FitConfig` for
-specialised scenarios.
+specialised scenarios, and pass `grouped_weibull_mode="ls"` or `"mle"` to mirror the CLI toggle
+when you need to pin or force the grouped Weibull solver mode.
 
 ### Reference Fit (BC PSP 4000002-PSP1)
 

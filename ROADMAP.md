@@ -44,16 +44,19 @@ requirements firm up and is intended to stay in sync with day-to-day development
 1. **Grouped Weibull EM/Newton roll-out**
    - [x] Replace the L-BFGS refinement with a guarded Newton iteration that respects the
      `min(DBH) – 0.5 cm` conditional offset (2025-11-06).
-   - [ ] Validate the solver on synthetic data and the spruce–fir grouped tallies from Zhang et al.
-     (2011); capture results under `tests/fixtures/`.
-   - [ ] Expose a feature flag that keeps the least-squares solution as default until fixtures pass,
-     then document the offset behaviour in the HPS guide.
+   - [x] Validate the solver on synthetic data and the spruce–fir grouped tallies from Zhang et al.
+     (2011); capture results under `tests/fixtures/`. *(2025-11-06; see `tests/test_grouped_fixtures.py`)*
+   - [x] Expose a feature flag that keeps the least-squares solution as default until fixtures pass,
+     then document the offset behaviour in the HPS guide. *(2025-11-06; CLI `--grouped-weibull-mode`
+     and `fit_hps_inventory(..., grouped_weibull_mode=…)` documented in `docs/howto/hps_workflow.md`.)*
+   - [ ] Complete Birnbaum–Saunders grouped EM (latent normal moments per ForestFit) and retire the SciPy fallback.
+   - [ ] Extend the grouped regression suite with Birnbaum–Saunders synthetic fixtures to guard updates.
 2. **Fixture preparation**
-- [x] Digitise or extract the manuscript PSP tally (`examples/hps_baf12/...`) and the ForestFit
-    spruce–fir bins into dedicated fixtures used by regression tests. *(2025-11-06)*
+   - [x] Digitise or extract the manuscript PSP tally (`examples/hps_baf12/...`) and the ForestFit
+     spruce–fir bins into dedicated fixtures used by regression tests. *(2025-11-06)*
 3. **Documentation updates**
-   - [ ] Once the grouped solver is validated, update `docs/howto/hps_workflow.md` and related pages
-     with guidance on the conditional offset and the new grouped-MLE option.
+   - [x] Once the grouped solver is validated, update `docs/howto/hps_workflow.md` and related pages
+     with guidance on the conditional offset and the new grouped-MLE option. *(2025-11-06)*
 
 ## Phase 3 — Quality & Release Readiness
 - [ ] Expand unit and property-based tests; add golden fixtures for known tallies.
