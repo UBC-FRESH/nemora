@@ -18,6 +18,8 @@ if TYPE_CHECKING:  # pragma: no cover - typing aid
 
 GroupedEstimator = Callable[[InventorySpec, "FitConfig | None"], FitResult]
 
+WEIBULL_CML_OFFSET = 0.5
+
 
 def _numerical_hessian(
     func: Callable[[np.ndarray], float],
@@ -58,9 +60,17 @@ def _numerical_hessian(
     return hessian
 
 
-def _weibull_probabilities(a: float, beta: float, edges: np.ndarray) -> np.ndarray:
+def _weibull_probabilities(
+    a: float,
+    beta: float,
+    edges: np.ndarray,
+    *,
+    location_shift: float = 0.0,
+) -> np.ndarray:
     """Return bin probabilities for a Weibull distribution across provided edges."""
-    cdf_vals = weibull_min.cdf(edges, a, scale=beta)
+    shifted = np.asarray(edges, dtype=float) - location_shift
+    shifted = np.clip(shifted, 0.0, None)
+    cdf_vals = weibull_min.cdf(shifted, a, scale=beta)
     probabilities = np.diff(cdf_vals)
     if probabilities.size == 0:
         return probabilities
@@ -347,6 +357,8 @@ def _fit_weibull_grouped(
     y = np.asarray(inventory.tallies, dtype=float)
     weights = config.weights
     edges = _bin_edges_from_centroids(x)
+    min_dbh = float(np.min(x))
+    location_shift = max(0.0, min_dbh - WEIBULL_CML_OFFSET)
     initial_map = dict(config.initial)
     a0 = float(initial_map.get("a", 2.0))
     beta0 = float(initial_map.get("beta", max(float(np.mean(x)) if x.size else 10.0, 1.0)))
@@ -418,7 +430,12 @@ def _fit_weibull_grouped(
 
     param_dict = {"a": float(params[0]), "beta": float(params[1]), "s": float(params[2])}
 
-    ls_probs = _weibull_probabilities(param_dict["a"], param_dict["beta"], edges)
+    ls_probs = _weibull_probabilities(
+        param_dict["a"],
+        param_dict["beta"],
+        edges,
+        location_shift=location_shift,
+    )
     diagnostics["probabilities"] = ls_probs
 
     ls_covariance = None
@@ -437,7 +454,12 @@ def _fit_weibull_grouped(
     def objective(theta: np.ndarray) -> float:
         shape = float(np.exp(theta[0]))
         scale = float(np.exp(theta[1]))
-        probs = _weibull_probabilities(shape, scale, edges)
+        probs = _weibull_probabilities(
+            shape,
+            scale,
+            edges,
+            location_shift=location_shift,
+        )
         return float(-np.sum(y * np.log(probs)))
 
     theta0 = np.log([param_dict["a"], param_dict["beta"]])
@@ -449,7 +471,7 @@ def _fit_weibull_grouped(
 
     shape = float(np.exp(opt.x[0]))
     scale = float(np.exp(opt.x[1]))
-    mle_probs = _weibull_probabilities(shape, scale, edges)
+    mle_probs = _weibull_probabilities(shape, scale, edges, location_shift=location_shift)
 
     amplitude = param_dict["s"]
     mle_params = {"a": shape, "beta": scale, "s": amplitude}

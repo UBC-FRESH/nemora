@@ -106,6 +106,7 @@ users can see which ForestFit ideas have been carried across.
     differentiating this expression with respect to the shape/scale/location parameters.
   - Conditional MLE enforces `α = min(DBH) - c` with small offsets (`c` ≈ 0.5–1.5 cm) to stabilise the
     Weibull location estimate (Zhang et al. 2011); alternative fits fix `α = 0` and adjust bins instead.
+    Our prototype adopts `c = 0.5` cm and shifts the bin edges before evaluating the grouped likelihood.
   - ForestFit initialises EM/MLE iterations from (i) method-of-moments for grouped data or (ii) the
     least-squares (Knoebel–Burkhart) solution, then applies damped Newton updates on the grouped score.
   - Covariance matrices are obtained from the observed information (negative Hessian of `ℓ(θ)`), which
