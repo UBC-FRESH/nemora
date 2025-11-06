@@ -20,14 +20,18 @@ requirements firm up and is intended to stay in sync with day-to-day development
 - [x] Add worked censored + DataLad-backed tutorials alongside notebook-based workflows.
 
 ## Phase 2 — Extensibility & Interfaces
+- [x] Catalogue ForestFit capabilities and track candidate imports in
+      `candidate-import-from-ForestFit-features.md`.
 - [ ] Implement user-defined distribution registration (entry points + config).
+- [ ] Design and prototype finite-mixture fitting (starting with two-component Weibull/Gamma EM).
+- [ ] Implement mixture distribution utilities (density/CDF/sampling) for fitted components.
+- [ ] Integrate grouped-sample EM estimators for key distributions (Weibull, JSB, Birnbaum–Saunders).
+- [ ] Add Johnson SB / Generalised Secant family support to the distribution registry.
+- [ ] Expand GOF diagnostics (AD, CvM, KS, grouped residuals) in `FitResult`.
+- [ ] Explore piecewise / hybrid PDFs for left-right blending and document references in the docs.
 - [ ] Deliver Typer CLI parity with FHOPS feature set (fit, compare, report commands).
 - [ ] Build R `dbhdistfitr` wrapper with unit tests and pkgdown-ready docs.
 - [ ] Add CLI/GUI example scripts and integrate with FHOPS-style logging UX.
-- [ ] Catalogue ForestFit capabilities and track candidate imports in
-      `candidate-import-from-ForestFit-features.md`.
-- [ ] Design and prototype finite-mixture fitting (starting with two-component Weibull/Gamma EM).
-- [ ] Explore piecewise / hybrid PDFs for left-right blending and document references in the docs.
 - [ ] Document comparative positioning against ForestFit and related toolkits.
 
 ## Phase 3 — Quality & Release Readiness
