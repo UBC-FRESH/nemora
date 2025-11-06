@@ -10,8 +10,8 @@ least-squares grouped Weibull estimator.
   Provides the grouped likelihood form `ℓ(θ) = \sum_j n_j \log(F(u_j; θ) - F(l_j; θ))` when tally
   classes are defined by bin bounds `l_j, u_j`.
 - Siekierski, R. (1992). *Conditional maximum likelihood estimation for the Weibull distribution*.
-  Derives the gradient / score equations for the three-parameter Weibull under grouped data and
-  shows the conditional treatment of the location parameter `α = \min(DBH) - c` (typically
+  Derives the grouped score equations for the three-parameter Weibull and confirms the conditional
+  treatment of the location parameter `α = \min(DBH) - c` (typically
   `c \in [0.5, 1.5]` cm) used in ForestFit’s CML implementation.
 - Zhang, L. et al. (2011). *A comparison of estimation methods for fitting Weibull and Johnson SB
   distributions to mixed spruce–fir stands*. Equation (3) reproduces the Johnson-style grouped log
