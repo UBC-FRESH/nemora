@@ -9,9 +9,10 @@ def test_grouped_weibull_estimator_applied() -> None:
     result = fit_hps_inventory(bins, counts, baf=1.0, distributions=("weibull",))
     assert result
     fit = result[0]
-    assert fit.diagnostics.get("method") in {"grouped-curve-fit", "grouped-mle"}
+    assert fit.diagnostics.get("method") in {"grouped-ls", "grouped-mle"}
     assert fit.parameters["a"] > 0
     assert fit.parameters["beta"] > 0
+    assert fit.parameters["s"] > 0
     assert "ks" in fit.gof
     assert "cvm" in fit.gof
 
@@ -47,10 +48,10 @@ def test_grouped_birnbaum_saunders_estimator_applied() -> None:
 def test_grouped_gsm_estimator_applied() -> None:
     bins = np.linspace(5, 35, num=8)
     counts = np.array([8, 14, 20, 24, 18, 12, 6, 3], dtype=float)
-    result = fit_hps_inventory(bins, counts, baf=1.0, distributions=("gsm3",))
+    result = fit_hps_inventory(bins, counts, baf=1.0, distributions=("gsm5",))
     assert result
     fit = result[0]
-    assert fit.distribution == "gsm3"
+    assert fit.distribution == "gsm5"
     assert fit.diagnostics.get("method") == "grouped-mle"
     assert fit.parameters["beta"] > 0
     assert "omega1" in fit.parameters

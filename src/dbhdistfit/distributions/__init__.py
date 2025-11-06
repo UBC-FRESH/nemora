@@ -186,7 +186,7 @@ def _build_generalized_secant_distributions() -> list[Distribution]:
         return cdf
 
     distributions: list[Distribution] = []
-    for components in (3, 4):
+    for components in range(2, 7):
         param_names = ("beta",) + tuple(f"omega{i}" for i in range(1, components))
         bounds: dict[str, tuple[float | None, float | None]] = {"beta": (1e-6, None)}
         for i in range(1, components):

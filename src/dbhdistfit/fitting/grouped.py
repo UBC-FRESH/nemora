@@ -19,6 +19,45 @@ if TYPE_CHECKING:  # pragma: no cover - typing aid
 GroupedEstimator = Callable[[InventorySpec, "FitConfig | None"], FitResult]
 
 
+def _numerical_hessian(
+    func: Callable[[np.ndarray], float],
+    theta: np.ndarray,
+    *,
+    step: float = 1e-5,
+) -> np.ndarray | None:
+    """Approximate the Hessian using central finite differences."""
+    n_params = theta.size
+    hessian = np.zeros((n_params, n_params), dtype=float)
+    try:
+        f0 = func(theta)
+    except Exception:  # pragma: no cover - numerical failure
+        return None
+
+    for i in range(n_params):
+        ei = np.zeros(n_params, dtype=float)
+        ei[i] = step
+        try:
+            f_plus = func(theta + ei)
+            f_minus = func(theta - ei)
+        except Exception:
+            return None
+        hessian[i, i] = (f_plus - 2.0 * f0 + f_minus) / (step**2)
+        for j in range(i + 1, n_params):
+            ej = np.zeros(n_params, dtype=float)
+            ej[j] = step
+            try:
+                f_pp = func(theta + ei + ej)
+                f_pm = func(theta + ei - ej)
+                f_mp = func(theta - ei + ej)
+                f_mm = func(theta - ei - ej)
+            except Exception:
+                return None
+            value = (f_pp - f_pm - f_mp + f_mm) / (4.0 * step**2)
+            hessian[i, j] = value
+            hessian[j, i] = value
+    return hessian
+
+
 def _prepare_grouped_data(
     inventory: InventorySpec,
     *,
@@ -124,17 +163,18 @@ def _assemble_grouped_result(
     *,
     covariance: np.ndarray | None,
     method: str,
-    extras: dict[str, float | int | bool | None] | None = None,
+    amplitude: float,
+    extras: dict[str, float | int | bool | str | np.ndarray | None] | None = None,
 ) -> FitResult:
-    total = float(np.sum(counts))
-    expected = total * probabilities
+    expected = np.clip(amplitude * probabilities, 1e-12, None)
     residuals = counts - expected
-    log_likelihood = float(np.sum(counts * np.log(np.clip(probabilities, 1e-12, None))))
+    log_likelihood = float(np.sum(counts * np.log(expected) - expected))
     rss = float(np.sum(np.square(residuals)))
     chisq = float(np.sum(np.square(residuals) / np.clip(expected, 1e-12, None)))
     obs_cdf, exp_cdf = _observed_expected_cdf(counts, expected)
     ks = float(np.max(np.abs(obs_cdf - exp_cdf)))
-    cvm = float(np.sum((obs_cdf - exp_cdf) ** 2 * counts / total))
+    total = float(np.sum(counts))
+    cvm = float(np.sum((obs_cdf - exp_cdf) ** 2 * counts / total)) if total > 0 else 0.0
     denom = np.clip(exp_cdf * (1.0 - exp_cdf), 1e-12, None)
     ad = float(np.sum(counts * np.square(obs_cdf - exp_cdf) / denom))
 
@@ -157,12 +197,13 @@ def _assemble_grouped_result(
         "ad": ad,
     }
 
-    diagnostics: dict[str, float | int | bool | None | np.ndarray] = {
+    diagnostics: dict[str, float | int | bool | str | np.ndarray | None] = {
         "method": method,
         "distribution": distribution,
         "sample_size": int(total),
         "bin_edges": edges,
         "probabilities": probabilities,
+        "amplitude": amplitude,
         "observed": counts,
         "expected": expected,
         "residuals": residuals,
@@ -171,7 +212,6 @@ def _assemble_grouped_result(
     }
     if extras:
         diagnostics.update(extras)
-    diagnostics.setdefault("bins", None)
 
     return FitResult(
         distribution=distribution,
@@ -191,16 +231,19 @@ def _grouped_mle(
     cdf_callable: Callable[[np.ndarray, dict[str, float]], np.ndarray],
     defaults: dict[str, float],
     positive_parameters: tuple[str, ...],
+    scale_parameter: str | None = None,
 ) -> FitResult:
     if config is None:
         raise ValueError("Grouped estimator requires a FitConfig instance.")
 
     x, counts = _prepare_grouped_data(inventory)
     edges = _bin_edges_from_centroids(x)
+    total = float(np.sum(counts))
 
     initial_map = dict(config.initial)
     for key, value in defaults.items():
-        initial_map.setdefault(key, value)
+        if key in param_names:
+            initial_map.setdefault(key, value)
     transform = {
         name: ("log" if name in positive_parameters else "identity") for name in param_names
     }
@@ -212,10 +255,19 @@ def _grouped_mle(
         if np.any(np.isnan(cdf_vals)):
             return np.inf
         probabilities = np.diff(cdf_vals)
+        if cdf_vals[0] > 0:
+            probabilities[0] += cdf_vals[0]
+        tail_mass = 1.0 - cdf_vals[-1]
+        if tail_mass > 0:
+            probabilities[-1] += tail_mass
         if np.any(probabilities <= 0):
             return np.inf
-        log_probs = np.log(np.clip(probabilities, 1e-12, None))
-        return float(-np.sum(counts * log_probs))
+        prob_sum = float(np.sum(probabilities))
+        if prob_sum <= 0.0:
+            return np.inf
+        amplitude = total if scale_parameter is None else total / prob_sum
+        expected = np.clip(amplitude * probabilities, 1e-12, None)
+        return float(np.sum(expected - counts * np.log(expected)))
 
     result = minimize(objective, theta0, method="L-BFGS-B")
     if not result.success:
@@ -223,9 +275,33 @@ def _grouped_mle(
 
     params = _convert_params(result.x, param_names, transform)
     cdf_vals = cdf_callable(edges, params)
-    probabilities = np.clip(np.diff(cdf_vals), 1e-12, None)
-    covariance = _approximate_covariance(result, params, transform, param_names)
-    extras = {
+    probabilities = np.diff(cdf_vals)
+    if cdf_vals[0] > 0:
+        probabilities[0] += cdf_vals[0]
+    tail_mass = 1.0 - cdf_vals[-1]
+    if tail_mass > 0:
+        probabilities[-1] += tail_mass
+    probabilities = np.clip(probabilities, 1e-12, None)
+    prob_sum = float(np.sum(probabilities))
+    amplitude = total if scale_parameter is None else total / max(prob_sum, 1e-12)
+
+    hessian = _numerical_hessian(objective, result.x)
+    covariance = None
+    if hessian is not None:
+        try:
+            hessian_inv = np.linalg.inv(hessian)
+            pseudo_result = type("OptResult", (), {"hess_inv": hessian_inv})
+            covariance = _approximate_covariance(pseudo_result, params, transform, param_names)
+        except np.linalg.LinAlgError:  # pragma: no cover - singular Hessian
+            covariance = None
+    if scale_parameter:
+        params[scale_parameter] = amplitude
+        if covariance is not None:
+            size = covariance.shape[0]
+            expanded = np.zeros((size + 1, size + 1), dtype=float)
+            expanded[:size, :size] = covariance
+            covariance = expanded
+    extras: dict[str, float | int | bool | str | np.ndarray | None] = {
         "iterations": int(getattr(result, "nit", 0)),
         "converged": bool(result.success),
         "status": getattr(result, "status", None),
@@ -240,6 +316,7 @@ def _grouped_mle(
         probabilities,
         covariance=covariance,
         method="grouped-mle",
+        amplitude=amplitude,
         extras=extras,
     )
 
@@ -250,6 +327,7 @@ def _fit_weibull_grouped(
 ) -> FitResult:
     if config is None:
         raise ValueError("Grouped estimator requires a FitConfig instance.")
+
     x = np.asarray(inventory.bins, dtype=float)
     y = np.asarray(inventory.tallies, dtype=float)
     weights = config.weights
@@ -259,8 +337,7 @@ def _fit_weibull_grouped(
     s0 = float(initial_map.get("s", np.max(y) if y.size else 1.0))
 
     def model(x_vals: np.ndarray, a: float, beta: float, s: float) -> np.ndarray:
-        params = {"a": a, "beta": beta, "s": s}
-        return weibull_pdf(x_vals, params)
+        return weibull_pdf(x_vals, {"a": a, "beta": beta, "s": s})
 
     params, cov = curve_fit(
         model,
@@ -283,17 +360,9 @@ def _fit_weibull_grouped(
         aicc = aic + (2.0 * k_params * (k_params + 1.0)) / (n - k_params - 1.0)
     bic = float(n * np.log(rss_safe / max(n, 1)) + k_params * np.log(n)) if n else float("nan")
     chisq = float(np.sum(np.square(residuals) / np.clip(fitted, 1e-12, None)))
-    gof = {
-        "rss": rss,
-        "aic": aic,
-        "aicc": float(aicc) if not np.isnan(aicc) else np.nan,
-        "bic": bic,
-        "chisq": chisq,
-    }
 
     fitted_safe = np.clip(fitted, 1e-12, None)
     log_likelihood = float(np.sum(y * np.log(fitted_safe) - fitted_safe))
-    gof["log_likelihood"] = log_likelihood
 
     total_obs = float(np.sum(y))
     obs_cdf = np.cumsum(y) / total_obs if total_obs > 0 else np.zeros_like(y)
@@ -303,21 +372,32 @@ def _fit_weibull_grouped(
     cvm = float(np.sum((obs_cdf - exp_cdf) ** 2 * y / total_obs)) if total_obs > 0 else 0.0
     denom = np.clip(exp_cdf * (1.0 - exp_cdf), 1e-12, None)
     ad = float(np.sum(y * np.square(obs_cdf - exp_cdf) / denom)) if total_obs > 0 else 0.0
-    gof.update({"ks": ks, "cvm": cvm, "ad": ad})
 
-    edges = _bin_edges_from_centroids(x)
+    gof = {
+        "rss": rss,
+        "log_likelihood": log_likelihood,
+        "aic": aic,
+        "aicc": float(aicc) if not np.isnan(aicc) else np.nan,
+        "bic": bic,
+        "chisq": chisq,
+        "ks": ks,
+        "cvm": cvm,
+        "ad": ad,
+    }
+
     diagnostics = {
-        "method": "grouped-curve-fit",
+        "method": "grouped-ls",
         "distribution": "weibull",
         "sample_size": int(total_obs),
         "bins": x,
-        "bin_edges": edges,
+        "bin_edges": _bin_edges_from_centroids(x),
         "probabilities": np.clip(fitted_safe / fitted_sum, 1e-12, None),
         "observed": y,
         "expected": fitted,
         "residuals": residuals,
         "weights": weights,
         "fitted": fitted,
+        "amplitude": fitted_sum,
     }
 
     param_dict = {"a": float(params[0]), "beta": float(params[1]), "s": float(params[2])}
@@ -375,12 +455,15 @@ def _fit_johnsonsb_grouped(
             "scale": float(scale_fit),
         }
         edges = _bin_edges_from_centroids(x)
-        probabilities = np.clip(
-            np.diff(johnsonsb.cdf(edges, a=a_fit, b=b_fit, loc=loc_fit, scale=scale_fit)),
-            1e-12,
-            None,
-        )
-        extras = {
+        cdf_vals = johnsonsb.cdf(edges, a=a_fit, b=b_fit, loc=loc_fit, scale=scale_fit)
+        probabilities = np.diff(cdf_vals)
+        if cdf_vals[0] > 0:
+            probabilities[0] += cdf_vals[0]
+        tail_mass = 1.0 - cdf_vals[-1]
+        if tail_mass > 0:
+            probabilities[-1] += tail_mass
+        probabilities = np.clip(probabilities, 1e-12, None)
+        extras: dict[str, float | int | bool | str | np.ndarray | None] = {
             "bins": x,
             "converged": False,
             "status": "fallback-scipy-fit",
@@ -395,6 +478,7 @@ def _fit_johnsonsb_grouped(
             probabilities,
             covariance=None,
             method="grouped-mle",
+            amplitude=float(np.sum(counts)),
             extras=extras,
         )
 
@@ -449,7 +533,13 @@ def _make_gsm_grouped_estimator(components: int) -> GroupedEstimator:
             for comp in range(components):
                 upper = gamma_dist.cdf(edges[1:], a=comp + 1, scale=scale)
                 lower = gamma_dist.cdf(edges[:-1], a=comp + 1, scale=scale)
-                probabilities[comp] = np.clip(upper - lower, 1e-12, None)
+                diff = upper - lower
+                if lower[0] > 0:
+                    diff[0] += lower[0]
+                tail = 1.0 - upper[-1]
+                if tail > 0:
+                    diff[-1] += tail
+                probabilities[comp] = np.clip(diff, 1e-12, None)
             return probabilities
 
         beta_upper = max(50.0, 5.0 * (float(edges[-1]) if edges.size else 10.0))
@@ -501,7 +591,7 @@ def _make_gsm_grouped_estimator(components: int) -> GroupedEstimator:
         for idx in range(1, components):
             params[f"omega{idx}"] = float(weights[idx - 1])
 
-        extras = {
+        extras: dict[str, float | int | bool | str | np.ndarray | None] = {
             "bins": x,
             "iterations": last_iteration,
             "converged": converged,
@@ -519,6 +609,7 @@ def _make_gsm_grouped_estimator(components: int) -> GroupedEstimator:
             probabilities,
             covariance=None,
             method="grouped-mle",
+            amplitude=float(np.sum(counts)),
             extras=extras,
         )
 
@@ -529,11 +620,25 @@ _GROUPED_ESTIMATORS: dict[str, GroupedEstimator] = {
     "weibull": _fit_weibull_grouped,
     "johnsonsb": _fit_johnsonsb_grouped,
     "birnbaum_saunders": _fit_birnbaum_saunders_grouped,
-    "gsm3": _make_gsm_grouped_estimator(3),
-    "gsm4": _make_gsm_grouped_estimator(4),
 }
+
+_GSM_CACHE: dict[int, GroupedEstimator] = {}
 
 
 def get_grouped_estimator(name: str) -> GroupedEstimator | None:
     """Return a grouped estimator for the given distribution, if available."""
-    return _GROUPED_ESTIMATORS.get(name.lower())
+    key = name.lower()
+    estimator = _GROUPED_ESTIMATORS.get(key)
+    if estimator is not None:
+        return estimator
+    if key.startswith("gsm"):
+        suffix = key[3:]
+        if suffix.isdigit():
+            components = int(suffix)
+            if components >= 2:
+                if components not in _GSM_CACHE:
+                    _GSM_CACHE[components] = _make_gsm_grouped_estimator(components)
+                estimator = _GSM_CACHE[components]
+                _GROUPED_ESTIMATORS[key] = estimator
+                return estimator
+    return None

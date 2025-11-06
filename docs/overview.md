@@ -32,9 +32,12 @@ in the README. Contributions comparing the toolkits or proposing cross-language 
 welcome.
 
 ## Current Caveats
-- The grouped Weibull workflow uses a curve-fit back-end to preserve manuscript parity; an EM
-  implementation with covariance reporting is slated for a follow-up release.
+- Grouped Weibull currently relies on a least-squares fit (matching the manuscript parity workflow),
+  while Johnson SB and Birnbaum-Saunders use grouped maximum-likelihood optimisation with numerical
+  Hessian estimates. We plan to consolidate these approaches once the MLE path reproduces the legacy
+  parity results.
 - Johnson SB grouped fits fall back to SciPy’s continuous MLE when the grouped optimiser fails, so
   diagnostics will report a non-converged status in those cases.
-- Generalised secant (GSM) support currently covers three- and four-component mixtures. Extending the
-  estimator and registry entries to arbitrary component counts remains on the roadmap.
+- Generalised secant (GSM) mixtures are exposed as `gsmN` distributions; while the grouped estimator
+  supports any component count `N >= 2`, convergence behaviour for large `N` still needs empirical
+  evaluation.

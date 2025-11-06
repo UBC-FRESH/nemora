@@ -1,7 +1,8 @@
 # Register Custom Distributions
 
 `dbhdistfit` ships with a core registry (Weibull, Gamma, Johnson SB, Birnbaum-Saunders, and the
-generalized beta and generalized secant families) and can be
+generalized beta and generalized secant families). Generalised secant entries are available as
+`gsmN` for `N >= 2` (e.g. `gsm3`, `gsm5`) and can be extended via the same plugin hooks. The registry can be
 extended at runtime. You can plug in additional probability density functions either by calling the
 Python API directly, by installing a plugin that exposes an entry point, or by pointing the toolkit
 at a YAML configuration file.

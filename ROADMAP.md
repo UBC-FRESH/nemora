@@ -28,7 +28,7 @@ requirements firm up and is intended to stay in sync with day-to-day development
       support covers gamma/Weibull mixtures; extend coverage to other registry distributions in a
       follow-up pass.)*
 - [ ] Integrate grouped-sample EM estimators for key distributions (Weibull, JSB, Birnbaum-Saunders). *(Prototype grouped fits now land via SciPy curve-fit/MLE hybrids; replace with true EM updates, include covariance estimates, and remove SciPy fallbacks before marking complete.)*
-- [ ] Add Johnson SB / Generalised Secant family support to the distribution registry. *(Johnson SB and GSM3/4 registered with grouped estimators; extend to arbitrary component counts and document usage before closing.)*
+- [ ] Add Johnson SB / Generalised Secant family support to the distribution registry. *(Johnson SB and GSMN (N ≥ 2) entries now ship with grouped estimators; add user-facing docs/examples and stress-test higher-component fits before closing.)*
 - [ ] Expand GOF diagnostics (AD, CvM, KS, grouped residuals) in `FitResult`.
 - [ ] Explore piecewise / hybrid PDFs for left-right blending and document references in the docs.
 - [ ] Document parameter/return details for public APIs (docstrings and developer notes).
