@@ -127,8 +127,8 @@ Date: 2025-11-06
    - Surface diagnostics (`iterations`, per-parameter deltas, fallback flags). Provide option to revert to previous iterate if likelihood decreases.
 
 3. **Birnbaum–Saunders EM driver**.
-   - Apply latent-normal moment updates, optionally refine via Newton. *(2025-11-06 — implemented an EMT-style loop using truncated normal moments with a bounded scalar search for `β`; when the variance term is non-positive the solver falls back to the legacy grouped MLE and records the chosen path in diagnostics.)*
-   - Attach diagnostics and covariance (via numerical Hessian on `(α, β)`).
+   - Apply latent-normal moment updates, optionally refine via Newton. *(2025-11-06 — replaced the EM loop with a moment-based closed form that eliminates the fallback path while keeping diagnostics to flag the moment start.)*
+   - Attach diagnostics and covariance (via numerical Hessian on `(α, β)`). *(Open — covariance still pending once we supplement the moment solution with uncertainty estimates).*
 
 4. **Testing**.
    - Extend `tests/test_grouped.py` with synthetic Beta/Birnbaum grouped datasets where the true parameters are known. *(Johnson SB test now checks for the `grouped-em` diagnostic.)*

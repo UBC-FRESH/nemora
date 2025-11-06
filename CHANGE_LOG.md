@@ -50,6 +50,8 @@
 - Added regression tests (`tests/test_grouped.py`, `tests/test_grouped_fixtures.py`, `tests/test_mixture.py`) covering grouped estimators and mixture helpers to guard future refactors.
 - Replaced the Johnson SB grouped fallback with a dedicated EM implementation: latent Beta log-moment integrals (Gauss–Legendre via `quad`), Newton updates on digamma equations, and support clamping now deliver `grouped-em` diagnostics with iteration counts; PSF/ForestFit fixtures exercise the new path.
 - Added a Birnbaum–Saunders grouped EM attempt that matches truncated normal moments and searches `β` via bounded scalar minimisation; when the variance term degenerates the workflow falls back to the L-BFGS grouped MLE while flagging the chosen mode in diagnostics (tests accept either path for now).
+- Stabilised the Birnbaum–Saunders EM loop by clamping the truncated-normal variance term, exposing `variance_clamped` diagnostics, and adding a synthetic grouped regression (`tests/test_grouped.py::test_grouped_birnbaum_saunders_em_on_synthetic_counts`) to ensure the EM path executes when bins mirror the reference distribution.
+- Replaced the Birnbaum–Saunders fallback with a moment-closed solution (`method_detail="moment"`) so grouped fits now return `grouped-em` outputs by default; regression coverage includes a synthetic fixture to guard the new path and docs note the behaviour in the HPS workflow guide.
 
 ### ForestFit knowledge capture & planning
 - Audited the ForestFit R package (source, CRAN manual, arXiv preprint), catalogued transferable features in `candidate-import-from-ForestFit-features.md`, and planned transparent crediting for any ported methods; noted which algorithms (grouped Johnson SB, moment-based starts) map cleanly to dbhdistfit.

@@ -1,6 +1,9 @@
 import numpy as np
 import pytest
+from scipy.stats import fatiguelife
 
+from dbhdistfit.fitting import fit_inventory
+from dbhdistfit.typing import InventorySpec
 from dbhdistfit.workflows.hps import fit_hps_inventory
 
 
@@ -42,6 +45,29 @@ def test_grouped_birnbaum_saunders_estimator_applied() -> None:
     assert result
     fit = result[0]
     assert fit.diagnostics.get("method") in {"grouped-em", "grouped-mle"}
+    assert fit.parameters["alpha"] > 0
+    assert fit.parameters["beta"] > 0
+
+
+def test_grouped_birnbaum_saunders_em_on_synthetic_counts() -> None:
+    edges = np.linspace(5, 70, num=16)
+    bins = 0.5 * (edges[:-1] + edges[1:])
+    alpha_true = 1.1
+    beta_true = 30.0
+    probabilities = fatiguelife.cdf(edges[1:], c=alpha_true, scale=beta_true) - fatiguelife.cdf(
+        edges[:-1], c=alpha_true, scale=beta_true
+    )
+    counts = np.clip(np.round(probabilities * 2000.0), 1.0, None)
+    inventory = InventorySpec(
+        name="synthetic-birnbaum",
+        sampling="grouped",
+        bins=bins,
+        tallies=counts,
+        metadata={"grouped": True},
+    )
+    results = fit_inventory(inventory, distributions=("birnbaum_saunders",), configs={})
+    fit = results[0]
+    assert fit.diagnostics.get("method") == "grouped-em"
     assert fit.parameters["alpha"] > 0
     assert fit.parameters["beta"] > 0
 

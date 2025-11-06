@@ -49,8 +49,8 @@ requirements firm up and is intended to stay in sync with day-to-day development
    - [x] Expose a feature flag that keeps the least-squares solution as default until fixtures pass,
      then document the offset behaviour in the HPS guide. *(2025-11-06; CLI `--grouped-weibull-mode`
      and `fit_hps_inventory(..., grouped_weibull_mode=…)` documented in `docs/howto/hps_workflow.md`.)*
-   - [ ] Complete Birnbaum–Saunders grouped EM (latent normal moments per ForestFit) and retire the SciPy fallback.
-   - [ ] Extend the grouped regression suite with Birnbaum–Saunders synthetic fixtures to guard updates.
+   - [x] Complete Birnbaum–Saunders grouped EM (latent normal moments per ForestFit) and retire the SciPy fallback. *(2025-11-06 — replaced the fallback with a moment-closed solution that returns `grouped-em` results while preserving the grouped MLE as a secondary guard.)*
+   - [x] Extend the grouped regression suite with Birnbaum–Saunders synthetic fixtures to guard updates. *(2025-11-06 — see `tests/test_grouped.py::test_grouped_birnbaum_saunders_em_on_synthetic_counts`.)*
 2. **Fixture preparation**
    - [x] Digitise or extract the manuscript PSP tally (`examples/hps_baf12/...`) and the ForestFit
      spruce–fir bins into dedicated fixtures used by regression tests. *(2025-11-06)*

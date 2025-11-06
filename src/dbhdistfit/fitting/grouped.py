@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import numpy as np
 from scipy.integrate import quad
-from scipy.optimize import approx_fprime, curve_fit, minimize, minimize_scalar
+from scipy.optimize import approx_fprime, brentq, curve_fit, minimize, minimize_scalar
 from scipy.special import betainc, betaln, digamma, polygamma
 from scipy.stats import fatiguelife, johnsonsb, norm, weibull_min
 from scipy.stats import gamma as gamma_dist
@@ -1026,6 +1026,26 @@ def _birnbaum_normal_bounds(
     return y[:-1], y[1:]
 
 
+def _solve_birnbaum_moments(mean: float, variance: float) -> tuple[float, float] | None:
+    """Solve Birnbaum–Saunders moment identities for (alpha, beta)."""
+    if mean <= 0 or variance <= 0:
+        return None
+
+    def equation(alpha_sq: float) -> float:
+        beta = mean / (1.0 + alpha_sq / 2.0)
+        return (beta**2 * alpha_sq / 2.0) * (1.0 + 5.0 * alpha_sq / 4.0) - variance
+
+    try:
+        root = brentq(equation, 1e-6, 100.0)
+    except ValueError:
+        return None
+    alpha = float(np.sqrt(root))
+    beta = float(mean / (1.0 + root / 2.0))
+    if not np.isfinite(alpha) or not np.isfinite(beta):
+        return None
+    return alpha, beta
+
+
 def _fit_birnbaum_saunders_em(
     inventory: InventorySpec,
     config: FitConfig,
@@ -1039,19 +1059,55 @@ def _fit_birnbaum_saunders_em(
     if total <= 0:
         return None
 
+    weights = counts.astype(float)
+    mean = float(np.average(x, weights=weights))
+    variance = float(np.average(np.square(x - mean), weights=weights))
+
     initial_map = dict(config.initial)
-    alpha_guess = float(initial_map.get("alpha", 1.0))
-    beta_guess = float(initial_map.get("beta", np.mean(x) if x.size else 10.0))
-    alpha = float(np.clip(alpha_guess, 0.05, 20.0))
-    beta = float(np.clip(beta_guess, 1e-3, np.max(edges) * 2.0 if edges.size else 10.0))
+    moment_solution = _solve_birnbaum_moments(mean, variance)
+    if moment_solution is not None:
+        initial_map.setdefault("alpha", moment_solution[0])
+        initial_map.setdefault("beta", moment_solution[1])
+    alpha = float(np.clip(initial_map.get("alpha", 1.0), 0.05, 20.0))
+    beta = float(
+        np.clip(
+            initial_map.get("beta", mean if x.size else 10.0),
+            1e-3,
+            np.max(edges) * 2.0 if edges.size else 10.0,
+        )
+    )
 
     best_loglik = -np.inf
-    converged = False
-    last_delta = float("inf")
 
-    last_iteration = 0
+    variance_was_clamped = False
+    best_candidate: dict[str, float | np.ndarray | bool | int | str] | None = None
+    if moment_solution is not None:
+        cdf_vals = fatiguelife.cdf(edges, c=alpha, loc=0.0, scale=beta)
+        if np.all(np.isfinite(cdf_vals)):
+            moment_probs = np.diff(cdf_vals)
+            if cdf_vals[0] > 0:
+                moment_probs[0] += cdf_vals[0]
+            tail_mass = 1.0 - cdf_vals[-1]
+            if tail_mass > 0:
+                moment_probs[-1] += tail_mass
+            moment_probs = np.clip(moment_probs, 1e-12, None)
+            moment_probs = moment_probs / float(np.sum(moment_probs))
+            best_loglik = float(np.sum(counts * np.log(moment_probs)))
+            best_candidate = cast(
+                dict[str, float | np.ndarray | bool | int | str],
+                {
+                    "alpha": alpha,
+                    "beta": beta,
+                    "probabilities": moment_probs,
+                    "iterations": 0,
+                    "delta": 0.0,
+                    "loglik": best_loglik,
+                    "converged": True,
+                    "variance_clamped": False,
+                    "method_detail": "moment",
+                },
+            )
     for iteration in range(1, max_iter + 1):
-        last_iteration = iteration
         lower, upper = _birnbaum_normal_bounds(alpha, beta, edges)
         if lower is None or upper is None:
             break
@@ -1079,15 +1135,17 @@ def _fit_birnbaum_saunders_em(
         t2 = float(np.sum(counts * second_arr))
 
         variance_term = t2 / total - 1.0 - (t1 / total) ** 2
-        if variance_term <= 1e-8 or not np.isfinite(variance_term):
+        if not np.isfinite(variance_term):
             break
-        alpha_new = float(np.sqrt(variance_term))
+        clamped_iteration = False
+        if variance_term <= 1e-8:
+            variance_term = 1e-8
+            variance_was_clamped = True
+            clamped_iteration = True
+        raw_alpha = float(np.sqrt(variance_term))
+        alpha_new = max(raw_alpha, 0.1 * alpha)
 
-        def neg_loglik_beta(
-            beta_candidate: float,
-            *,
-            current_alpha: float = alpha_new,
-        ) -> float:
+        def neg_loglik_beta(beta_candidate: float, current_alpha: float = alpha_new) -> float:
             if beta_candidate <= 1e-6 or not np.isfinite(beta_candidate):
                 return float("inf")
             lower_candidate, upper_candidate = _birnbaum_normal_bounds(
@@ -1139,34 +1197,65 @@ def _fit_birnbaum_saunders_em(
         alpha = alpha_new
         beta = beta_new
         best_loglik = new_loglik
-        last_delta = delta_param
+        candidate: dict[str, float | np.ndarray | bool | int | str] = {
+            "alpha": alpha_new,
+            "beta": beta_new,
+            "probabilities": probabilities_new,
+            "iterations": iteration,
+            "delta": delta_param,
+            "loglik": new_loglik,
+            "converged": delta_param < tol and delta_loglik < tol * (1.0 + abs(best_loglik)),
+            "method_detail": "em-normal-moments",
+        }
+        if variance_was_clamped or clamped_iteration:
+            candidate["variance_clamped"] = True
+        if best_candidate is None or new_loglik > float(best_candidate["loglik"]):
+            best_candidate = candidate
 
-        if delta_param < tol and delta_loglik < tol * (1.0 + abs(best_loglik)):
-            converged = True
+        if candidate["converged"]:
             break
 
-    if not converged:
+    if best_candidate is None:
         return None
+
+    alpha = float(best_candidate["alpha"])
+    beta = float(best_candidate["beta"])
+    probabilities_final = np.asarray(best_candidate["probabilities"], dtype=float)
+    if np.any(probabilities_final <= 0) or not np.all(np.isfinite(probabilities_final)):
+        cdf_vals = fatiguelife.cdf(edges, c=alpha, loc=0.0, scale=beta)
+        if np.any(~np.isfinite(cdf_vals)):
+            return None
+        probabilities_final = np.diff(cdf_vals)
+        if cdf_vals[0] > 0:
+            probabilities_final[0] += cdf_vals[0]
+        tail_mass = 1.0 - cdf_vals[-1]
+        if tail_mass > 0:
+            probabilities_final[-1] += tail_mass
+        probabilities_final = np.clip(probabilities_final, 1e-12, None)
+        probabilities_final = probabilities_final / float(np.sum(probabilities_final))
 
     cdf_vals = fatiguelife.cdf(edges, c=alpha, loc=0.0, scale=beta)
     if np.any(~np.isfinite(cdf_vals)):
         return None
-    probabilities_final = np.diff(cdf_vals)
-    if cdf_vals[0] > 0:
-        probabilities_final[0] += cdf_vals[0]
-    tail_mass = 1.0 - cdf_vals[-1]
-    if tail_mass > 0:
-        probabilities_final[-1] += tail_mass
-    probabilities_final = np.clip(probabilities_final, 1e-12, None)
-    probabilities_final = probabilities_final / float(np.sum(probabilities_final))
+    if probabilities_final.shape[0] != counts.shape[0]:
+        probabilities_final = np.diff(cdf_vals)
+        if cdf_vals[0] > 0:
+            probabilities_final[0] += cdf_vals[0]
+        tail_mass = 1.0 - cdf_vals[-1]
+        if tail_mass > 0:
+            probabilities_final[-1] += tail_mass
+        probabilities_final = np.clip(probabilities_final, 1e-12, None)
+        probabilities_final = probabilities_final / float(np.sum(probabilities_final))
 
     params = {"alpha": alpha, "beta": beta}
     extras: dict[str, float | int | bool | str | np.ndarray | None] = {
-        "iterations": last_iteration,
-        "converged": converged,
-        "delta": last_delta,
-        "method_detail": "em-normal-moments",
+        "iterations": int(best_candidate["iterations"]),
+        "converged": bool(best_candidate["converged"]),
+        "delta": float(best_candidate["delta"]),
+        "method_detail": str(best_candidate.get("method_detail", "em-normal-moments")),
     }
+    if variance_was_clamped or best_candidate.get("variance_clamped"):
+        extras["variance_clamped"] = True
     return _assemble_grouped_result(
         "birnbaum_saunders",
         params,

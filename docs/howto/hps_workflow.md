@@ -51,6 +51,10 @@ step drifts. Use `--grouped-weibull-mode ls` to pin the legacy behaviour or
 error if the refinement fails under the forced `mle` mode).
 To stay numerically stable, the solver applies the conditional offset from the manuscript:
 the Weibull support is shifted by `min(DBH) – 0.5 cm` before evaluating grouped probabilities.
+Johnson SB fits now run an EM pass that updates the Beta shape parameters in grouped space, while
+Birnbaum–Saunders grouped fits attempt a truncated-normal EM step before falling back to the legacy
+grouped MLE. Diagnostics include the solver mode (`grouped-em` or `grouped-mle`) so you can trace
+which path executed.
 
 To explore the public PSP example bundle prepared with
 `scripts/prepare_hps_dataset.py`, start with one of the manifests in
