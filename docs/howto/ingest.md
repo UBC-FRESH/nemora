@@ -30,7 +30,13 @@ BC_FAIB_SOURCE = DatasetSource(
     name="bc-faib",
     description="BC FAIB ground sample plots (PSP, CMI, NFI, YSM)",
     uri="https://bcgov-env.shinyapps.io/FAIB_GROUND_SAMPLE/",
-    metadata={"notes": "Public FAIB portal; subsample by BAF/prism size as needed."},
+    metadata={
+        "notes": (
+            "Public FAIB portal; subsample by BAF/prism size as needed. "
+            "Bulk downloads also available via FTP under "
+            "ftp://ftp.for.gov.bc.ca/HTS/external/!publish/ground_plot_compilations/psp/"
+        )
+    },
     fetcher=fetch_bc_faib,
 )
 ```
@@ -63,6 +69,14 @@ pipeline = TransformPipeline(
 )
 pipeline.add_step(convert_units)
 pipeline.add_step(compute_stand_table)
+```
+
+### Data dictionaries
+
+FAIB publishes companion Excel data dictionaries alongside each compilation.
+For example, the PSP release exposes `PSP_data_dictionary_20250514.xlsx` under
+the FTP path above. Include these files in ingest documentation so analysts can
+interpret column names (`faib_plot_header.csv`, `faib_tree_detail.csv`, etc.).
 ```
 
 Running `pipeline.run(raw_frame)` applies the configured steps sequentially—

@@ -45,6 +45,7 @@ src/nemora/
    - [ ] Audit current scripts for reusable ETL logic.
    - [ ] Design `DatasetSource`, `RecordBatch`, `TransformPipeline` abstractions aligned with `nemora.core`.
    - [ ] Implement key connectors (BC FAIB, FIA, etc.), add CLI helpers, and unit/integration tests against sample raw datasets.
+   - [ ] Verify FTP access to FAIB PSP/non-PSP datasets and capture download instructions/DataLad strategy.
 
 5. **Sampling engine (`nemora.sampling`)**
    - [ ] Catalogue existing sampling utilities (mixtures, truncated normals, etc.) and migrate next.
@@ -99,4 +100,4 @@ src/nemora/
 
 1. Finalise `DatasetSource` / `TransformPipeline` interface proposal and circulate for feedback.
 2. Prototype sampling helpers (PDF→CDF inversion, bootstrap configuration) and capture design decisions.
-3. Draft ingest fixture plan (BC FAIB/FIA samples) and outline integration tests.
+3. Draft ingest fixture plan (BC FAIB/FIA samples), including automated tests for PSP/non-PSP FTP downloads and data dictionary parsing.

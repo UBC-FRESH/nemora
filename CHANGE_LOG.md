@@ -90,3 +90,4 @@
 - Created initial `nemora.ingest` scaffolding (module stub + to-do doc) and refreshed the modular reorg plan with Phase 2 ingest/sampling priorities.
 - Documented the `Distribution.extras` field and expanded the custom distribution how-to with richer examples for bounds/extras across Python, entry-point, and YAML pathways.
 - Added ingest interfaces (`DatasetSource`, `TransformPipeline`) with regression coverage and documentation describing how future connectors will leverage them.
+- Documented the FAIB Shiny portal/FTP bulk download locations in the ingest how-to and noted the accompanying data dictionaries that guide column interpretation.
