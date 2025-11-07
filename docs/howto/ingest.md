@@ -18,17 +18,19 @@ from nemora.ingest import DatasetSource
 
 
 def fetch_bc_faib(source: DatasetSource) -> list[Path]:
-    # TODO: replace with DataLad/open data portal integration.
-    local_path = Path("data/external") / f"{source.name}.zip"
-    local_path.parent.mkdir(parents=True, exist_ok=True)
-    # download into local_path ...
-    return [local_path]
+    output_dir = Path("data/external") / source.name
+    output_dir.mkdir(parents=True, exist_ok=True)
+    # TODO: integrate with the FAIB portal API (https://bcgov-env.shinyapps.io/FAIB_GROUND_SAMPLE/)
+    # to download PSP/CMI/NFI/YSM extracts. For now, drop a placeholder.
+    (output_dir / "README.txt").write_text("FAIB data placeholder\n", encoding="utf-8")
+    return [output_dir]
 
 
 BC_FAIB_SOURCE = DatasetSource(
     name="bc-faib",
-    description="BC FAIB PSP compilation (HPS plots)",
-    uri="https://www.for.gov.bc.ca/ftp/HTS/external/!publish/ground_plot_compilations/psp",
+    description="BC FAIB ground sample plots (PSP, CMI, NFI, YSM)",
+    uri="https://bcgov-env.shinyapps.io/FAIB_GROUND_SAMPLE/",
+    metadata={"notes": "Public FAIB portal; subsample by BAF/prism size as needed."},
     fetcher=fetch_bc_faib,
 )
 ```
