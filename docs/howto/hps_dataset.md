@@ -161,3 +161,4 @@ figures.
 - [x] Regression guard for the reference Weibull fit (`tests/test_hps_parity.py`).
 - [x] Censored meta-plot fixture + regression (`tests/fixtures/hps/meta_censored.csv`,
       `tests/test_censored_workflow.py`).
+.. todo:: Update this section once the nemora.ingest / sampling / synthforest modules land to reflect the broader workflow.

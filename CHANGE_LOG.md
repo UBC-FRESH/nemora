@@ -1,7 +1,5 @@
 # Development Change Log
 
-# Development Change Log
-
 ## 2025-11-04 — Project Bootstrap
 
 - Established initial project scaffold with packaging metadata, distribution registry, fitting workflows, CLI entry points, and base documentation; resolved editable install version detection issues uncovered during first commits.
@@ -66,3 +64,11 @@
 - Switched the Typer CLI to `nemora`, refreshed installation instructions (`pip install "nemora[data]"`), and retargeted the DataLad helper to the new repository namespace.
 - Renamed the R reticulate wrapper scaffold to `nemorar` and rewired all tests/docs to import `nemora`.
 - Adjusted packaging metadata (`pyproject.toml`), coverage/pytest settings, and Sphinx configuration to match the new module namespace.
+
+## 2025-11-06 — Distfit Alpha Docs & Coverage
+
+- Updated the top-level package exports so `nemora.distfit`, `nemora.core`, and `nemora.distributions` are reachable from `import nemora`; refreshed the parity notebook to import from the new namespace.
+- Added `docs/reference/distfit.md` and `docs/api/distfit.md`, updated the reference/API toctrees, and ensured Sphinx builds succeed after installing `myst-parser` and a compatible `sphinx-autodoc-typehints`.
+- Introduced `tests/test_distfit_module.py` to exercise `default_fit_config`, `fit_inventory`, and the new re-export, bringing the distfit alpha surface under direct unit coverage.
+- Ran `pytest`, `mypy src`, and `sphinx-build -b html docs _build/html -W` to validate the refactor; cleaned up the documentation build artifacts afterwards.
+- Documented the distfit alpha API with field-level docstrings on `FitConfig`, `_curve_fit_distribution`, `fit_with_lmfit`, and `fit_inventory`; verified notebooks no longer import `nemora.fitting` and re-ran `pytest tests/test_distfit_module.py` to keep coverage green.

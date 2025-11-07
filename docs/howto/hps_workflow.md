@@ -177,3 +177,5 @@ two-stage workflow. Residual lines highlight the agreement on the truncated supp
 - Integrate notebook tutorials mirroring the published reproducibility bundles.
 - Expand FAIR dataset coverage (see [HPS dataset guide](hps_dataset.md)) with additional PSP plots and
   censored variants to support end-to-end parity tests.
+
+.. todo:: Update this section once the nemora.ingest / sampling / synthforest modules land to reflect the broader workflow.

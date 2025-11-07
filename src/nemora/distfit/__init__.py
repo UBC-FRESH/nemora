@@ -20,6 +20,22 @@ Objective = Callable[[np.ndarray, np.ndarray, Mapping[str, float]], float]
 
 @dataclass(slots=True)
 class FitConfig:
+    """Configuration payload describing how a candidate distribution should be fitted.
+
+    Parameters
+    ----------
+    distribution:
+        Registry name for the distribution to evaluate.
+    initial:
+        Mapping of parameter names to initial values supplied to the optimiser.
+    bounds:
+        Optional parameter bounds expressed as ``(lower, upper)`` tuples. ``None`` disables
+        bounding for that parameter.
+    weights:
+        Optional vector of observation weights (e.g., compression factors); when provided they are
+        forwarded to the underlying optimiser.
+    """
+
     distribution: str
     initial: dict[str, float]
     bounds: dict[str, tuple[float | None, float | None]] | None = None
@@ -115,7 +131,26 @@ def _gof_metrics(
 
 
 def default_fit_config(name: str, x: np.ndarray, y: np.ndarray) -> FitConfig:
-    """Construct a heuristic FitConfig for the requested distribution."""
+    """Construct a heuristic :class:`FitConfig` for the requested distribution.
+
+    The helper inspects the supplied stand table and synthesises parameter seeds and bounds that
+    keep the optimiser on a sensible domain. The seeds are conservative—callers can refine the
+    result or provide their own configuration via ``FitConfig``.
+
+    Parameters
+    ----------
+    name:
+        Registry name of the distribution.
+    x:
+        Bin midpoints or sample observations in centimetres.
+    y:
+        Observed tallies or density values aligned with ``x``.
+
+    Returns
+    -------
+    FitConfig
+        Heuristic configuration populated with seeds, bounds, and (when appropriate) scale terms.
+    """
     dist = get_distribution(name)
     mean, variance, std, xmin, xmax = _moment_summary(x, y)
     scale = float(np.max(y)) if y.size else 1.0
@@ -174,7 +209,22 @@ def _curve_fit_distribution(
     distribution: Distribution,
     config: FitConfig,
 ) -> FitResult:
-    """Fit a distribution using SciPy curve_fit with optional weights."""
+    """Fit a distribution using :func:`scipy.optimize.curve_fit`.
+
+    Parameters
+    ----------
+    x, y:
+        Stand-table abscissa/ordinate vectors in aligned order.
+    distribution:
+        Registry entry for the candidate PDF.
+    config:
+        Fit configuration created by :func:`default_fit_config` or supplied by the caller.
+
+    Returns
+    -------
+    FitResult
+        Fitted parameters, covariance estimate, goodness-of-fit metrics, and diagnostics.
+    """
 
     def wrapped(x_vals: np.ndarray, *params: float) -> np.ndarray:
         values = dict(zip(distribution.parameters, params, strict=False))
@@ -215,7 +265,12 @@ def fit_with_lmfit(
     distribution: Distribution,
     config: FitConfig,
 ) -> FitResult:
-    """Fit using lmfit Model for more advanced scenarios (e.g., truncation)."""
+    """Fit a candidate using :mod:`lmfit` for scenarios that need custom constraints.
+
+    Parameters mirror :func:`_curve_fit_distribution`. The result exposes the raw lmfit
+    ``ModelResult`` under ``diagnostics['result']`` so callers can inspect uncertainties or
+    statistics that are not normalised into :class:`FitResult`.
+    """
 
     param_names = list(distribution.parameters)
 
@@ -275,7 +330,26 @@ def fit_inventory(
         FitResult,
     ] = _curve_fit_distribution,
 ) -> list[FitResult]:
-    """Fit a collection of candidate distributions to an inventory."""
+    """Fit one or more candidate distributions to a stand table or grouped inventory.
+
+    Parameters
+    ----------
+    inventory:
+        Inventory payload describing the bins/tallies and metadata (e.g., ``metadata['grouped']``).
+    distributions:
+        Sequence of registry names to evaluate.
+    configs:
+        Mapping of distribution names to :class:`FitConfig` instances. Missing entries are populated
+        via :func:`default_fit_config`.
+    fitter:
+        Callable implementing the optimisation primitive. Defaults to SciPy ``curve_fit``; grouped
+        inventories automatically invoke specialised estimators when available.
+
+    Returns
+    -------
+    list[FitResult]
+        Fitted results in the order requested.
+    """
     x = np.asarray(inventory.bins, dtype=float)
     y = np.asarray(inventory.tallies, dtype=float)
     configs = dict(configs)

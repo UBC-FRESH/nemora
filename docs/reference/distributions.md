@@ -107,3 +107,5 @@ starting values that can be overridden via `FitConfig`.
   - `b`, `s`
   - Log-logistic distribution with equal shape parameters.
 ```
+
+.. todo:: Update this section once the nemora.ingest / sampling / synthforest modules land to reflect the broader workflow.

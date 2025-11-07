@@ -1,68 +1,105 @@
-# nemora
+# Nemora
 
-`nemora` is an open-source toolkit for fitting diameter-at-breast-height (DBH) probability
-distributions to forest inventory tally data. It packages the workflows developed by the UBC FRESH
-Lab for handling both horizontal point sampling (HPS) and fixed-area plot inventories, including
-size-bias corrections, left/right censoring, and extensible distribution libraries.
+Nemora is an early-stage meta-package for forest analytics. It aims to provide an
+interoperable collection of submodules that cover the typical workflow from *raw inventory data*
+through *statistical fitting*, *synthetic forest generation*, and *inventory simulation*. The
+project is only a few days old, which means we can move quickly, but it also means the API is
+still fluid—expect rapid iteration and watch the changelog.
 
-## Features (planned)
-- Weighted HPS fitting that reproduces size-biased estimators using standard-form PDFs.
-- Two-stage scaling workflow for censored or truncated tallies without bespoke PDF forms.
-- Catalogue of 28+ forestry-relevant distributions, with user-defined plugin support.
-- Python API, Typer-powered CLI, and an R wrapper (`nemorar`) built on reticulate.
-- Reproducible examples (Jupyter, Python scripts, bash) linked to DataLad managed tallies.
-- Sphinx documentation with theory notes, API reference, and worked examples.
-- Experimental finite-mixture fitting (two-component EM) for grouped stand tables.
+## High-Level Goals
 
-## Relationship to other tools
-`nemora` complements earlier diameter-distribution toolkits—most notably the R package
-[`ForestFit`](https://cran.r-project.org/package=ForestFit)—by focusing on workflow integration and
-cross-language accessibility:
+- **Core types & tooling (`nemora.core`)** – canonical dataclasses and helpers shared across every
+  module (e.g., `InventorySpec`, `FitResult`, reproducible random seeds).
+- **Central distribution registry (`nemora.distributions`)** – a single source of truth for
+  forestry-relevant PDFs/CDFs used by ingestion, fitting, sampling, and synthetic generation.
+- **Distribution fitting (`nemora.distfit`)** – grouped estimators, mixture fitting, and goodness-of-fit
+  diagnostics. This is the first module we are pushing to alpha.
+- **Sampling utilities (`nemora.sampling`)** – analytic/numeric PDF→CDF inversion, bootstrap and
+  Monte Carlo samplers, mixture helpers.
+- **Ingestion/ETL (`nemora.ingest`)** – transforms raw inventory releases (provincial portals,
+  open data) into the tidy secondary forms consumed by the rest of Nemora.
+- **Synthetic forest generation (`nemora.synthforest`)** – builds landscape mosaics, stand-level
+  attributes, and stem populations for simulation and testing.
+- **Inventory simulations (`nemora.simulations`)** – simulates measurement campaigns (plots, LiDAR,
+  transects) against synthetic forests with configurable error models.
+- **CLI & API parity** – Nemora ships both a Typer-based CLI (`nemora …`) and a user-facing Python
+  API. Scripts in `scripts/` remain available; we plan to add CLI shims rather than remove them.
 
-- **Workflow-first design.** Horizontal point sampling (HPS) weighting, censored workflows, and
-  parity datasets are bundled as ready-to-run pipelines rather than standalone distribution
-  routines.
-- **Python ecosystem integration.** A Typer CLI, pandas-friendly API, and forthcoming reticulate
-  bridge allow the same scripts to run in notebooks, batch jobs, or mixed Python/R projects.
-- **Reproducible data packaging.** DataLad-backed reference datasets and CLI bootstrap commands make
-  it easy to pull the manuscript tallies or swap in project-specific inventories.
-- **Transparent differentiation.** We actively track ideas from ForestFit and related literature
-  (finite mixtures, piecewise PDFs, JSB family support). Candidate imports are logged in
-  `candidate-import-from-ForestFit-features.md` so that upstream contributions remain visible while
-  we extend the Python implementation.
+## Current Status (Rapid Iteration)
 
-The goal is to interoperate with ForestFit users rather than replace that package; future releases
-will surface mixture and piecewise models inspired by the same body of research.
+| Module              | Status / Notes                                                                 |
+| ------------------- | ------------------------------------------------------------------------------ |
+| `core`              | ✅ Bootstrapped. Hosts shared dataclasses and compatibility shims.             |
+| `distributions`     | ✅ Central registry connected to `distfit`, `sampling`, and future modules.    |
+| `distfit`           | 🚧 Targeting alpha; grouped EM, mixtures, CLI wiring migrated here.            |
+| `sampling`          | 📝 Planned. Will consume registry + distfit outputs after alpha ships.         |
+| `ingest`            | 📝 Planned. Will supersede current helper scripts—design in progress.          |
+| `synthforest`       | 📝 Planned. Synthetic landscape and stem generation to follow sampling module. |
+| `simulations`       | 📝 Planned. Builds on synthforest; design sketches in roadmap.                 |
 
-## Project Layout
+See [`notes/nemora_modular_reorg_plan.md`](notes/nemora_modular_reorg_plan.md) for the detailed
+timeline, sequencing, and dependencies. The plan mirrors the table above and is the source of
+truth for day-to-day work.
+
+## Relationship to Other Toolkits
+
+- **ForestFit (R)** – Nemora borrows ideas from the ForestFit literature and logs planned imports in
+  [`candidate-import-from-ForestFit-features.md`](candidate-import-from-ForestFit-features.md).
+  We aim to interoperate, not replace: ForestFit covers more mature mixed models today; Nemora is
+  focusing on workflow integration and Python-first pipelines.
+- **Existing scripts/notebooks** – The repository still contains historic parity notebooks and
+  scripts. Many will be rewritten or replaced once the new modules mature. Feel free to use them,
+  but watch for “TODO” callouts noting planned refactors.
+
+## Repository Layout
+
 ```
-src/nemora/    # Core Python package (core types, distributions, distfit, workflows, etc.)
-docs/              # Sphinx documentation sources
-tests/             # Pytest suites and fixtures
-examples/          # Jupyter notebooks, scripts, CLI samples
-config/            # Distribution registry and package defaults
-r/nemorar/     # R wrapper (reticulate bridge) scaffolding
-.github/workflows/ # CI pipelines
-ROADMAP.md         # Working readiness plan
+src/nemora/
+    core/            # Shared dataclasses and helpers
+    distributions/   # Canonical distribution registry
+    distfit/         # Distribution fitting (alpha focus)
+    ingest/          # (planned) inventory ETL pipelines
+    sampling/        # (planned) PDF/CDF inversion & sampling
+    synthforest/     # (planned) synthetic forest generator
+    simulations/     # (planned) inventory simulation module
+    cli.py           # Typer CLI entry point (subcommands on the roadmap)
+docs/                # Sphinx documentation (How-to, reference, theory)
+tests/               # Pytest suites + fixtures
+examples/            # Notebooks and scripts (being reorganised)
+notes/               # Planning documents and prototypes
+scripts/             # Legacy helpers (will be re-housed under ingest)
+r/nemorar/           # Reticulate wrapper scaffold for R users
 ```
 
 ## Getting Started
-```
+
+```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
 pre-commit install
-nemora --help
+nemora --help  # CLI smoke test (currently focused on fitting workflows)
 ```
 
-See `CONTRIBUTING.md` for coding standards, testing, and review checklists.
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for coding standards, testing expectations, and review
+checklists. Documentation builds with Sphinx (`docs/`); we’ll flip the switch on Read the Docs once
+the module reorganisation stabilises.
 
-Documentation is built with Sphinx under `docs/`. A Read the Docs configuration will follow once
-the initial API stabilises.
+## Documentation TODOs
+
+Many doc pages still assume the original scope. As the new modules land we will:
+
+- Rework the “How-to” guides to spotlight ingest, sampling, synthforest, and simulations.
+- Expand the reference section with per-module API docs (`nemora.core`, `nemora.distributions`,
+  `nemora.distfit`, …).
+- Annotate legacy pages with `.. todo::` blocks indicating where scope has changed.
 
 ## Contributing
-Contributions are welcome via pull requests. Please run `ruff`, `mypy`, and `pytest` locally before
-submitting patches. Changes should include documentation updates and tests where applicable.
+
+Pull requests are welcome. Please run `ruff`, `mypy`, and `pytest` locally before submitting and
+update docs/tests alongside code changes. When touching the reorganised modules, keep an eye on the
+alpha plan so we can land the distfit milestone quickly.
 
 ## License
-This project is released under the MIT License. See `LICENSE` for details.
+
+MIT – see [`LICENSE`](LICENSE).
