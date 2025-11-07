@@ -54,18 +54,16 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 - [ ] Outreach (blog posts, mailing lists, working group updates).
 
 ## Detailed Next Steps Notes
-1. **Distfit Alpha Checklist (Phase 1 focus)**
-   - [ ] Review and tune grouped EM implementations (Weibull, Johnson SB, Birnbaum–Saunders).
-   - [ ] Confirm mixture utilities operate under `nemora.distfit`.
-   - [ ] Update CLI subcommands/tests to reference `distfit`.
-   - [ ] Document new module layout; mark legacy docs with `.. todo::` for follow-up rewrites.
-   - [ ] Ensure CI enforces coverage for `core`, `distributions`, `distfit`.
-2. **Ingestion & Sampling Design (Phase 2 prep)**
-   - [ ] Draft interfaces in `notes/nemora_modular_reorg_plan.md`, solicit feedback.
-   - [ ] Identify raw datasets for ETL integration tests (BC FAIB, FIA).
-   - [ ] Prototype sampling utilities (numeric integration, mixture samplers) in notebooks.
+1. **Phase 2 Kickoff — Ingest module design**
+   - [ ] Finalise `DatasetSource` / `TransformPipeline` abstractions in `notes/nemora_modular_reorg_plan.md`.
+   - [ ] Stub `nemora/ingest/__init__.py` and outline initial pipeline modules.
+   - [ ] Prepare BC FAIB/FIA fixture manifests for integration tests.
+2. **Sampling module prototypes**
+   - [ ] Draft numeric/analytic PDF→CDF inversion helpers in notebooks.
+   - [ ] Specify bootstrap/Monte Carlo API surface to align with distfit outputs.
+   - [ ] Identify regression tests required for mixture integration.
 3. **Documentation TODOs**
-   - [ ] Rework how-to guides to reference new modules (`ingest`, `sampling`, etc.).
+   - [ ] Update how-to guides as new modules land (`ingest`, `sampling`, etc.).
    - [ ] Add module API pages (placeholders present).
    - [ ] Highlight CLI + Python API parity intent.
 

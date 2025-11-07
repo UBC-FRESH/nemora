@@ -12,7 +12,7 @@ project = "nemora"
 author = "UBC FRESH Lab"
 copyright = f"{datetime.now():%Y}, {author}"
 
-release = "0.0.1"
+release = "0.0.1-alpha"
 try:
     release = importlib.metadata.version("nemora")
 except importlib.metadata.PackageNotFoundError:  # pragma: no cover - docs build

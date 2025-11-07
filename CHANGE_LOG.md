@@ -81,3 +81,9 @@
 - Re-ran the CLI regression suite (`pytest tests/test_cli.py`) to confirm the help messaging change does not impact behaviour.
 - Audited all notebooks and examples for stale `nemora.fitting`/`dbhdistfit` imports; none remain after the namespace migration.
 - Normalised `FitResult.diagnostics` across solvers by tagging the optimisation method (`curve-fit`, `lmfit-model`, grouped modes) and extended the distfit docs/test suite to cover the new metadata contract.
+
+## 2025-11-07 — Distfit 0.0.1-alpha release prep
+
+- Bumped the package/version metadata to `0.0.1-alpha` and updated the Sphinx fallback release string so local docs match.
+- Confirmed roadmap Phase 1 checkboxes are closed and reoriented the detailed next-step notes toward Phase 2 module design.
+- Regenerated Sphinx docs (`sphinx-build -b html docs _build/html -W`) and `pytest` to validate the version bump before tagging.
