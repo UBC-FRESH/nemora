@@ -14,6 +14,8 @@ except metadata.PackageNotFoundError:  # pragma: no cover - local dev fallback
 from . import core as core  # noqa: F401
 from . import distfit as distfit  # noqa: F401
 from . import distributions as distributions  # noqa: F401
+from . import ingest as ingest  # noqa: F401
+from . import sampling as sampling  # noqa: F401
 from .core import FitResult, FitSummary, InventorySpec  # noqa: F401
 from .workflows.censoring import fit_censored_inventory  # noqa: F401
 from .workflows.hps import fit_hps_inventory  # noqa: F401
@@ -23,6 +25,8 @@ __all__ = [
     "core",
     "distributions",
     "distfit",
+    "ingest",
+    "sampling",
     "FitResult",
     "FitSummary",
     "InventorySpec",

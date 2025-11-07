@@ -8,5 +8,6 @@ hps_api
 hps_dataset
 custom_distributions
 ingest
+sampling
 contributing
 ```
