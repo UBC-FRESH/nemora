@@ -36,7 +36,7 @@ will surface mixture and piecewise models inspired by the same body of research.
 
 ## Project Layout
 ```
-src/nemora/    # Core Python package (distributions, weighting, fitting, workflows)
+src/nemora/    # Core Python package (core types, distributions, distfit, workflows, etc.)
 docs/              # Sphinx documentation sources
 tests/             # Pytest suites and fixtures
 examples/          # Jupyter notebooks, scripts, CLI samples

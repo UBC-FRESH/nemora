@@ -1,4 +1,4 @@
-"""Shared fitting strategies for dbhdistfit."""
+"""Shared fitting strategies for nemora."""
 
 from __future__ import annotations
 
@@ -11,8 +11,8 @@ import numpy as np
 from lmfit import Model
 from scipy.optimize import curve_fit
 
+from ..core import FitResult, InventorySpec
 from ..distributions import Distribution, get_distribution
-from ..typing import FitResult, InventorySpec
 from .grouped import get_grouped_estimator
 
 Objective = Callable[[np.ndarray, np.ndarray, Mapping[str, float]], float]

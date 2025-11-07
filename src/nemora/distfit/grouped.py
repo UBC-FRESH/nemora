@@ -12,8 +12,8 @@ from scipy.special import betainc, betaln, digamma, polygamma
 from scipy.stats import fatiguelife, johnsonsb, norm, weibull_min
 from scipy.stats import gamma as gamma_dist
 
+from ..core import FitResult, InventorySpec
 from ..distributions import weibull_pdf
-from ..typing import FitResult, InventorySpec
 
 if TYPE_CHECKING:  # pragma: no cover - typing aid
     from . import FitConfig

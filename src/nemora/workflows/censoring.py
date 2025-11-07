@@ -6,8 +6,8 @@ from collections.abc import Iterable, Mapping
 
 import numpy as np
 
-from ..fitting import FitConfig, default_fit_config, fit_inventory, fit_with_lmfit
-from ..typing import FitResult, InventorySpec
+from ..core import FitResult, InventorySpec
+from ..distfit import FitConfig, default_fit_config, fit_inventory, fit_with_lmfit
 
 
 def fit_censored_inventory(

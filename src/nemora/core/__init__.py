@@ -1,4 +1,4 @@
-"""Shared type declarations and data containers."""
+"""Core dataclasses and shared type aliases for nemora modules."""
 
 from __future__ import annotations
 
@@ -76,3 +76,14 @@ class FitSummary:
             record.update({f"gof_{k}": v for k, v in result.gof.items()})
             records.append(record)
         return pd.DataFrame.from_records(records)
+
+
+__all__ = [
+    "ArrayLike",
+    "TableLike",
+    "InventorySpec",
+    "FitResult",
+    "MixtureComponentFit",
+    "MixtureFitResult",
+    "FitSummary",
+]

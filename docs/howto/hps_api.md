@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from nemora.typing import FitSummary, InventorySpec
+from nemora.core import FitSummary, InventorySpec
 from nemora.workflows import fit_hps_inventory
 
 csv_path = Path("examples/hps_baf12/4000002_PSP1_v1_p1.csv")

@@ -61,7 +61,8 @@
 
 ## 2025-11-06 — Project Renaming
 
-- Renamed the project from `dbhdistfit` to `nemora`, updating package/module paths, CLI entry points, documentation, and supporting scripts.
+- Renamed the project from `dbhdistfit` to `nemora`,
+- Bootstrapped `nemora.core` and centralised the distribution registry, migrating the fitting stack into the new `nemora.distfit` subpackage with compatibility shims and updated imports/docs. updating package/module paths, CLI entry points, documentation, and supporting scripts.
 - Switched the Typer CLI to `nemora`, refreshed installation instructions (`pip install "nemora[data]"`), and retargeted the DataLad helper to the new repository namespace.
 - Renamed the R reticulate wrapper scaffold to `nemorar` and rewired all tests/docs to import `nemora`.
 - Adjusted packaging metadata (`pyproject.toml`), coverage/pytest settings, and Sphinx configuration to match the new module namespace.

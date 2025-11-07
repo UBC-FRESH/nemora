@@ -2,7 +2,7 @@
 
 Generates synthetic grouped tallies from a three-parameter Weibull
 (alpha = 0.5, beta = 12, shape = 2.6) and runs the grouped likelihood
-refinement implemented in src/dbhdistfit/fitting/grouped.py. Intended
+refinement implemented in src/nemora/distfit/grouped.py. Intended
 for development only – this file is not imported by the package or tests.
 """
 
@@ -13,7 +13,7 @@ from numpy.random import default_rng
 from scipy.optimize import minimize
 from scipy.stats import weibull_min
 
-from dbhdistfit.fitting.grouped import _weibull_probabilities
+from nemora.distfit.grouped import _weibull_probabilities
 
 rng = default_rng(0)
 alpha_true = 0.5

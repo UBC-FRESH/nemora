@@ -8,8 +8,8 @@ from dataclasses import dataclass
 import numpy as np
 from numpy.typing import ArrayLike
 
+from ..core import InventorySpec, MixtureComponentFit, MixtureFitResult
 from ..distributions import get_distribution
-from ..typing import InventorySpec, MixtureComponentFit, MixtureFitResult
 from . import default_fit_config, fit_inventory
 
 
