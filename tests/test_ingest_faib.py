@@ -8,6 +8,7 @@ from nemora.ingest.faib import (
     PSP_DICTIONARY_URL,
     DataDictionary,
     aggregate_stand_table,
+    build_stand_table_from_csvs,
     load_data_dictionary,
     load_non_psp_dictionary,
     load_psp_dictionary,
@@ -77,3 +78,9 @@ def test_aggregate_stand_table() -> None:
 
     empty = aggregate_stand_table(tree_detail, sample_byvisit, baf=20.0)
     assert empty.empty
+
+
+def test_build_stand_table_from_csvs(tmp_path: Path) -> None:
+    fixture_root = Path("tests/fixtures/faib")
+    result = build_stand_table_from_csvs(fixture_root, baf=12.0)
+    assert list(result["dbh_cm"]) == [12.0, 13.0, 25.0]

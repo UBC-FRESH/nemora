@@ -25,6 +25,7 @@ __all__ = [
     "load_psp_dictionary",
     "load_non_psp_dictionary",
     "aggregate_stand_table",
+    "build_stand_table_from_csvs",
     "PSP_DICTIONARY_URL",
     "NON_PSP_DICTIONARY_URL",
 ]
@@ -130,3 +131,36 @@ def aggregate_stand_table(
         .sort_values("dbh_cm")
     )
     return aggregated.reset_index(drop=True)
+
+
+def build_stand_table_from_csvs(
+    root: str | Path,
+    baf: float,
+    *,
+    tree_file: str = "faib_tree_detail.csv",
+    sample_file: str = "faib_sample_byvisit.csv",
+) -> pd.DataFrame:
+    """Load FAIB CSV extracts from ``root`` and build a stand table for ``baf``.
+
+    Parameters
+    ----------
+    root:
+        Directory containing the FAIB CSV extracts.
+    baf:
+        Desired basal area factor to filter.
+    tree_file:
+        Filename for the tree detail CSV within ``root``.
+    sample_file:
+        Filename for the sample-by-visit CSV within ``root``.
+    """
+
+    root_path = Path(root)
+    tree_path = root_path / tree_file
+    sample_path = root_path / sample_file
+    if not tree_path.exists() or not sample_path.exists():
+        missing = [str(path) for path in (tree_path, sample_path) if not path.exists()]
+        raise FileNotFoundError(f"Missing FAIB CSV file(s): {', '.join(missing)}")
+
+    tree_detail = pd.read_csv(tree_path)
+    sample_byvisit = pd.read_csv(sample_path)
+    return aggregate_stand_table(tree_detail, sample_byvisit, baf=baf)

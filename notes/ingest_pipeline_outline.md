@@ -1,7 +1,7 @@
 # FAIB Ingest Pipeline Outline
 
 Date: 2025-11-07
-Status: Draft — initial thoughts on transforming FAIB ground plots into Nemora-ready tables.
+Status: In progress — stand-table aggregation (`build_stand_table_from_csvs`) and CLI stub implemented; fetch/caching still pending.
 
 ## Objectives
 

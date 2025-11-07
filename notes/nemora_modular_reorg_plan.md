@@ -44,7 +44,7 @@ src/nemora/
 4. **Ingestion / ETL (`nemora.ingest`) – Phase 2 kickoff**
    - [ ] Audit current scripts for reusable ETL logic.
    - [ ] Design `DatasetSource`, `RecordBatch`, `TransformPipeline` abstractions aligned with `nemora.core`.
-   - [ ] Implement key connectors (BC FAIB, FIA, etc.), add CLI helpers, and unit/integration tests against sample raw datasets.
+   - [ ] Implement key connectors (BC FAIB, FIA, etc.), add CLI helpers, and unit/integration tests against sample raw datasets. *(Stand-table aggregation + CLI stub in place; fetch/caching outstanding.)*
    - [ ] Verify FTP access to FAIB PSP/non-PSP datasets and capture download instructions/DataLad strategy.
    - [ ] Parse FAIB PSP/non-PSP data dictionaries (XLSX) and surface schema metadata for ingest docs/tests.
    - [ ] Flesh out FAIB ingest pipeline per `notes/ingest_pipeline_outline.md` (fetch, transform, output).

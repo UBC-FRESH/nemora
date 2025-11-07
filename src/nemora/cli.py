@@ -17,6 +17,7 @@ from rich.table import Table
 
 from . import __version__
 from .distributions import get_distribution, list_distributions
+from .ingest.faib import build_stand_table_from_csvs
 from .workflows.hps import fit_hps_inventory
 
 app = typer.Typer(help="Nemora distribution fitting CLI (distfit alpha).")
@@ -76,6 +77,23 @@ GROUPED_WEIBULL_MODE_OPTION = typer.Option(
     "--grouped-weibull-mode",
     help="Grouped Weibull solver mode: auto (default), ls, or mle.",
     show_default=True,
+)
+
+FAIB_ROOT_ARGUMENT = typer.Argument(
+    ...,
+    exists=True,
+    file_okay=False,
+    dir_okay=True,
+    readable=True,
+    help="Directory containing FAIB CSV extracts (faib_tree_detail.csv, faib_sample_byvisit.csv).",
+)
+
+FAIB_OUTPUT_OPTION = typer.Option(
+    None,
+    "--output",
+    "-o",
+    help="Optional path to write the stand table CSV.",
+    show_default=False,
 )
 
 
@@ -174,6 +192,28 @@ def fit_hps(  # noqa: B008
                 row.append(_format_metric(result.parameters.get(name)))
             param_table.add_row(*row)
         console.print(param_table)
+
+
+@app.command("ingest-faib")
+def ingest_faib(  # noqa: B008
+    root: Path = FAIB_ROOT_ARGUMENT,
+    baf: float = typer.Option(..., "--baf", help="Basal area factor to filter (e.g., 12)."),
+    output: Path | None = FAIB_OUTPUT_OPTION,
+) -> None:
+    """Generate a stand table from local FAIB PSP extracts."""
+    try:
+        stand_table = build_stand_table_from_csvs(root, baf)
+    except Exception as exc:
+        console.print(f"[red]Failed to build stand table:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+
+    if output is not None:
+        stand_table.to_csv(output, index=False)
+        console.print(
+            f"[green]Stand table written[/green] {output} " f"(rows={len(stand_table)}, baf={baf})"
+        )
+    else:
+        console.print(stand_table.head())
 
 
 def main_entry() -> None:

@@ -171,6 +171,28 @@ def test_fit_hps_parameter_preview_includes_columns() -> None:
                 assert _as_float(row[param]) == pytest.approx(value, rel=1e-4)
 
 
+def test_ingest_faib_command(tmp_path: Path) -> None:
+    fixtures = Path("tests/fixtures/faib")
+    output = tmp_path / "stand_table.csv"
+
+    result = runner.invoke(
+        app,
+        [
+            "ingest-faib",
+            str(fixtures),
+            "--baf",
+            "12",
+            "--output",
+            str(output),
+        ],
+    )
+    assert result.exit_code == 0
+    assert output.exists()
+    df = pd.read_csv(output)
+    assert "dbh_cm" in df.columns
+    assert "tally" in df.columns
+
+
 def test_fetch_reference_data_dry_run_message() -> None:
     result = runner.invoke(app, ["fetch-reference-data"])  # default dry-run
     assert result.exit_code == 0

@@ -94,3 +94,4 @@
 - Prototyped `nemora.sampling` utilities (`pdf_to_cdf`, `sample_distribution`, `sample_mixture_fit`, `bootstrap_inventory`) with smoke tests and documentation, and re-exported the module via `nemora.__init__`.
 - Noted FAIB PSP/non-PSP FTP endpoints in the ingest plan, added tasks to parse the accompanying data dictionaries, and updated the how-to guide to point at both sources.
 - Added FAIB ingest helpers (`load_psp_dictionary`, `load_non_psp_dictionary`, `aggregate_stand_table`) with regression coverage to transform tree detail tables into Nemora stand tables.
+- Wired a minimal FAIB ingest pipeline: `build_stand_table_from_csvs`, CLI command (`nemora ingest-faib`), and fixtures/tests demonstrating BAF-filtered stand tables sourced from FAIB extracts.

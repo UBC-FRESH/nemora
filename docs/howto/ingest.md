@@ -92,3 +92,14 @@ collapse tree detail tables into Nemora-ready stand-table summaries.
 
 .. todo:: Flesh out end-to-end ingestion workflows (including CLI usage and
           caching guidelines) once dataset connectors are implemented.
+
+## CLI helper
+
+Nemora exposes an early CLI stub for PSP stand tables:
+
+```bash
+nemora ingest-faib tests/fixtures/faib --baf 12 --output stand_table.csv
+```
+
+The command expects pre-downloaded FAIB CSV extracts; future versions will
+bundle fetch/caching logic.
