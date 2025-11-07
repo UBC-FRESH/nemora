@@ -16,6 +16,14 @@ from nemora.ingest.faib import (
 )
 
 
+def test_manifest_records_exist() -> None:
+    manifest_path = Path("examples/faib_manifest/faib_manifest.csv")
+    manifest = pd.read_csv(manifest_path)
+    assert not manifest.empty
+    for rel_path in manifest["path"]:
+        assert (manifest_path.parent / rel_path).exists()
+
+
 def test_load_data_dictionary_from_local(tmp_path: Path) -> None:
     sheet = pd.DataFrame({"Attribute": ["col1", "col2"], "Description": ["One", "Two"]})
     path = tmp_path / "demo.xlsx"

@@ -95,3 +95,4 @@
 - Noted FAIB PSP/non-PSP FTP endpoints in the ingest plan, added tasks to parse the accompanying data dictionaries, and updated the how-to guide to point at both sources.
 - Added FAIB ingest helpers (`load_psp_dictionary`, `load_non_psp_dictionary`, `aggregate_stand_table`) with regression coverage to transform tree detail tables into Nemora stand tables.
 - Wired a minimal FAIB ingest pipeline: `build_stand_table_from_csvs`, FTP download helper, CLI command (`nemora ingest-faib --fetch`), and fixtures/tests demonstrating BAF-filtered stand tables sourced from FAIB extracts.
+- Added `scripts/generate_faib_manifest.py` and checked in trimmed PSP fixtures/manifest for regression tests and documentation examples.
