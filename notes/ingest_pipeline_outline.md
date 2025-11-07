@@ -17,6 +17,8 @@ Status: In progress — stand-table aggregation, FTP fetch helper (with overwrit
    - ✅ `generate_faib_manifest` now wraps `download_faib_csvs`, enabling automated fetch + manifest creation via CLI/script.
    - ✅ FIA prototype helper aggregates `TREE`/`COND`/`PLOT` tables into stand tables (plot CN filter, DBH conversion).
    - ✅ Trimmed FIA fixtures (`tests/fixtures/fia/`) recorded for deterministic tests.
+   - ✅ CLI supports `--fetch-state` to download state-specific tables before aggregation.
+   - [ ] Promote FIA download helper into a reusable `DatasetSource` fetcher once the interface is finalised.
 
 2. **Transform**
    - Join headers and sample metadata by `(CLSTR_ID, VISIT_NUMBER, PLOT)`.

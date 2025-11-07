@@ -48,8 +48,8 @@ Tasks:
 - [ ] Prototype a `DatasetSource` entry and fetcher stub mirroring FAIB approach.
 - [x] Trim the HI sample into fixtures (`tests/fixtures/fia/`) with README/licensing notes and update tests to rely on them.
 - [x] Add regression coverage exercising multi-condition weighting and non-live tree filtering.
-- [ ] Coordinate with documentation to ensure licensing/attribution requirements captured.
-- [ ] Draft a CLI workflow (`nemora ingest-fia`) after fixtures and regression harness are available.
+- [x] Coordinate with documentation to ensure licensing/attribution requirements captured.
+- [x] Draft a CLI workflow (`nemora ingest-fia`) after fixtures and regression harness are available.
 
 ## 2025-11-07 observations (HI sample)
 
@@ -64,3 +64,5 @@ Tasks:
 - Condition proportions (`CONDPROP_UNADJ`, `MICRPROP_UNADJ`, `SUBPPROP_UNADJ`, `MACRPROP_UNADJ`) will gate weighting when multiple conditions share a plot.
 - Plot status codes (`PLOT_STATUS_CD`) and condition status codes (`COND_STATUS_CD`) determine live forest vs nonforest filtering.
 - Next steps: derive sample aggregation script joining plot/cond/tree using the fixtures, evaluate basal area factors (if available), and capture column descriptions from FIA documentation.
+- CLI fetch helper (`nemora ingest-fia --fetch-state HI`) wraps `download_fia_tables` and defaults filenames to the downloaded ``STATE_TABLE.csv`` convention.
+- Consider adding an optional integration test (skipped by default) that exercises live downloads for a small state (e.g., HI) to monitor upstream schema changes.

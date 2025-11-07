@@ -27,6 +27,7 @@ from .ingest.faib import (
     build_stand_table_from_csvs as build_faib_stand_table,
 )
 from .ingest.fia import build_stand_table_from_csvs as build_fia_stand_table
+from .ingest.fia import download_fia_tables
 from .workflows.hps import fit_hps_inventory
 
 app = typer.Typer(help="Nemora distribution fitting CLI (distfit alpha).")
@@ -203,30 +204,32 @@ FIA_OUTPUT_OPTION = typer.Option(
 )
 
 FIA_TREE_FILE_OPTION = typer.Option(
-    "TREE.csv",
+    None,
     "--tree-file",
-    help="Name of the FIA TREE CSV file inside the root directory.",
-    show_default=True,
+    help=(
+        "Name of the FIA TREE CSV file inside the root directory (defaults to the state-specific"
+        " download or TREE.csv)."
+    ),
+    show_default=False,
 )
 
 FIA_COND_FILE_OPTION = typer.Option(
-    "COND.csv",
+    None,
     "--cond-file",
-    help="Name of the FIA COND CSV file inside the root directory.",
-    show_default=True,
+    help=(
+        "Name of the FIA COND CSV file inside the root directory (defaults to the state-specific"
+        " download or COND.csv)."
+    ),
+    show_default=False,
 )
 
 FIA_PLOT_FILE_OPTION = typer.Option(
-    "PLOT.csv",
-    "--plot-file",
-    help="Name of the FIA PLOT CSV file inside the root directory.",
-    show_default=True,
-)
-
-FIA_PLOT_CN_OPTION = typer.Option(
     None,
-    "--plot-cn",
-    help="Filter to specific FIA plot CNs (repeatable).",
+    "--plot-file",
+    help=(
+        "Name of the FIA PLOT CSV file inside the root directory (defaults to the state-specific"
+        " download or PLOT.csv)."
+    ),
     show_default=False,
 )
 
@@ -234,6 +237,21 @@ FIA_DBH_BIN_OPTION = typer.Option(
     1.0,
     "--dbh-bin-cm",
     help="DBH bin width in centimetres used for aggregation.",
+    show_default=True,
+)
+
+FIA_FETCH_STATE_OPTION = typer.Option(
+    None,
+    "--fetch-state",
+    help="Download FIA CSV tables for the specified state (two-letter code) before aggregation.",
+    show_default=False,
+)
+
+
+FIA_OVERWRITE_OPTION = typer.Option(
+    False,
+    "--overwrite/--keep-existing",
+    help="Re-download FIA CSV files even when present in the root directory.",
     show_default=True,
 )
 
@@ -454,15 +472,61 @@ def faib_manifest(  # noqa: B008
 def ingest_fia(  # noqa: B008
     root: Path = FIA_ROOT_ARGUMENT,
     output: Path | None = FIA_OUTPUT_OPTION,
-    plot_cn: list[int] = FIA_PLOT_CN_OPTION,
-    tree_file: str = FIA_TREE_FILE_OPTION,
-    cond_file: str = FIA_COND_FILE_OPTION,
-    plot_file: str = FIA_PLOT_FILE_OPTION,
+    plot_cn: list[int] = typer.Option(  # noqa: B008
+        [],
+        "--plot-cn",
+        help="Filter to specific FIA plot CNs (repeatable).",
+        show_default=False,
+    ),
+    tree_file: str | None = FIA_TREE_FILE_OPTION,
+    cond_file: str | None = FIA_COND_FILE_OPTION,
+    plot_file: str | None = FIA_PLOT_FILE_OPTION,
     dbh_bin_cm: float = FIA_DBH_BIN_OPTION,
+    fetch_state: str | None = FIA_FETCH_STATE_OPTION,
+    tables: list[str] = typer.Option(  # noqa: B008
+        [],
+        "--table",
+        "-t",
+        help="FIA table names to download when --fetch-state is provided.",
+        show_default=False,
+    ),
+    overwrite: bool = FIA_OVERWRITE_OPTION,
 ) -> None:
     """Aggregate FIA TREE/COND/PLOT CSV extracts into a stand table."""
 
     import pandas as pd
+
+    state_upper: str | None = fetch_state.strip().upper() if fetch_state else None
+
+    # Determine filenames, favouring state-specific downloads when available.
+    def _resolve_filename(candidate: str | None, table: str, fallback: str) -> str:
+        if candidate:
+            return candidate
+        if state_upper:
+            return f"{state_upper}_{table}.csv"
+        return fallback
+
+    resolved_tree_file = _resolve_filename(tree_file, "TREE", "TREE.csv")
+    resolved_cond_file = _resolve_filename(cond_file, "COND", "COND.csv")
+    resolved_plot_file = _resolve_filename(plot_file, "PLOT", "PLOT.csv")
+
+    fetch_tables = tuple(table.upper() for table in tables) if tables else ("TREE", "PLOT", "COND")
+
+    if state_upper:
+        try:
+            downloaded = download_fia_tables(
+                root,
+                state=state_upper,
+                tables=fetch_tables,
+                overwrite=overwrite,
+            )
+        except Exception as exc:  # noqa: BLE001
+            console.print(f"[red]Failed to download FIA tables:[/red] {exc}")
+            raise typer.Exit(code=1) from exc
+        console.print(
+            f"[green]Fetched[/green] {len(downloaded)} files to {root} "
+            f"(state={state_upper}, overwrite={overwrite})"
+        )
 
     targets: list[int | None] = list(plot_cn) if plot_cn else [None]
     frames: list[pd.DataFrame] = []
@@ -470,9 +534,9 @@ def ingest_fia(  # noqa: B008
         frame = build_fia_stand_table(
             root,
             plot_cn=target,
-            tree_file=tree_file,
-            cond_file=cond_file,
-            plot_file=plot_file,
+            tree_file=resolved_tree_file,
+            cond_file=resolved_cond_file,
+            plot_file=resolved_plot_file,
             dbh_bin_cm=dbh_bin_cm,
         )
         if frame.empty:

@@ -313,6 +313,52 @@ def test_ingest_fia_command(tmp_path: Path) -> None:
     assert df["plot_cn"].nunique() == 2
 
 
+def test_ingest_fia_command_with_fetch(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    fixtures = Path("tests/fixtures/fia")
+    output = tmp_path / "fia_fetch.csv"
+
+    def fake_download(
+        destination: Path,
+        state: str,
+        tables: tuple[str, ...] = ("TREE", "PLOT", "COND"),
+        overwrite: bool = False,
+    ) -> list[Path]:
+        dest = Path(destination)
+        dest.mkdir(parents=True, exist_ok=True)
+        mapping = {
+            "TREE": "tree_small.csv",
+            "PLOT": "plot_small.csv",
+            "COND": "cond_small.csv",
+        }
+        created: list[Path] = []
+        for table in tables:
+            source_name = mapping.get(table.upper())
+            if source_name is None:
+                continue
+            target = dest / f"{state.upper()}_{table.upper()}.csv"
+            target.write_bytes((fixtures / source_name).read_bytes())
+            created.append(target)
+        return created
+
+    monkeypatch.setattr("nemora.cli.download_fia_tables", fake_download)
+
+    result = runner.invoke(
+        app,
+        [
+            "ingest-fia",
+            str(tmp_path),
+            "--fetch-state",
+            "hi",
+            "--output",
+            str(output),
+        ],
+    )
+    assert result.exit_code == 0
+    assert output.exists()
+    df = pd.read_csv(output)
+    assert df["plot_cn"].nunique() == 2
+
+
 def test_fetch_reference_data_dry_run_message() -> None:
     result = runner.invoke(app, ["fetch-reference-data"])  # default dry-run
     assert result.exit_code == 0

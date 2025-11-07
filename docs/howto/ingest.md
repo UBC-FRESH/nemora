@@ -180,3 +180,15 @@ trees/conditions, converts DBH to centimetres, and aggregates stand tables
 weighted by ``TPA_UNADJ`` and condition proportions. These utilities are the
 first step toward a full FIA ingest pipeline; use them to validate schema joins
 on downloaded samples while additional ETL automation is being planned.
+
+The CLI supports automatic downloads via ``--fetch-state``; Nemora maps state
+codes to the public FIA Datamart URLs (for example ``nemora ingest-fia
+data/fia --fetch-state hi`` will retrieve ``HI_TREE.csv``, ``HI_PLOT.csv``, and
+``HI_COND.csv`` before aggregating). Downloads are optional—pass custom
+``--tree-file``/``--cond-file``/``--plot-file`` arguments when working with
+pre-existing extracts or trimmed fixtures.
+
+**Licensing note:** FIA data are public domain but attribution is appreciated;
+refer to the USDA legal notice at <https://www.fia.fs.usda.gov/contact/legal.php>.
+When redistributing trimmed fixtures (e.g., under ``tests/fixtures/fia``) include
+the citation and acquisition date so downstream users understand the provenance.

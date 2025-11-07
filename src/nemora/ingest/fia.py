@@ -5,6 +5,8 @@ from __future__ import annotations
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
+from urllib.error import URLError
+from urllib.request import urlretrieve
 
 import numpy as np
 import pandas as pd
@@ -14,6 +16,7 @@ __all__ = [
     "load_fia_tables",
     "aggregate_plot_stand_table",
     "build_stand_table_from_csvs",
+    "download_fia_tables",
 ]
 
 
@@ -166,3 +169,65 @@ def build_stand_table_from_csvs(
         condition_status_codes=condition_status_codes,
         dbh_bin_cm=dbh_bin_cm,
     )
+
+
+def download_fia_tables(
+    destination: str | Path,
+    state: str,
+    tables: Sequence[str] = ("TREE", "PLOT", "COND"),
+    *,
+    overwrite: bool = False,
+) -> list[Path]:
+    """Download FIA CSV extracts for a given state.
+
+    Parameters
+    ----------
+    destination:
+        Directory where the CSV files will be written.
+    state:
+        Two-letter state or territory code (e.g., ``HI``, ``OR``).
+    tables:
+        Iterable of table names to download (default: TREE, PLOT, COND).
+    overwrite:
+        When ``True``, re-download files even if they already exist locally.
+    """
+
+    if not state:
+        raise ValueError("state must be provided (e.g., 'HI', 'OR').")
+    state_upper = state.strip().upper()
+    if len(state_upper) != 2:
+        raise ValueError("state must be a two-letter code.")
+
+    allowed = {"TREE", "PLOT", "COND", "SUBPLOT", "SUBPLOT_COND"}
+    normalized_tables = []
+    for table in tables:
+        table_upper = table.strip().upper()
+        if table_upper not in allowed:
+            raise ValueError(f"Unsupported FIA table '{table}'.")
+        normalized_tables.append(table_upper)
+
+    dest_path = Path(destination)
+    dest_path.mkdir(parents=True, exist_ok=True)
+
+    base_url = "https://apps.fs.usda.gov/fia/datamart/CSV"
+    downloaded: list[Path] = []
+    for table in normalized_tables:
+        filename = f"{state_upper}_{table}.csv"
+        target = dest_path / filename
+        if target.exists() and not overwrite:
+            downloaded.append(target)
+            continue
+
+        tmp_path = target.with_suffix(".part")
+        if tmp_path.exists():
+            tmp_path.unlink()
+        url = f"{base_url}/{filename}"
+        try:
+            urlretrieve(url, tmp_path)  # noqa: S310 - public FIA HTTPS endpoint
+        except URLError as exc:  # pragma: no cover - network failure
+            if tmp_path.exists():
+                tmp_path.unlink()
+            raise RuntimeError(f"Failed to download FIA table {table}: {exc}") from exc
+        tmp_path.replace(target)
+        downloaded.append(target)
+    return downloaded

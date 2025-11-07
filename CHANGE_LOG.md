@@ -145,6 +145,6 @@
 
 ## 2025-11-07 — FIA ingest CLI prototype
 
-- Added `nemora ingest-fia` Typer command with options for custom TREE/COND/PLOT filenames, plot CN filters, DBH bin width, and optional CSV output; aggregates via the new FIA helper.
-- Documented the CLI workflow and furnished CLI regression coverage (`tests/test_cli.py::test_ingest_fia_command`).
+- Added `nemora ingest-fia` Typer command with options for custom TREE/COND/PLOT filenames, plot CN filters, DBH bin width, state-driven downloads (`--fetch-state`), and optional CSV output; aggregates via the new FIA helper.
+- Documented the CLI workflow, including automated downloads and licensing guidance, and furnished CLI regression coverage (`tests/test_cli.py::test_ingest_fia_command*`).
 - Tests executed: `ruff check`, `mypy src`, `pytest`.

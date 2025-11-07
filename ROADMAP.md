@@ -62,6 +62,7 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
    - [x] Schedule FIA dataset scoping session once FAIB automation is stable (`notes/fia_ingest_scoping.md` drafted; HI sample downloaded to `data/external/fia/raw` for schema review).
    - [x] Trim FIA HI sample into test fixtures (`tests/fixtures/fia/`) and wire ingest tests to use them.
    - [ ] Build FIA CLI/ETL workflow (state + filters) once fixtures/regression harness are in place.
+   - [ ] Expose FIA download helper via `DatasetSource` fetcher abstraction and integrate into ingest module planning.
 2. **Sampling module prototypes**
    - [ ] Draft numeric/analytic PDF→CDF inversion helpers in notebooks.
    - [ ] Specify bootstrap/Monte Carlo API surface to align with distfit outputs.

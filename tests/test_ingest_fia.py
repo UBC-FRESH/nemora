@@ -7,6 +7,7 @@ from nemora.ingest.fia import (
     FIATables,
     aggregate_plot_stand_table,
     build_stand_table_from_csvs,
+    download_fia_tables,
 )
 
 FIXTURES = Path("tests/fixtures/fia")
@@ -84,3 +85,19 @@ def load_fixture_tables() -> FIATables:
     cond = pd.read_csv(FIXTURES / "cond_small.csv")
     plot = pd.read_csv(FIXTURES / "plot_small.csv")
     return FIATables(tree=tree, condition=cond, plot=plot)
+
+
+def test_download_fia_tables(monkeypatch, tmp_path: Path) -> None:
+    calls: list[str] = []
+
+    def fake_retrieve(url: str, filename: str) -> tuple[str, None]:
+        calls.append(url)
+        Path(filename).write_text("demo", encoding="utf-8")
+        return filename, None
+
+    monkeypatch.setattr("nemora.ingest.fia.urlretrieve", fake_retrieve)
+    paths = download_fia_tables(tmp_path, state="hi", tables=("TREE",))
+    assert len(paths) == 1
+    assert paths[0].name == "HI_TREE.csv"
+    assert paths[0].exists()
+    assert any(url.endswith("HI_TREE.csv") for url in calls)
