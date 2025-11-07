@@ -317,30 +317,29 @@ def test_ingest_fia_command_with_fetch(monkeypatch: pytest.MonkeyPatch, tmp_path
     fixtures = Path("tests/fixtures/fia")
     output = tmp_path / "fia_fetch.csv"
 
-    def fake_download(
-        destination: Path,
-        state: str,
-        tables: tuple[str, ...] = ("TREE", "PLOT", "COND"),
-        overwrite: bool = False,
-    ) -> list[Path]:
+    def fake_dataset(state: str, *, destination: Path, tables, overwrite: bool = False):
         dest = Path(destination)
         dest.mkdir(parents=True, exist_ok=True)
-        mapping = {
-            "TREE": "tree_small.csv",
-            "PLOT": "plot_small.csv",
-            "COND": "cond_small.csv",
-        }
-        created: list[Path] = []
-        for table in tables:
-            source_name = mapping.get(table.upper())
-            if source_name is None:
-                continue
-            target = dest / f"{state.upper()}_{table.upper()}.csv"
-            target.write_bytes((fixtures / source_name).read_bytes())
-            created.append(target)
-        return created
 
-    monkeypatch.setattr("nemora.cli.download_fia_tables", fake_download)
+        def _fetch(_: object = None) -> list[Path]:
+            created: list[Path] = []
+            mapping = {
+                "TREE": "tree_small.csv",
+                "PLOT": "plot_small.csv",
+                "COND": "cond_small.csv",
+            }
+            for table in tables:
+                source_name = mapping.get(table.upper())
+                if source_name is None:
+                    continue
+                target = dest / f"{state.upper()}_{table.upper()}.csv"
+                target.write_bytes((fixtures / source_name).read_bytes())
+                created.append(target)
+            return created
+
+        return type("FakeDataset", (), {"fetch": _fetch, "metadata": {"state": state.upper()}})()
+
+    monkeypatch.setattr("nemora.cli.build_fia_dataset_source", fake_dataset)
 
     result = runner.invoke(
         app,

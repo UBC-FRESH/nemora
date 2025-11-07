@@ -26,8 +26,12 @@ from .ingest.faib import (
 from .ingest.faib import (
     build_stand_table_from_csvs as build_faib_stand_table,
 )
-from .ingest.fia import build_stand_table_from_csvs as build_fia_stand_table
-from .ingest.fia import download_fia_tables
+from .ingest.fia import (
+    build_fia_dataset_source,
+)
+from .ingest.fia import (
+    build_stand_table_from_csvs as build_fia_stand_table,
+)
 from .workflows.hps import fit_hps_inventory
 
 app = typer.Typer(help="Nemora distribution fitting CLI (distfit alpha).")
@@ -514,12 +518,13 @@ def ingest_fia(  # noqa: B008
 
     if state_upper:
         try:
-            downloaded = download_fia_tables(
-                root,
-                state=state_upper,
+            dataset = build_fia_dataset_source(
+                state_upper,
+                destination=root,
                 tables=fetch_tables,
                 overwrite=overwrite,
             )
+            downloaded = list(dataset.fetch())
         except Exception as exc:  # noqa: BLE001
             console.print(f"[red]Failed to download FIA tables:[/red] {exc}")
             raise typer.Exit(code=1) from exc

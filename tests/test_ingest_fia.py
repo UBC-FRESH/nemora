@@ -6,6 +6,7 @@ import pytest
 from nemora.ingest.fia import (
     FIATables,
     aggregate_plot_stand_table,
+    build_fia_dataset_source,
     build_stand_table_from_csvs,
     download_fia_tables,
 )
@@ -101,3 +102,26 @@ def test_download_fia_tables(monkeypatch, tmp_path: Path) -> None:
     assert paths[0].name == "HI_TREE.csv"
     assert paths[0].exists()
     assert any(url.endswith("HI_TREE.csv") for url in calls)
+
+
+def test_build_fia_dataset_source(monkeypatch, tmp_path: Path) -> None:
+    calls: list[tuple[str, tuple[str, ...]]] = []
+
+    def fake_download(
+        dest: Path,
+        state: str,
+        tables: tuple[str, ...],
+        overwrite: bool = False,
+    ) -> list[Path]:
+        calls.append((state, tables))
+        target = dest / f"{state}_TREE.csv"
+        target.write_text("demo", encoding="utf-8")
+        return [target]
+
+    monkeypatch.setattr("nemora.ingest.fia.download_fia_tables", fake_download)
+
+    dataset = build_fia_dataset_source("hi", destination=tmp_path, tables=("TREE",), overwrite=True)
+    paths = list(dataset.fetch())
+    assert len(paths) == 1
+    assert calls == [("HI", ("TREE",))]
+    assert dataset.metadata["state"] == "HI"

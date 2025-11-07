@@ -5,11 +5,15 @@ from __future__ import annotations
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING, cast
 from urllib.error import URLError
 from urllib.request import urlretrieve
 
 import numpy as np
 import pandas as pd
+
+if TYPE_CHECKING:  # pragma: no cover
+    from . import DatasetSource
 
 __all__ = [
     "FIATables",
@@ -17,6 +21,7 @@ __all__ = [
     "aggregate_plot_stand_table",
     "build_stand_table_from_csvs",
     "download_fia_tables",
+    "build_fia_dataset_source",
 ]
 
 
@@ -231,3 +236,48 @@ def download_fia_tables(
         tmp_path.replace(target)
         downloaded.append(target)
     return downloaded
+
+
+def build_fia_dataset_source(
+    state: str,
+    *,
+    destination: str | Path,
+    tables: Sequence[str] = ("TREE", "PLOT", "COND"),
+    overwrite: bool = False,
+) -> DatasetSource:
+    """Create a :class:`DatasetSource` for downloading FIA CSV extracts."""
+
+    state_upper = state.strip().upper()
+    if len(state_upper) != 2:
+        raise ValueError("state must be a two-letter code.")
+
+    normalized_tables = tuple(table.strip().upper() for table in tables)
+
+    dest_path = Path(destination)
+
+    from . import DatasetFetcher, DatasetSource  # imported lazily to avoid circular dependency
+
+    def _fetch(_: DatasetSource) -> Iterable[Path]:
+        return download_fia_tables(
+            dest_path,
+            state=state_upper,
+            tables=normalized_tables,
+            overwrite=overwrite,
+        )
+
+    metadata = {
+        "state": state_upper,
+        "tables": list(normalized_tables),
+        "destination": str(dest_path),
+        "overwrite": overwrite,
+    }
+
+    fetcher = cast(DatasetFetcher, _fetch)
+
+    return DatasetSource(
+        name=f"fia-{state_upper.lower()}",
+        description=f"USDA FIA datamart extracts for state {state_upper}",
+        uri="https://apps.fs.usda.gov/fia/datamart/CSV/",
+        metadata=metadata,
+        fetcher=fetcher,
+    )
