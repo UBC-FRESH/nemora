@@ -86,5 +86,8 @@ Running `pipeline.run(raw_frame)` applies the configured steps sequentially—
 ideal for cleaning CSV extracts, building stand tables, and harmonising column
 names. Pipelines will be orchestrated by future CLI commands.
 
+See `nemora.ingest.faib` for utilities that download and parse the PSP/non-PSP
+data dictionaries into tidy frames usable by documentation and tests.
+
 .. todo:: Flesh out end-to-end ingestion workflows (including CLI usage and
           caching guidelines) once dataset connectors are implemented.
