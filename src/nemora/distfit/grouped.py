@@ -585,6 +585,13 @@ def _fit_weibull_grouped(
     inventory: InventorySpec,
     config: FitConfig | None,
 ) -> FitResult:
+    """Fit grouped Weibull counts using least squares with guarded MLE refinement.
+
+    The estimator first performs a weighted least-squares fit (mirroring the manuscript parity
+    workflow) and, unless the caller pins ``grouped_weibull_mode='ls'``, attempts a grouped
+    maximum-likelihood refinement via a Newton step. Instability triggers the documented fallback
+    to the least-squares solution unless the caller forces the grouped MLE path.
+    """
     if config is None:
         raise ValueError("Grouped estimator requires a FitConfig instance.")
 
@@ -806,6 +813,7 @@ def _fit_johnsonsb_grouped(
     inventory: InventorySpec,
     config: FitConfig | None,
 ) -> FitResult:
+    """Fit grouped Johnson SB tallies via EM with an MLE fallback."""
     if config is None:
         raise ValueError("Grouped estimator requires a FitConfig instance.")
 
@@ -845,6 +853,7 @@ def _fit_birnbaum_saunders_grouped(
     inventory: InventorySpec,
     config: FitConfig | None,
 ) -> FitResult:
+    """Fit grouped Birnbaum–Saunders tallies via moment-matched EM with MLE fallback."""
     if config is None:
         raise ValueError("Grouped estimator requires a FitConfig instance.")
 

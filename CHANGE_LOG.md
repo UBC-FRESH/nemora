@@ -72,3 +72,4 @@
 - Introduced `tests/test_distfit_module.py` to exercise `default_fit_config`, `fit_inventory`, and the new re-export, bringing the distfit alpha surface under direct unit coverage.
 - Ran `pytest`, `mypy src`, and `sphinx-build -b html docs _build/html -W` to validate the refactor; cleaned up the documentation build artifacts afterwards.
 - Documented the distfit alpha API with field-level docstrings on `FitConfig`, `_curve_fit_distribution`, `fit_with_lmfit`, and `fit_inventory`; verified notebooks no longer import `nemora.fitting` and re-ran `pytest tests/test_distfit_module.py` to keep coverage green.
+- Tightened grouped EM coverage (docstrings plus diagnostics assertions in `tests/test_grouped*.py`) and expanded mixture regression tests/documentation to confirm `fit_mixture_grouped`/`fit_mixture_samples` operate under the new namespace.

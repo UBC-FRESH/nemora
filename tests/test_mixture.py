@@ -41,6 +41,33 @@ def test_fit_mixture_samples_gamma() -> None:
     assert samples.shape == (50,)
 
 
+def test_fit_mixture_grouped_converges_on_gamma_mix() -> None:
+    rng = np.random.default_rng(2025)
+    samples = _synth_gamma_mixture(rng, size=5000)
+    hist, edges = np.histogram(samples, bins=40)
+    mids = 0.5 * (edges[:-1] + edges[1:])
+    specs = [
+        MixtureComponentSpec("gamma"),
+        MixtureComponentSpec("gamma"),
+    ]
+    result = fit_mixture_grouped(
+        mids,
+        hist,
+        specs,
+        max_iter=300,
+        tol=1e-4,
+        random_state=2025,
+    )
+    assert result.iterations > 0
+    weights = np.array([component.weight for component in result.components])
+    assert np.isclose(weights.sum(), 1.0)
+    assert np.all(weights > 0)
+    responsibilities = result.diagnostics.get("responsibilities")
+    assert isinstance(responsibilities, np.ndarray)
+    assert responsibilities.shape[0] == len(specs)
+    assert responsibilities.shape[1] == mids.size
+
+
 def test_fit_mixture_grouped_errors() -> None:
     specs = [MixtureComponentSpec("gamma")]
     with pytest.raises(ValueError):

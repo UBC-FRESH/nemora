@@ -18,6 +18,21 @@ in `nemora.distributions` and the shared dataclasses in `nemora.core`.
 
 Module-level functions return `FitResult` or `MixtureFitResult` instances from `nemora.core`.
 
+```python
+import numpy as np
+from nemora.distfit import MixtureComponentSpec, fit_mixture_grouped
+
+hist, edges = np.histogram(samples, bins=40)
+midpoints = 0.5 * (edges[:-1] + edges[1:])
+mixture = fit_mixture_grouped(
+    midpoints,
+    hist,
+    [MixtureComponentSpec("gamma"), MixtureComponentSpec("gamma")],
+    random_state=42,
+)
+print(mixture.components[0].weight)
+```
+
 ## API Reference
 
 ```{automodule} nemora.distfit

@@ -28,6 +28,8 @@ def test_grouped_johnsonsb_estimator_applied() -> None:
     assert result
     fit = result[0]
     assert fit.diagnostics.get("method") == "grouped-em"
+    assert "method_detail" in fit.diagnostics
+    assert "iterations" in fit.diagnostics
     assert fit.parameters["a"] > 0
     assert fit.parameters["b"] > 0
     assert fit.parameters["scale"] > 0
@@ -45,6 +47,7 @@ def test_grouped_birnbaum_saunders_estimator_applied() -> None:
     assert result
     fit = result[0]
     assert fit.diagnostics.get("method") in {"grouped-em", "grouped-mle"}
+    assert "method_detail" in fit.diagnostics
     assert fit.parameters["alpha"] > 0
     assert fit.parameters["beta"] > 0
 

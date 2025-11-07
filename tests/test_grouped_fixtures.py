@@ -75,6 +75,8 @@ def test_hps_psp_fixture_mle_mode_runs_grouped_solver() -> None:
     fit = results[0]
     assert fit.distribution == "weibull"
     assert fit.diagnostics.get("method") == "grouped-mle"
+    assert fit.diagnostics.get("mode") == "mle"
+    assert "iterations" in fit.diagnostics
     expected = {"a": 1.237159537064637, "beta": 8.154683291449842, "s": 69732.71124303175}
     for key, value in expected.items():
         assert fit.parameters[key] == pytest.approx(value, rel=1e-4)
