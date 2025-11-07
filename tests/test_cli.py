@@ -197,7 +197,13 @@ def test_ingest_faib_command_with_fetch(monkeypatch: pytest.MonkeyPatch, tmp_pat
     cache_dir = tmp_path / "cache"
     output = tmp_path / "out.csv"
 
-    def fake_download(destination: Path, dataset: str) -> list[Path]:
+    def fake_download(
+        destination: Path,
+        dataset: str,
+        *,
+        overwrite: bool = False,
+        filenames: list[str] | None = None,
+    ) -> list[Path]:
         destination.mkdir(parents=True, exist_ok=True)
         (destination / "faib_tree_detail.csv").write_text(
             "CLSTR_ID,VISIT_NUMBER,PLOT,DBH_CM,TREE_EXP\nA,1,1,12.0,2\n",
@@ -223,6 +229,7 @@ def test_ingest_faib_command_with_fetch(monkeypatch: pytest.MonkeyPatch, tmp_pat
             "psp",
             "--cache-dir",
             str(cache_dir),
+            "--overwrite",
             "--output",
             str(output),
         ],
@@ -230,6 +237,50 @@ def test_ingest_faib_command_with_fetch(monkeypatch: pytest.MonkeyPatch, tmp_pat
     assert result.exit_code == 0
     assert output.exists()
     df = pd.read_csv(output)
+    assert not df.empty
+
+
+def test_ingest_faib_auto_bafs(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    def fake_auto(root: Path) -> list[float]:
+        return [4.0, 8.0, 12.0]
+
+    monkeypatch.setattr("nemora.cli.auto_select_bafs", fake_auto)
+    result = runner.invoke(
+        app,
+        [
+            "ingest-faib",
+            str(tmp_path),
+            "--auto-bafs",
+        ],
+    )
+    assert result.exit_code == 0
+    assert "Suggested BAFs" in result.stdout
+
+
+def test_faib_manifest_command(tmp_path: Path) -> None:
+    fixtures = Path("tests/fixtures/faib")
+    destination = tmp_path / "manifest"
+
+    result = runner.invoke(
+        app,
+        [
+            "faib-manifest",
+            str(destination),
+            "--dataset",
+            "psp",
+            "--source",
+            str(fixtures),
+            "--no-fetch",
+            "--baf",
+            "12",
+            "--max-rows",
+            "10",
+        ],
+    )
+    assert result.exit_code == 0
+    manifest = destination / "faib_manifest.csv"
+    assert manifest.exists()
+    df = pd.read_csv(manifest)
     assert not df.empty
 
 

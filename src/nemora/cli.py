@@ -17,7 +17,13 @@ from rich.table import Table
 
 from . import __version__
 from .distributions import get_distribution, list_distributions
-from .ingest.faib import build_stand_table_from_csvs, download_faib_csvs
+from .ingest.faib import (
+    FAIBManifestResult,
+    auto_select_bafs,
+    build_stand_table_from_csvs,
+    download_faib_csvs,
+    generate_faib_manifest,
+)
 from .workflows.hps import fit_hps_inventory
 
 app = typer.Typer(help="Nemora distribution fitting CLI (distfit alpha).")
@@ -103,6 +109,21 @@ FAIB_FETCH_OPTION = typer.Option(
     show_default=True,
 )
 
+FAIB_MANIFEST_FETCH_OPTION = typer.Option(
+    True,
+    "--fetch/--no-fetch",
+    help="Download FAIB CSV files before building the manifest (defaults to fetch when no source).",
+    show_default=True,
+)
+
+FAIB_MANIFEST_DESTINATION_ARGUMENT = typer.Argument(
+    ...,
+    help="Directory where the FAIB manifest and stand tables will be written.",
+    file_okay=False,
+    dir_okay=True,
+    writable=True,
+)
+
 FAIB_DATASET_OPTION = typer.Option(
     "psp",
     "--dataset",
@@ -114,6 +135,49 @@ FAIB_CACHE_OPTION = typer.Option(
     None,
     "--cache-dir",
     help="Destination directory for downloaded FAIB files (defaults to root when omitted).",
+    show_default=False,
+)
+
+FAIB_OVERWRITE_OPTION = typer.Option(
+    False,
+    "--overwrite/--keep-existing",
+    help="Re-download FAIB CSV files even when present in the cache directory.",
+    show_default=True,
+)
+
+FAIB_AUTO_BAF_OPTION = typer.Option(
+    False,
+    "--auto-bafs/--no-auto-bafs",
+    help="Automatically select representative BAF values when generating stand tables.",
+    show_default=False,
+)
+
+FAIB_SOURCE_OPTION = typer.Option(
+    None,
+    "--source",
+    "-s",
+    help="Existing FAIB download directory (skip download when provided).",
+    show_default=False,
+)
+
+FAIB_BAFS_OPTION = typer.Option(
+    None,
+    "--baf",
+    help="Explicit BAF values to include (repeat for multiple).",
+    show_default=False,
+)
+
+FAIB_AUTO_COUNT_OPTION = typer.Option(
+    3,
+    "--auto-count",
+    help="Number of representative BAFs to suggest when --auto-bafs is enabled.",
+    show_default=True,
+)
+
+FAIB_MAX_ROWS_OPTION = typer.Option(
+    None,
+    "--max-rows",
+    help="Limit the number of rows kept in each stand table (default: keep all).",
     show_default=False,
 )
 
@@ -218,10 +282,14 @@ def fit_hps(  # noqa: B008
 @app.command("ingest-faib")
 def ingest_faib(  # noqa: B008
     root: Path = FAIB_ROOT_ARGUMENT,
-    baf: float = typer.Option(..., "--baf", help="Basal area factor to filter (e.g., 12)."),
+    baf: float = typer.Option(
+        12.0, "--baf", help="Basal area factor to filter (ignored when --auto-bafs is set)."
+    ),
     dataset: str = FAIB_DATASET_OPTION,
     fetch: bool = FAIB_FETCH_OPTION,
     cache_dir: Path | None = FAIB_CACHE_OPTION,
+    overwrite: bool = FAIB_OVERWRITE_OPTION,
+    auto_bafs: bool = FAIB_AUTO_BAF_OPTION,
     output: Path | None = FAIB_OUTPUT_OPTION,
 ) -> None:
     """Generate a stand table from local FAIB PSP extracts."""
@@ -229,17 +297,31 @@ def ingest_faib(  # noqa: B008
     if fetch:
         destination = cache_dir or root
         try:
-            downloaded = download_faib_csvs(destination, dataset=dataset)
+            downloaded = download_faib_csvs(destination, dataset=dataset, overwrite=overwrite)
         except Exception as exc:
             console.print(f"[red]Download failed:[/red] {exc}")
             raise typer.Exit(code=1) from exc
         target_root = destination
         console.print(
-            f"[green]Fetched[/green] {len(downloaded)} files to {destination} "
-            f"(dataset={dataset})"
+            f"[green]Prepared[/green] {len(downloaded)} files in {destination} "
+            f"(dataset={dataset}, overwrite={overwrite})"
         )
+    plot_file: str | None = None
+    plot_header = target_root / "faib_plot_header.csv"
+    if plot_header.exists():
+        plot_file = "faib_plot_header.csv"
+
+    if auto_bafs:
+        suggestions = auto_select_bafs(target_root)
+        console.print(
+            "[green]Suggested BAFs:[/green] "
+            + ", ".join(f"{value:.4f}" for value in suggestions)
+            + "\nUse `scripts/generate_faib_manifest.py --auto` to build a manifest."
+        )
+        raise typer.Exit()
+
     try:
-        stand_table = build_stand_table_from_csvs(target_root, baf)
+        stand_table = build_stand_table_from_csvs(target_root, baf, plot_file=plot_file)
     except Exception as exc:
         console.print(f"[red]Failed to build stand table:[/red] {exc}")
         raise typer.Exit(code=1) from exc
@@ -247,10 +329,69 @@ def ingest_faib(  # noqa: B008
     if output is not None:
         stand_table.to_csv(output, index=False)
         console.print(
-            f"[green]Stand table written[/green] {output} " f"(rows={len(stand_table)}, baf={baf})"
+            f"[green]Stand table written[/green] {output} (rows={len(stand_table)}, baf={baf})"
         )
     else:
         console.print(stand_table.head())
+
+
+@app.command("faib-manifest")
+def faib_manifest(  # noqa: B008
+    destination: Path = FAIB_MANIFEST_DESTINATION_ARGUMENT,
+    dataset: str = FAIB_DATASET_OPTION,
+    source: Path | None = FAIB_SOURCE_OPTION,
+    cache_dir: Path | None = FAIB_CACHE_OPTION,
+    fetch: bool = FAIB_MANIFEST_FETCH_OPTION,
+    overwrite: bool = FAIB_OVERWRITE_OPTION,
+    bafs: list[float] | None = FAIB_BAFS_OPTION,
+    auto_bafs: bool = FAIB_AUTO_BAF_OPTION,
+    auto_count: int = FAIB_AUTO_COUNT_OPTION,
+    max_rows: int | None = FAIB_MAX_ROWS_OPTION,
+) -> None:
+    """Fetch FAIB extracts, generate stand tables, and emit a manifest CSV."""
+
+    if auto_bafs and bafs:
+        console.print("[red]Specify either --auto-bafs or explicit --baf values, not both.[/red]")
+        raise typer.Exit(code=1)
+    if not fetch and source is None and cache_dir is None:
+        console.print(
+            "[red]No source directory provided and downloads disabled; nothing to ingest.[/red]"
+        )
+        raise typer.Exit(code=1)
+
+    effective_source = source or cache_dir
+    fetch_flag = fetch
+    if effective_source is None:
+        effective_source = destination / "raw"
+        effective_source.mkdir(parents=True, exist_ok=True)
+
+    try:
+        result: FAIBManifestResult = generate_faib_manifest(
+            destination,
+            dataset=dataset,
+            source=effective_source,
+            fetch=fetch_flag,
+            overwrite=overwrite,
+            bafs=bafs,
+            auto_count=auto_count if auto_bafs else None,
+            max_rows=max_rows,
+        )
+    except Exception as exc:  # noqa: BLE001
+        console.print(f"[red]Failed to build manifest:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+
+    if result.downloaded:
+        console.print(
+            f"[green]Downloaded[/green] {len(result.downloaded)} files to "
+            f"{result.downloaded[0].parent} (dataset={dataset}, overwrite={overwrite})"
+        )
+    console.print(
+        "[green]Manifest generated:[/green] "
+        f"{result.manifest_path} (BAFs={', '.join(f'{b:.4f}' for b in result.bafs)})"
+    )
+    for table in result.tables:
+        status = "truncated" if result.truncated_flags.get(table, False) else "full"
+        console.print(f"  • {table.name} ({status})")
 
 
 def main_entry() -> None:

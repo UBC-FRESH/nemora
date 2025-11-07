@@ -35,6 +35,8 @@ BC_FAIB_SOURCE = DatasetSource(
             "Public FAIB portal; subsample by BAF/prism size as needed. "
             "Bulk downloads also available via FTP under "
             "ftp://ftp.for.gov.bc.ca/HTS/external/!publish/ground_plot_compilations/psp/"
+            " and the companion web interface at "
+            "https://bcgov-env.shinyapps.io/FAIB_GROUND_SAMPLE/."
         )
     },
     fetcher=fetch_bc_faib,
@@ -79,7 +81,23 @@ the FTP path above. Include these files in ingest documentation so analysts can
 interpret column names (`faib_plot_header.csv`, `faib_tree_detail.csv`, etc.).
 The non-PSP directory mirrors the structure (see
 `ftp://ftp.for.gov.bc.ca/HTS/external/!publish/ground_plot_compilations/non_psp/`
-and `non_PSP_data_dictionary_20250514.xlsx`).
+and `non_PSP_data_dictionary_20250514.xlsx`). These spreadsheets map column
+codes to descriptions; keep a local copy alongside any downloads so analysts can
+interpret FAIB variable names when building pipelines.
+
+.. note::
+
+   The FAIB team confirmed the portal data is fully public and can be
+   redistributed. For bulk processing the FTP endpoints above are faster and
+   expose the complete PSP, CMI, NFI, and YSM compilations (hundreds of megabytes
+   per table). Nemora stores fetched CSVs under `data/external/faib/`, which is
+   already `.gitignore`-d; treat that directory as a local cache and avoid
+   committing the raw extracts.
+
+   During rapid iteration you can limit downloads to specific files by passing
+   `filenames=["faib_plot_header.csv"]` to :func:`nemora.ingest.faib.download_faib_csvs`
+   so that small metadata tables can be fetched without transferring the
+   multi-hundred-megabyte tree detail extracts.
 ```
 
 Running `pipeline.run(raw_frame)` applies the configured steps sequentially—
@@ -102,9 +120,33 @@ nemora ingest-faib tests/fixtures/faib --baf 12 --output stand_table.csv
 
 # Fetch PSP extracts and write output
 nemora ingest-faib data/external/faib --baf 12 --fetch --dataset psp --output stand_table.csv
+# Force a fresh download (overwrite cached files) before building the stand table
+nemora ingest-faib data/external/faib --baf 12 --fetch --overwrite --output stand_table.csv
+# Preview suggested BAF values and exit without generating a table
+nemora ingest-faib data/external/faib --auto-bafs --fetch --dataset psp
+
+# Fetch extracts, auto-select BAFs, and generate a manifest + stand tables
+nemora faib-manifest data/external/faib/manifest_psp --auto-bafs --auto-count 3
+# Reuse an existing download, skip fetch, and limit each stand table to 200 rows
+nemora faib-manifest examples/faib_manifest --source tests/fixtures/faib --no-fetch --baf 12 --max-rows 200
 
 # Generate trimmed fixtures + manifest (used in tests)
 python scripts/generate_faib_manifest.py examples/faib_manifest --dataset psp
+# Auto-select representative BAF values before generating the manifest
+python scripts/generate_faib_manifest.py examples/faib_manifest --dataset psp --auto
+# Limit stand tables to the first 200 rows when exporting the manifest samples
+python scripts/generate_faib_manifest.py examples/faib_manifest --dataset psp --auto --max-rows 200
+
+# Aggregate an FIA stand table (prototype) using local CSV extracts
+python - <<'PY'
+from nemora.ingest.fia import build_stand_table_from_csvs
+
+table = build_stand_table_from_csvs(
+    "data/external/fia/raw",
+    plot_cn=47825253010497,
+)
+print(table.head())
+PY
 ```
 
 The command expects pre-downloaded FAIB CSV extracts; future versions will
@@ -115,5 +157,22 @@ bundle fetch/caching logic.
 The repository contains a trimmed PSP example generated with
 `scripts/generate_faib_manifest.py` under `examples/faib_manifest/`.
 The manifest (`faib_manifest.csv`) lists each stand-table CSV (e.g.,
-`stand_table_baf12.csv`) alongside the BAF and row count so tests and
-documentation can reference a lightweight sample of the full FAIB release.
+`stand_table_baf12.csv`) alongside the BAF, row count, and a `truncated` flag so
+tests and documentation can reference a lightweight sample of the full FAIB
+release. Re-run the script with `--max-rows` to regenerate the samples from a
+larger local cache without bloating the repository.
+
+The CLI and script both call :func:`nemora.ingest.faib.generate_faib_manifest`,
+which orchestrates downloads, BAF selection, stand-table aggregation, and
+manifest creation. The helper returns the manifest path, generated table paths,
+and any files downloaded so automated workflows can inspect the output.
+
+## FIA prototype
+
+Nemora includes early helpers for USDA FIA CSV extracts
+(:mod:`nemora.ingest.fia`). The :func:`nemora.ingest.fia.build_stand_table_from_csvs`
+function joins ``TREE``/``COND``/``PLOT`` tables, filters live
+trees/conditions, converts DBH to centimetres, and aggregates stand tables
+weighted by ``TPA_UNADJ`` and condition proportions. These utilities are the
+first step toward a full FIA ingest pipeline; use them to validate schema joins
+on downloaded samples while additional ETL automation is being planned.

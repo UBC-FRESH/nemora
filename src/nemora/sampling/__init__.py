@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import numbers
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from typing import Literal
@@ -102,11 +103,17 @@ def sample_mixture_fit(
     fit: MixtureFitResult,
     size: int,
     *,
-    random_state: np.random.Generator | None = None,
+    random_state: np.random.Generator | int | None = None,
 ) -> np.ndarray:
     """Sample from a :class:`MixtureFitResult`."""
-    rng = random_state or np.random.default_rng()
-    return distfit_sample_mixture(size, fit.components, random_state=rng)
+    seed: int | None
+    if isinstance(random_state, np.random.Generator):
+        seed = int(random_state.integers(0, 2**32, dtype=np.uint64))
+    elif isinstance(random_state, numbers.Integral):
+        seed = int(random_state)
+    else:
+        seed = None
+    return distfit_sample_mixture(size, fit.components, random_state=seed)
 
 
 def bootstrap_inventory(

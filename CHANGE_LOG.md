@@ -96,3 +96,43 @@
 - Added FAIB ingest helpers (`load_psp_dictionary`, `load_non_psp_dictionary`, `aggregate_stand_table`) with regression coverage to transform tree detail tables into Nemora stand tables.
 - Wired a minimal FAIB ingest pipeline: `build_stand_table_from_csvs`, FTP download helper, CLI command (`nemora ingest-faib --fetch`), and fixtures/tests demonstrating BAF-filtered stand tables sourced from FAIB extracts.
 - Added `scripts/generate_faib_manifest.py` and checked in trimmed PSP fixtures/manifest for regression tests and documentation examples.
+- Enhanced FAIB helpers to infer DBH/BAF columns from the raw PSP releases, enabling real-data downloads (`download_faib_csvs`) and BAF-specific stand tables for stress testing (manifest stored under `data/external/faib/manifest_psp`).
+- Added automatic BAF selection helpers (`auto_select_bafs`), CLI support (`--auto-bafs`), and manifest tooling (`scripts/generate_faib_manifest.py --auto`) to simplify generating representative FAIB samples for stress testing.
+
+## 2025-11-07 — Full PSP dataset fetch for stress testing
+
+- Downloaded the complete FAIB PSP CSV bundle into `data/external/faib/full_psp/raw` using `scripts/generate_faib_manifest.py`, ensuring a clean cache that mirrors the public FTP release (∼224 MB of tree detail plus plot metadata).
+- Built six large stand tables for the most common BAF values (`12.341247`, `24.702679`, `9.846248`, `25.016810`, `12.354409`, `10.001391`), preserving them under descriptive filenames (e.g., `stand_table_baf12_341247.csv`) alongside an updated manifest with row counts ranging from 124–172 diameter classes.
+- Verified the new datasets by fitting the grouped distfit workflow against `stand_table_baf12_341247.csv` (`nemora fit-hps --baf 12.341247`) and confirmed Weibull remains the preferred model with stable diagnostics, providing a ready-made stress corpus for future solver profiling and mixture experiments.
+
+## 2025-11-07 — FAIB ingest caching & manifest tooling
+
+- Hardened `nemora.ingest.faib` by coercing numeric columns safely, adding overwrite-aware FTP caching with `.part` downloads, and supporting per-file fetches for lightweight testing; the Typer CLI now exposes `--overwrite/--keep-existing` so analysts can refresh local caches intentionally.
+- Extended `scripts/generate_faib_manifest.py` with `--max-rows` truncation and a `truncated` manifest column, refreshed the checked-in PSP sample, and documented the workflow for regenerating larger slices without bloating the repository.
+- Expanded ingestion docs (`docs/howto/ingest.md`) and `notes/ingest_pipeline_outline.md` with FAIB portal + FTP guidance, caching caveats, and next-step automation tasks; roadmap and modular reorg notes updated to reflect FAIB milestones and pending automation work.
+- Added an env-gated FTP integration test, registered a reusable `network` pytest marker, strengthened CLI/unit coverage for the new flags, and tweaked `sample_mixture_fit` seeding so `mypy` continues to pass alongside the ingest updates.
+- Tooling run: `ruff format src tests scripts`, `ruff check src tests scripts`, `mypy src`, `pytest`.
+
+## 2025-11-07 — FAIB manifest automation
+
+- Added `generate_faib_manifest` and `FAIBManifestResult` to orchestrate FAIB fetch → stand-table aggregation → manifest export with optional BAF auto-selection, row truncation, and overwrite-safe caching; CLI now offers `nemora faib-manifest` with matching controls.
+- Refactored `scripts/generate_faib_manifest.py` to call the shared API (BooleanOptional flags, auto-count, row limits) and updated docs/notes to highlight the end-to-end pipeline and automation status.
+- Expanded regression coverage: new unit test for the manifest helper, Typer smoke test for `faib-manifest`, and pytest marker integration carried forward; refreshed PSP sample manifest to include the new schema.
+- Tooling run: `ruff format src tests scripts`, `ruff check src tests scripts`, `mypy src`, `pytest`.
+
+## 2025-11-07 — Planning updates for ingest & sampling
+
+- Captured FIA ingest scoping requirements in `notes/fia_ingest_scoping.md`, outlining data sources, schema needs, and action items for the upcoming connector.
+- Drafted `notes/sampling_module_plan.md` to chart analytic inversion, numeric integration, and bootstrap enhancements for the sampling module; cross-referenced plan within the modular reorg document and roadmap.
+- Updated roadmap detailed notes to point at the new planning docs so Phase 2 sequencing stays aligned.
+
+## 2025-11-07 — FIA sample acquisition
+
+- Downloaded Hawaii FIA tables (`HI_TREE.csv`, `HI_PLOT.csv`, `HI_COND.csv`) into `data/external/fia/raw/` and documented join keys, DBH units, expansion factors, and condition proportions in `notes/fia_ingest_scoping.md`.
+- Updated the roadmap to note the completed FIA scoping step and queued follow-up work to prototype the plot/cond/tree aggregation logic.
+
+## 2025-11-07 — FIA stand-table prototype
+
+- Added `nemora.ingest.fia` with helpers to load TREE/COND/PLOT CSV extracts, convert DBH to centimetres, weight tallies by `TPA_UNADJ` and condition proportions, and aggregate per-plot stand tables; included unit tests covering aggregation and CSV loading paths.
+- Wired the FIA module into the ingest namespace, refreshed the ingest how-to with example usage, and expanded the pipeline outline to track upcoming FIA regression fixtures and automation.
+- Test suite: `ruff format src tests`, `ruff check src tests`, `mypy src`, `pytest`.

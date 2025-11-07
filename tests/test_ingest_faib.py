@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import pandas as pd
@@ -8,8 +9,10 @@ from nemora.ingest.faib import (
     PSP_DICTIONARY_URL,
     DataDictionary,
     aggregate_stand_table,
+    auto_select_bafs,
     build_stand_table_from_csvs,
     download_faib_csvs,
+    generate_faib_manifest,
     load_data_dictionary,
     load_non_psp_dictionary,
     load_psp_dictionary,
@@ -20,8 +23,26 @@ def test_manifest_records_exist() -> None:
     manifest_path = Path("examples/faib_manifest/faib_manifest.csv")
     manifest = pd.read_csv(manifest_path)
     assert not manifest.empty
+    assert {"dataset", "baf", "rows", "path", "truncated"} <= set(manifest.columns)
     for rel_path in manifest["path"]:
         assert (manifest_path.parent / rel_path).exists()
+
+
+def test_auto_select_bafs_prefers_plot_header(tmp_path: Path) -> None:
+    root = tmp_path
+    plot_header = pd.DataFrame(
+        {
+            "CLSTR_ID": ["A", "B", "C", "D"],
+            "VISIT_NUMBER": [1, 1, 1, 1],
+            "PLOT": [1, 1, 1, 1],
+            "BLOWUP_MAIN": [10.0, 12.0, 20.0, 40.0],
+        }
+    )
+    plot_header.to_csv(root / "faib_plot_header.csv", index=False)
+    bafs = auto_select_bafs(root, count=3)
+    assert len(bafs) == 3
+    assert min(bafs) >= 10.0
+    assert max(bafs) <= 40.0
 
 
 def test_load_data_dictionary_from_local(tmp_path: Path) -> None:
@@ -72,6 +93,21 @@ def test_aggregate_stand_table() -> None:
             "TREE_EXP": [3.0, 2.0, 4.0],
         }
     )
+    tree_detail = pd.concat(
+        [
+            tree_detail,
+            pd.DataFrame(
+                {
+                    "CLSTR_ID": ["A"],
+                    "VISIT_NUMBER": [1],
+                    "PLOT": [1],
+                    "DBH_CM": ["30.6"],
+                    "TREE_EXP": ["1.5"],
+                }
+            ),
+        ],
+        ignore_index=True,
+    )
     sample_byvisit = pd.DataFrame(
         {
             "CLSTR_ID": ["A", "B"],
@@ -82,8 +118,8 @@ def test_aggregate_stand_table() -> None:
     )
 
     stand_table = aggregate_stand_table(tree_detail, sample_byvisit, baf=12.0)
-    assert list(stand_table["dbh_cm"]) == [12.0, 25.0]
-    assert list(stand_table["tally"]) == [3.0, 2.0]
+    assert list(stand_table["dbh_cm"]) == [12.0, 25.0, 31.0]
+    assert list(stand_table["tally"]) == [3.0, 2.0, 1.5]
 
     empty = aggregate_stand_table(tree_detail, sample_byvisit, baf=20.0)
     assert empty.empty
@@ -96,41 +132,71 @@ def test_build_stand_table_from_csvs(tmp_path: Path) -> None:
 
 
 def test_download_faib_csvs(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    listing = (
-        b"05-01-25  09:00AM  12345 faib_tree_detail.csv\n"
-        b"05-01-25  09:00AM  67890 faib_sample_byvisit.csv\n"
-        b"05-01-25  09:00AM  11111 readme.txt\n"
-    )
+    files = ["faib_tree_detail.csv", "faib_sample_byvisit.csv", "readme.txt"]
     file_data = {
         "faib_tree_detail.csv": b"CLSTR_ID,VISIT_NUMBER,PLOT,DBH_CM,TREE_EXP\nA,1,1,12,2\n",
         "faib_sample_byvisit.csv": b"CLSTR_ID,VISIT_NUMBER,PLOT,BAF\nA,1,1,12\n",
     }
 
-    class FakeResponse:
-        def __init__(self, data: bytes) -> None:
-            self._data = data
+    class FakeFTP:
+        def __init__(self, *args, **kwargs) -> None:
+            self.cwd_path: str | None = None
 
-        def read(self) -> bytes:
-            return self._data
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc, tb) -> None:
+        def connect(self, hostname: str, port: int = 21) -> None:
             return None
 
-    urls_requested: list[str] = []
+        def login(self) -> None:
+            return None
 
-    def fake_urlopen(url: str, *args, **kwargs):
-        urls_requested.append(url)
-        if url.endswith("psp/"):
-            return FakeResponse(listing)
-        name = url.split("/")[-1]
-        return FakeResponse(file_data.get(name, b""))
+        def cwd(self, path: str) -> None:
+            self.cwd_path = path
 
-    monkeypatch.setattr("nemora.ingest.faib.urlopen", fake_urlopen)
+        def nlst(self) -> list[str]:
+            return files
+
+        def retrbinary(self, command: str, callback) -> None:
+            name = command.split()[-1]
+            callback(file_data.get(name, b""))
+
+        def quit(self) -> None:
+            return None
+
+    monkeypatch.setattr("nemora.ingest.faib.FTP", FakeFTP)
 
     downloaded = download_faib_csvs(tmp_path, dataset="psp")
     assert len(downloaded) == 2
     assert (tmp_path / "faib_tree_detail.csv").exists()
-    assert urls_requested[0].endswith("psp/")
+
+
+@pytest.mark.network
+@pytest.mark.skipif(
+    not os.environ.get("NEMORA_RUN_FAIB_INTEGRATION"),
+    reason="Set NEMORA_RUN_FAIB_INTEGRATION=1 to exercise live FAIB FTP download.",
+)
+def test_download_faib_csvs_integration(tmp_path: Path) -> None:
+    files = download_faib_csvs(
+        tmp_path,
+        dataset="psp",
+        filenames=["faib_plot_header.csv"],
+        overwrite=True,
+    )
+    assert any(path.name == "faib_plot_header.csv" for path in files)
+    assert (tmp_path / "faib_plot_header.csv").exists()
+
+
+def test_generate_faib_manifest(tmp_path: Path) -> None:
+    destination = tmp_path / "manifest"
+    fixtures = Path("tests/fixtures/faib")
+    result = generate_faib_manifest(
+        destination,
+        dataset="psp",
+        source=fixtures,
+        fetch=False,
+        bafs=[12.0],
+        max_rows=10,
+    )
+    assert result.manifest_path.exists()
+    assert len(result.tables) == 1
+    assert result.tables[0].exists()
+    manifest = pd.read_csv(result.manifest_path)
+    assert set(manifest.columns) == {"dataset", "baf", "rows", "path", "truncated"}

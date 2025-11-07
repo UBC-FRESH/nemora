@@ -57,7 +57,11 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 1. **Phase 2 Kickoff — Ingest module design**
    - [x] Finalise `DatasetSource` / `TransformPipeline` abstractions in `notes/nemora_modular_reorg_plan.md`.
    - [x] Stub `nemora/ingest/__init__.py` and outline initial pipeline modules.
-   - [ ] Prepare BC FAIB/FIA fixture manifests for integration tests.
+   - [x] Prepare BC FAIB fixture manifests for integration tests (`examples/faib_manifest`, CLI).
+   - [x] Automate FAIB fetch → manifest → stand-table ETL flow (cache management, CLI integration test).
+   - [x] Schedule FIA dataset scoping session once FAIB automation is stable (`notes/fia_ingest_scoping.md` drafted; HI sample downloaded to `data/external/fia/raw` for schema review).
+   - [ ] Trim FIA HI sample into test fixtures (`tests/fixtures/fia/`) and wire ingest tests to use them.
+   - [ ] Build FIA CLI/ETL workflow (state + filters) once fixtures/regression harness are in place.
 2. **Sampling module prototypes**
    - [ ] Draft numeric/analytic PDF→CDF inversion helpers in notebooks.
    - [ ] Specify bootstrap/Monte Carlo API surface to align with distfit outputs.

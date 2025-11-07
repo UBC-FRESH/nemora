@@ -42,17 +42,17 @@ src/nemora/
    - [x] Publish alpha documentation (module overview + API reference) and update README.
 
 4. **Ingestion / ETL (`nemora.ingest`) – Phase 2 kickoff**
-   - [ ] Audit current scripts for reusable ETL logic.
+   - [x] Audit current scripts for reusable ETL logic (manifest generator, CLI wiring).
    - [ ] Design `DatasetSource`, `RecordBatch`, `TransformPipeline` abstractions aligned with `nemora.core`.
-   - [ ] Implement key connectors (BC FAIB, FIA, etc.), add CLI helpers, and unit/integration tests against sample raw datasets. *(Stand-table aggregation + FTP fetch + CLI in place; manifest/export tasks outstanding.)*
-   - [ ] Verify FTP access to FAIB PSP/non-PSP datasets and capture download instructions/DataLad strategy.
-   - [ ] Parse FAIB PSP/non-PSP data dictionaries (XLSX) and surface schema metadata for ingest docs/tests.
+   - [ ] Implement key connectors (BC FAIB, FIA, etc.), add CLI helpers, and unit/integration tests against sample raw datasets. *(FAIB fetch + manifest CLI landed; FIA prototype helper committed; next: fixtures + CLI automation.)*
+   - [x] Verify FTP access to FAIB PSP/non-PSP datasets and capture download instructions/DataLad strategy (caching helpers + env-gated integration test).
+   - [x] Parse FAIB PSP/non-PSP data dictionaries (XLSX) and surface schema metadata for ingest docs/tests.
    - [ ] Flesh out FAIB ingest pipeline per `notes/ingest_pipeline_outline.md` (fetch, transform, output).
 
 5. **Sampling engine (`nemora.sampling`)**
    - [x] Catalogue existing sampling utilities (mixtures, truncated normals, etc.) and migrate next.
    - [x] Provide PDF → CDF inversion (analytic + numeric), bootstrap/Monte Carlo generators, and integrate with the central distribution registry.
-   - [ ] Benchmark accuracy and ensure compatibility with `distfit` outputs.
+   - [ ] Benchmark accuracy and ensure compatibility with `distfit` outputs. *(See `notes/sampling_module_plan.md` for detailed roadmap.)*
 
 6. **Synthetic forest generation (`nemora.synthforest`)**
    - [ ] Define landscape/stem data models, leveraging `distributions` + `sampling`.

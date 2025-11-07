@@ -68,6 +68,9 @@ packages = ["src/nemora"]
 minversion = "7.0"
 addopts = "-ra --cov=nemora --cov-report=term-missing"
 testpaths = ["tests"]
+markers = [
+  "network: requires network access to public FAIB endpoints",
+]
 
 [tool.coverage.run]
 branch = true

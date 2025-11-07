@@ -1,7 +1,7 @@
 # FAIB Ingest Pipeline Outline
 
 Date: 2025-11-07
-Status: In progress — stand-table aggregation, FTP fetch helper, CLI stub, and sample manifest committed; fetch automation + caching enhancements still pending.
+Status: In progress — stand-table aggregation, FTP fetch helper (with overwrite-safe caching), CLI manifest automation, and sample manifests committed; large-sample orchestration + downstream harmonisation still pending.
 
 ## Objectives
 
@@ -13,24 +13,28 @@ Status: In progress — stand-table aggregation, FTP fetch helper, CLI stub, and
 
 1. **Fetch**
    - Use `DatasetSource(fetcher=...)` to download `faib_plot_header`, `faib_sample_byvisit`, `faib_tree_detail`, etc.
-   - Cache zipped artifacts under `data/external/faib/`.
+   - Cache CSV extracts under `data/external/faib/` (gitignored) and support overwrite-safe refreshes via `.part` temp files.
+   - ✅ `generate_faib_manifest` now wraps `download_faib_csvs`, enabling automated fetch + manifest creation via CLI/script.
+   - ✅ FIA prototype helper aggregates `TREE`/`COND`/`PLOT` tables into stand tables (plot CN filter, DBH conversion).
 
 2. **Transform**
    - Join headers and sample metadata by `(CLSTR_ID, VISIT_NUMBER, PLOT)`.
    - Filter PSP visits (`SAMP_TYP` codes) and compute per-tree expansion factors.
    - Bin DBH to centimetre midpoints, then aggregate tallies by BAF.
-   - Produce manifest files summarising dataset metadata (region, plot count, BAF).
+   - Produce manifest files summarising dataset metadata (region, plot count, BAF, truncation flags).
 
 3. **Output**
    - Write per-plot CSVs under `examples/faib_psp_baf{N}/`.
-   - Emit a tidy stand-table parquet for fast analytics.
+   - Emit a tidy stand-table parquet for fast analytics (TODO; current pipeline writes CSV + manifest).
 
 ## Tests
 
 - Unit tests covering join logic, DBH binning, and BAF subsampling using small CSV fixtures.
-- Integration test (optional skip) that downloads a tiny slice via FTP to ensure schema alignment.
+- Integration test (optional skip) that downloads a tiny slice via FTP to ensure schema alignment (pending).
+- CLI smoke test added for `nemora faib-manifest`; extend with end-to-end download once CI policy confirmed.
+- Add regression harness for FIA aggregation once trimmed fixtures are authored (TODO).
 
 ## Documentation
 
-- Expand `docs/howto/ingest.md` once the pipeline is implemented.
-- Add CLI usage examples (`nemora ingest faib --baf 12`).
+- Expand `docs/howto/ingest.md` (updated with FAIB portal/FTP notes, `--overwrite`, and `--max-rows`; add full pipeline walkthrough once ETL lands).
+- Add CLI usage examples (`nemora ingest-faib --fetch --overwrite`) showing cache management (done).
