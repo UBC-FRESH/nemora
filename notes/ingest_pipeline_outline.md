@@ -1,7 +1,7 @@
 # FAIB Ingest Pipeline Outline
 
 Date: 2025-11-07
-Status: In progress — stand-table aggregation, FTP fetch helper, and CLI stub implemented; manifest/export tasks still pending.
+Status: In progress — stand-table aggregation, FTP fetch helper, CLI stub, and sample manifest committed; fetch automation + caching enhancements still pending.
 
 ## Objectives
 

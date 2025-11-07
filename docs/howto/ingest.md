@@ -109,3 +109,11 @@ python scripts/generate_faib_manifest.py examples/faib_manifest --dataset psp
 
 The command expects pre-downloaded FAIB CSV extracts; future versions will
 bundle fetch/caching logic.
+
+## Repository sample
+
+The repository contains a trimmed PSP example generated with
+`scripts/generate_faib_manifest.py` under `examples/faib_manifest/`.
+The manifest (`faib_manifest.csv`) lists each stand-table CSV (e.g.,
+`stand_table_baf12.csv`) alongside the BAF and row count so tests and
+documentation can reference a lightweight sample of the full FAIB release.
