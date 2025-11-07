@@ -46,6 +46,7 @@ src/nemora/
    - [ ] Design `DatasetSource`, `RecordBatch`, `TransformPipeline` abstractions aligned with `nemora.core`.
    - [ ] Implement key connectors (BC FAIB, FIA, etc.), add CLI helpers, and unit/integration tests against sample raw datasets.
    - [ ] Verify FTP access to FAIB PSP/non-PSP datasets and capture download instructions/DataLad strategy.
+   - [ ] Parse FAIB PSP/non-PSP data dictionaries (XLSX) and surface schema metadata for ingest docs/tests.
 
 5. **Sampling engine (`nemora.sampling`)**
    - [x] Catalogue existing sampling utilities (mixtures, truncated normals, etc.) and migrate next.

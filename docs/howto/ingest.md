@@ -77,6 +77,9 @@ FAIB publishes companion Excel data dictionaries alongside each compilation.
 For example, the PSP release exposes `PSP_data_dictionary_20250514.xlsx` under
 the FTP path above. Include these files in ingest documentation so analysts can
 interpret column names (`faib_plot_header.csv`, `faib_tree_detail.csv`, etc.).
+The non-PSP directory mirrors the structure (see
+`ftp://ftp.for.gov.bc.ca/HTS/external/!publish/ground_plot_compilations/non_psp/`
+and `non_PSP_data_dictionary_20250514.xlsx`).
 ```
 
 Running `pipeline.run(raw_frame)` applies the configured steps sequentially—
