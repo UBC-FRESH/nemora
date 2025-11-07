@@ -55,8 +55,8 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 
 ## Detailed Next Steps Notes
 1. **Phase 2 Kickoff — Ingest module design**
-   - [ ] Finalise `DatasetSource` / `TransformPipeline` abstractions in `notes/nemora_modular_reorg_plan.md`.
-   - [ ] Stub `nemora/ingest/__init__.py` and outline initial pipeline modules.
+   - [x] Finalise `DatasetSource` / `TransformPipeline` abstractions in `notes/nemora_modular_reorg_plan.md`.
+   - [x] Stub `nemora/ingest/__init__.py` and outline initial pipeline modules.
    - [ ] Prepare BC FAIB/FIA fixture manifests for integration tests.
 2. **Sampling module prototypes**
    - [ ] Draft numeric/analytic PDF→CDF inversion helpers in notebooks.

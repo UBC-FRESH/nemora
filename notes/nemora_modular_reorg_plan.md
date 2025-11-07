@@ -33,7 +33,7 @@ src/nemora/
 2. **Central distributions registry (`nemora.distributions`)**
    - [x] Extract canonical distribution metadata/registration logic from current code.
    - [x] Expose shared APIs so ingest, distfit, sampling, and synthforest can consume consistent definitions.
-   - [ ] Document extension points for user-supplied distributions.
+   - [x] Document extension points for user-supplied distributions.
 
 3. **Distribution fitting (`nemora.distfit`) – Alpha delivered**
    - [x] Move existing fitting, grouped estimators, and mixture utilities into dedicated subpackage.
