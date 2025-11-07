@@ -53,7 +53,6 @@ html_css_files = [
 
 autosummary_generate = True
 autodoc_typehints = "description"
-# html_baseurl = "https://nemora.readthedocs.io/en/latest/"
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),

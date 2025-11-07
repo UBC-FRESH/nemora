@@ -74,3 +74,10 @@
 - Documented the distfit alpha API with field-level docstrings on `FitConfig`, `_curve_fit_distribution`, `fit_with_lmfit`, and `fit_inventory`; verified notebooks no longer import `nemora.fitting` and re-ran `pytest tests/test_distfit_module.py` to keep coverage green.
 - Tightened grouped EM coverage (docstrings plus diagnostics assertions in `tests/test_grouped*.py`) and expanded mixture regression tests/documentation to confirm `fit_mixture_grouped`/`fit_mixture_samples` operate under the new namespace.
 - Updated documentation links to favour the new `nemora.readthedocs.io` domain and set `html_baseurl` in `docs/conf.py` so Sphinx advertises the correct canonical URL.
+
+## 2025-11-07 — CLI messaging & namespace audit
+
+- Updated the Typer app banner to clarify that the current CLI focuses on the distfit alpha milestone, and tuned the `README` quickstart note so contributors know where to find the commands.
+- Re-ran the CLI regression suite (`pytest tests/test_cli.py`) to confirm the help messaging change does not impact behaviour.
+- Audited all notebooks and examples for stale `nemora.fitting`/`dbhdistfit` imports; none remain after the namespace migration.
+- Normalised `FitResult.diagnostics` across solvers by tagging the optimisation method (`curve-fit`, `lmfit-model`, grouped modes) and extended the distfit docs/test suite to cover the new metadata contract.

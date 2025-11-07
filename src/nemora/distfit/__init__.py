@@ -249,6 +249,8 @@ def _curve_fit_distribution(
         "fitted": fitted,
         "residuals": residuals,
         "residual_summary": _residual_summary(residuals),
+        "method": "curve-fit",
+        "weights": config.weights,
     }
     return FitResult(
         distribution=distribution.name,
@@ -316,6 +318,8 @@ def fit_with_lmfit(
             "fitted": fitted,
             "residuals": residuals,
             "residual_summary": _residual_summary(residuals),
+            "method": "lmfit-model",
+            "weights": weights,
         },
     )
 

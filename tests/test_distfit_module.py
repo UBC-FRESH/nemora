@@ -40,3 +40,4 @@ def test_fit_inventory_returns_fit_results() -> None:
     assert fit.parameters["beta"] > 0
     assert fit.parameters["p"] > 0
     assert fit.gof["rss"] >= 0
+    assert fit.diagnostics.get("method") == "curve-fit"

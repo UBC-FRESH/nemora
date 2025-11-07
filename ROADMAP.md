@@ -12,11 +12,11 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
   registry, migrated fitting stack into `nemora.distfit`, added compatibility shims.
 
 ## Phase 1 — Distribution Fitting Alpha 🚧 (in progress, target: next 1–2 days)
-- [ ] Finalise `nemora.distfit` alpha API (grouped EM, mixtures, goodness-of-fit).
-- [ ] Expand distfit unit tests (fixtures, CLI regressions, coverage gating).
-- [ ] Publish module overview + API reference; update README/CLI help.
-- [ ] Verify notebooks/examples reference the new namespace.
-- [ ] Cut changelog entry announcing distfit alpha and note breaking import changes.
+- [x] Finalise `nemora.distfit` alpha API (grouped EM, mixtures, goodness-of-fit).
+- [x] Expand distfit unit tests (fixtures, CLI regressions, coverage gating).
+- [x] Publish module overview + API reference; update README/CLI help.
+- [x] Verify notebooks/examples reference the new namespace.
+- [x] Cut changelog entry announcing distfit alpha and note breaking import changes.
 
 ## Phase 2 — Core Module Expansion (sequenced after distfit alpha)
 - `nemora.distributions`

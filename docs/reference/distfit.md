@@ -15,6 +15,9 @@ in `nemora.distributions` and the shared dataclasses in `nemora.core`.
   (`grouped-ls`, `grouped-em`, `grouped-mle`).
 - **Mixture utilities** (`fit_mixture_grouped`, `fit_mixture_samples`, `mixture_pdf`, `mixture_cdf`,
   `sample_mixture`) support finite mixtures with grouped tallies or sample-level data.
+- All fitted results include a `diagnostics["method"]` entry (`curve-fit`, `lmfit-model`,
+  `grouped-ls`, `grouped-mle`, …) plus residual summaries and per-fit metadata for downstream
+  reporting.
 
 Module-level functions return `FitResult` or `MixtureFitResult` instances from `nemora.core`.
 

@@ -19,7 +19,7 @@ from . import __version__
 from .distributions import get_distribution, list_distributions
 from .workflows.hps import fit_hps_inventory
 
-app = typer.Typer(help="DBH distribution fitting toolkit.")
+app = typer.Typer(help="Nemora distribution fitting CLI (distfit alpha).")
 console = Console()
 
 DBH_FILE_ARGUMENT = typer.Argument(

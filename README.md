@@ -83,7 +83,7 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
 pre-commit install
-nemora --help  # CLI smoke test (currently focused on fitting workflows)
+nemora --help  # CLI smoke test (distfit alpha commands live here)
 ```
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for coding standards, testing expectations, and review
