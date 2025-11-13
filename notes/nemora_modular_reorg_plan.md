@@ -42,12 +42,12 @@ src/nemora/
    - [x] Publish alpha documentation (module overview + API reference) and update README.
 
 4. **Ingestion / ETL (`nemora.ingest`) – Phase 2 kickoff**
-- [x] Audit current scripts for reusable ETL logic (manifest generator, CLI wiring).
-- [x] Design `DatasetSource`, `RecordBatch`, `TransformPipeline` abstractions aligned with `nemora.core`.
-- [ ] Implement key connectors (BC FAIB, FIA, etc.), add CLI helpers, and unit/integration tests against sample raw datasets. *(FAIB fetch + manifest CLI landed; FIA helper + CLI shipping; next: fold FAIB manifest/stand-table into pipelines and expand integration coverage.)*
-- [x] Verify FTP access to FAIB PSP/non-PSP datasets and capture download instructions/DataLad strategy (caching helpers + env-gated integration test).
-- [x] Parse FAIB PSP/non-PSP data dictionaries (XLSX) and surface schema metadata for ingest docs/tests.
-- [ ] Flesh out FAIB ingest pipeline per `notes/ingest_pipeline_outline.md` (fetch, transform, output).
+   - [x] Audit current scripts for reusable ETL logic (manifest generator, CLI wiring).
+   - [x] Design `DatasetSource`, `RecordBatch`, `TransformPipeline` abstractions aligned with `nemora.core`.
+   - [ ] Implement key connectors (BC FAIB, FIA, etc.), add CLI helpers, and unit/integration tests against sample raw datasets. *(FAIB fetch + manifest CLI landed; FIA helper + CLI shipping; HPS pipeline live; nightly integration coverage pending.)*
+   - [x] Verify FTP access to FAIB PSP/non-PSP datasets and capture download instructions/DataLad strategy (caching helpers + env-gated integration test).
+   - [x] Parse FAIB PSP/non-PSP data dictionaries (XLSX) and surface schema metadata for ingest docs/tests.
+   - [ ] Flesh out FAIB ingest pipeline per `notes/ingest_pipeline_outline.md` (fetch, transform, output).
 
 5. **Sampling engine (`nemora.sampling`)**
    - [x] Catalogue existing sampling utilities (mixtures, truncated normals, etc.) and migrate next.
@@ -74,8 +74,13 @@ src/nemora/
    - [ ] Draft notes highlighting the project’s early stage but rapid iteration plan (distfit alpha quickly, other modules phased later).
 
 10. **Testing & CI strategy**
-   - [ ] Expand unit/integration tests per module; keep coverage gating distfit alpha milestone.
-   - [ ] Maintain nightly/CI runs; add module-specific coverage tracking as new components land.
+    - [ ] Expand unit/integration tests per module; keep coverage gating distfit alpha milestone.
+    - [ ] Maintain nightly/CI runs; add module-specific coverage tracking as new components land.
+    - [ ] Nightly FAIB/FIA ingest integration workflow exercising live downloads with environment-gated pytest selection.
+        - Configure `.github/workflows/nightly-ingest.yml` to run on a nightly cron and manual dispatch.
+        - Steps: set up Python, install project deps, export `NEMORA_RUN_FAIB_INTEGRATION=1` / `NEMORA_RUN_FIA_INTEGRATION=1`, execute `pytest` against `tests/test_ingest_faib.py::test_build_faib_dataset_source_integration` and `tests/test_ingest_fia.py::test_download_fia_tables_integration`.
+        - Enable automatic retries/log capture for transient network errors; failures surface via the Actions UI and optional Slack/Issue automation.
+        - Document local re-run instructions in `CONTRIBUTING.md` and link the workflow from the roadmap (Phase 2 ingest testing milestone).
 
 11. **Release milestones**
     - Alpha: `nemora.distributions` + `nemora.distfit` stabilised, docs/tests updated.
@@ -100,6 +105,5 @@ src/nemora/
 
 ## Next Steps
 
-1. Introduce skip-by-default live download checks (FAIB + FIA) to watch for upstream schema drift.
-2. Draft ingest module API docs to sit alongside the how-to guide and keep module parity visible.
-3. Update `scripts/prepare_hps_dataset.py` to delegate to the new ingest pipeline helpers and document the deprecation path.
+1. Land nightly FAIB/FIA ingest integration workflow via GitHub Actions (exports `NEMORA_RUN_FAIB_INTEGRATION` / `NEMORA_RUN_FIA_INTEGRATION`, runs targeted pytest selection, surfaces failures via Actions notifications). *(Roadmap Phase 2, Detailed Next Steps — add under ingest.)*
+2. Draft ingest module API docs to sit alongside the how-to guide and keep module parity visible. *(Docs/communication workstream, Roadmap Phase 2.)*

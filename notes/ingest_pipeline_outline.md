@@ -41,6 +41,7 @@ Status: In progress — stand-table aggregation, FTP fetch helper (with overwrit
 - CLI smoke test added for `nemora faib-manifest`; extend with end-to-end download once CI policy confirmed.
 - Add regression harness for FIA aggregation once trimmed fixtures are authored (TODO). ✅ basic coverage in `tests/test_ingest_fia.py`; extend with CLI once implemented.
 - ✅ Add CLI regression coverage for `nemora ingest-faib-hps` to verify tally/manifest outputs.
+- [ ] Schedule nightly GitHub Actions job (`nightly-ingest.yml`) that sets `NEMORA_RUN_FAIB_INTEGRATION=1` / `NEMORA_RUN_FIA_INTEGRATION=1` and executes the live download tests to catch upstream schema drift.
 
 ## Documentation
 
