@@ -28,7 +28,7 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
   - [x] Integrate mixture helpers with distfit outputs.
 - `nemora.ingest`
   - [x] Design abstraction for raw inventory sources (`DatasetSource`, `TransformPipeline`).
-  - [ ] Port existing scripts (HPS dataset prep) into pipelines.
+  - [x] Port existing scripts (HPS dataset prep) into pipelines.
   - [x] Add CLI helpers for fetching / transforming reference datasets.
   - [x] Publish ingest how-to updates covering FAIB/FIA workflows.
   - [x] Add regression coverage for FAIB manifest + pipeline orchestration.

@@ -78,6 +78,7 @@ class TransformPipeline:
 
 from . import faib as faib  # noqa: E402,F401
 from . import fia as fia  # noqa: E402,F401
+from . import hps as hps  # noqa: E402,F401
 
 __all__ = [
     "DatasetFetcher",
@@ -85,4 +86,5 @@ __all__ = [
     "TransformPipeline",
     "faib",
     "fia",
+    "hps",
 ]

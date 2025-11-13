@@ -26,10 +26,12 @@ Status: In progress — stand-table aggregation, FTP fetch helper (with overwrit
    - Filter PSP visits (`SAMP_TYP` codes) and compute per-tree expansion factors.
    - Bin DBH to centimetre midpoints, then aggregate tallies by BAF.
    - Produce manifest files summarising dataset metadata (region, plot count, BAF, truncation flags).
+   - ✅ Stream PSP tree detail into HPS tallies via `run_hps_pipeline` (shared by CLI + notebooks).
 
 3. **Output**
    - Write per-plot CSVs under `examples/faib_psp_baf{N}/`.
    - Emit a tidy stand-table parquet for fast analytics (TODO; current pipeline writes CSV + manifest).
+   - ✅ Export HPS tallies + manifest using shared helpers (`export_hps_outputs`).
 
 ## Tests
 
@@ -38,9 +40,11 @@ Status: In progress — stand-table aggregation, FTP fetch helper (with overwrit
 - ✅ Add FAIB pipeline regression suite (manifest orchestration + stand-table checks) once pipeline is formalised.
 - CLI smoke test added for `nemora faib-manifest`; extend with end-to-end download once CI policy confirmed.
 - Add regression harness for FIA aggregation once trimmed fixtures are authored (TODO). ✅ basic coverage in `tests/test_ingest_fia.py`; extend with CLI once implemented.
+- ✅ Add CLI regression coverage for `nemora ingest-faib-hps` to verify tally/manifest outputs.
 
 ## Documentation
 
 - Expand `docs/howto/ingest.md` (updated with FAIB portal/FTP notes, `--overwrite`, and `--max-rows`; add full pipeline walkthrough once ETL lands).
 - Add CLI usage examples (`nemora ingest-faib --fetch --overwrite`) showing cache management (done).
 - ✅ Extend how-to coverage for FIA CLI workflows, DatasetSource usage, and caching strategy.
+- ✅ Document HPS pipeline usage and CLI workflow in `docs/howto/ingest.md`.

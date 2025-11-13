@@ -123,6 +123,42 @@ stand_table = pipeline.run(tree_detail)
 This mirrors the logic used by both the CLI and `generate_faib_manifest`, so
 tests and notebooks can share the same transformation sequence.
 
+### HPS tallies
+
+PSP-derived HPS tallies can now be generated without the standalone helper
+script. The ingest module exposes a convenience wrapper that streams the tree
+detail CSV, filters plot visits, and returns both tallies and manifest data:
+
+```python
+from pathlib import Path
+
+from nemora.ingest.hps import (
+    SelectionCriteria,
+    export_hps_outputs,
+    load_plot_selections,
+    run_hps_pipeline,
+)
+
+root = Path("data/external/faib")
+plot_header = root / "faib_plot_header.csv"
+sample_byvisit = root / "faib_sample_byvisit.csv"
+tree_detail = root / "faib_tree_detail.csv"
+
+criteria = SelectionCriteria(first_visit_only=True, max_plots=5)
+selections = load_plot_selections(plot_header, sample_byvisit, baf=12.0, criteria=criteria)
+result = run_hps_pipeline(tree_detail, selections, live_status=("L",), bin_width=1.0)
+export_hps_outputs(
+    result.tallies,
+    result.manifest,
+    output_dir=Path("data/examples/hps_baf12"),
+    manifest_path=Path("data/examples/hps_baf12/manifest.csv"),
+)
+```
+
+`run_hps_pipeline` returns a `HPSPipelineResult` containing the per-plot tallies
+(grouped DataFrames), a combined manifest, and a flattened tallies DataFrame.
+`export_hps_outputs` mirrors the historical script behaviour when writing files.
+
 ### Data dictionaries
 
 FAIB publishes companion Excel data dictionaries alongside each compilation.
@@ -179,6 +215,11 @@ nemora ingest-faib data/external/faib --auto-bafs --fetch --dataset psp
 nemora faib-manifest data/external/faib/manifest_psp --auto-bafs --auto-count 3
 # Reuse an existing download, skip fetch, and limit each stand table to 200 rows
 nemora faib-manifest examples/faib_manifest --source tests/fixtures/faib --no-fetch --baf 12 --max-rows 200
+
+# Prepare HPS tallies and manifest (no download, reusing cached CSVs)
+nemora ingest-faib-hps data/external/faib --no-fetch --output data/examples/hps_baf12
+# Download PSP extracts to a cache directory and write outputs to the examples folder
+nemora ingest-faib-hps data/external/faib --cache-dir data/external/psp/raw --output data/examples/hps_baf12 --fetch
 
 # Generate trimmed fixtures + manifest (used in tests)
 python scripts/generate_faib_manifest.py examples/faib_manifest --dataset psp

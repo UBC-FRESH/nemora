@@ -30,6 +30,25 @@ from .ingest.fia import (
 from .ingest.fia import (
     build_stand_table_from_csvs as build_fia_stand_table,
 )
+from .ingest.hps import (
+    DEFAULT_PLOT_HEADER as HPS_DEFAULT_PLOT_HEADER,
+)
+from .ingest.hps import (
+    DEFAULT_SAMPLE_BYVISIT as HPS_DEFAULT_SAMPLE_BYVISIT,
+)
+from .ingest.hps import (
+    DEFAULT_TREE_DETAIL as HPS_DEFAULT_TREE_DETAIL,
+)
+from .ingest.hps import (
+    SelectionCriteria as HPSelectionCriteria,
+)
+from .ingest.hps import (
+    export_hps_outputs,
+    run_hps_pipeline,
+)
+from .ingest.hps import (
+    load_plot_selections as load_hps_plot_selections,
+)
 from .workflows.hps import fit_hps_inventory
 
 app = typer.Typer(help="Nemora distribution fitting CLI (distfit alpha).")
@@ -185,6 +204,142 @@ FAIB_MAX_ROWS_OPTION = typer.Option(
     "--max-rows",
     help="Limit the number of rows kept in each stand table (default: keep all).",
     show_default=False,
+)
+
+
+FAIB_HPS_OUTPUT_OPTION = typer.Option(
+    Path("data/examples/hps_baf12"),
+    "--output",
+    "-o",
+    help="Directory where per-plot HPS tallies will be written.",
+    show_default=True,
+)
+
+FAIB_HPS_MANIFEST_OPTION = typer.Option(
+    None,
+    "--manifest",
+    help="Optional path for the manifest CSV (defaults to <output>/manifest.csv).",
+    show_default=False,
+)
+
+FAIB_HPS_FETCH_OPTION = typer.Option(
+    True,
+    "--fetch/--no-fetch",
+    help="Download FAIB PSP CSVs before building HPS tallies.",
+    show_default=True,
+)
+
+FAIB_HPS_CACHE_OPTION = typer.Option(
+    Path("data/external/psp/raw"),
+    "--cache-dir",
+    help="Cache directory for FAIB PSP downloads.",
+    show_default=True,
+)
+
+FAIB_HPS_OVERWRITE_OPTION = typer.Option(
+    False,
+    "--overwrite/--keep-existing",
+    help="Redownload PSP files even when they already exist locally.",
+    show_default=True,
+)
+
+FAIB_HPS_BAF_OPTION = typer.Option(
+    12.0,
+    "--baf",
+    help="Basal area factor assigned to the output tallies.",
+    show_default=True,
+)
+
+FAIB_HPS_BIN_WIDTH_OPTION = typer.Option(
+    1.0,
+    "--bin-width",
+    help="DBH bin width in centimetres.",
+    show_default=True,
+)
+
+FAIB_HPS_BIN_ORIGIN_OPTION = typer.Option(
+    0.0,
+    "--bin-origin",
+    help="Origin for DBH bins in centimetres.",
+    show_default=True,
+)
+
+FAIB_HPS_CHUNK_OPTION = typer.Option(
+    200_000,
+    "--chunk-size",
+    help="Rows per chunk when streaming the tree detail CSV.",
+    show_default=True,
+)
+
+FAIB_HPS_STATUS_OPTION = typer.Option(
+    [],
+    "--status",
+    "-s",
+    help="Tree status codes considered live (repeatable).",
+    show_default=False,
+)
+
+FAIB_HPS_INCLUDE_ALL_VISITS_OPTION = typer.Option(
+    False,
+    "--include-all-visits/--first-visits-only",
+    help="Process every visit instead of restricting to first measurements.",
+    show_default=True,
+)
+
+FAIB_HPS_SAMPLE_TYPE_OPTION = typer.Option(
+    [],
+    "--sample-type",
+    help="Restrict plots to specific sample type codes (repeatable).",
+    show_default=False,
+)
+
+FAIB_HPS_MAX_PLOTS_OPTION = typer.Option(
+    None,
+    "--max-plots",
+    help="Limit the number of plots processed (helpful for smoke tests).",
+    show_default=False,
+)
+
+FAIB_HPS_ENCODING_OPTION = typer.Option(
+    "latin1",
+    "--encoding",
+    help="Encoding used when reading the FAIB CSV files.",
+    show_default=True,
+)
+
+FAIB_HPS_PLOT_HEADER_OPTION = typer.Option(
+    HPS_DEFAULT_PLOT_HEADER,
+    "--plot-header-file",
+    help="Filename of the FAIB plot header CSV.",
+    show_default=True,
+)
+
+FAIB_HPS_SAMPLE_BYVISIT_OPTION = typer.Option(
+    HPS_DEFAULT_SAMPLE_BYVISIT,
+    "--sample-byvisit-file",
+    help="Filename of the FAIB sample-by-visit CSV.",
+    show_default=True,
+)
+
+FAIB_HPS_TREE_DETAIL_OPTION = typer.Option(
+    HPS_DEFAULT_TREE_DETAIL,
+    "--tree-detail-file",
+    help="Filename of the FAIB tree detail CSV.",
+    show_default=True,
+)
+
+FAIB_HPS_DRY_RUN_OPTION = typer.Option(
+    False,
+    "--dry-run",
+    help="Report the plots that would be generated without writing files.",
+    show_default=True,
+)
+
+FAIB_HPS_QUIET_OPTION = typer.Option(
+    False,
+    "--quiet/--verbose",
+    help="Suppress progress output when writing files.",
+    show_default=True,
 )
 
 
@@ -473,6 +628,124 @@ def faib_manifest(  # noqa: B008
     for table in result.tables:
         status = "truncated" if result.truncated_flags.get(table, False) else "full"
         console.print(f"  • {table.name} ({status})")
+
+
+@app.command("ingest-faib-hps")
+def ingest_faib_hps(  # noqa: B008
+    root: Path = FAIB_ROOT_ARGUMENT,
+    output: Path = FAIB_HPS_OUTPUT_OPTION,
+    manifest: Path | None = FAIB_HPS_MANIFEST_OPTION,
+    fetch: bool = FAIB_HPS_FETCH_OPTION,
+    cache_dir: Path = FAIB_HPS_CACHE_OPTION,
+    overwrite: bool = FAIB_HPS_OVERWRITE_OPTION,
+    baf: float = FAIB_HPS_BAF_OPTION,
+    bin_width: float = FAIB_HPS_BIN_WIDTH_OPTION,
+    bin_origin: float = FAIB_HPS_BIN_ORIGIN_OPTION,
+    chunk_size: int = FAIB_HPS_CHUNK_OPTION,
+    status: list[str] = FAIB_HPS_STATUS_OPTION,
+    include_all_visits: bool = FAIB_HPS_INCLUDE_ALL_VISITS_OPTION,
+    sample_type: list[str] = FAIB_HPS_SAMPLE_TYPE_OPTION,
+    max_plots: int | None = FAIB_HPS_MAX_PLOTS_OPTION,
+    encoding: str = FAIB_HPS_ENCODING_OPTION,
+    plot_header_file: str = FAIB_HPS_PLOT_HEADER_OPTION,
+    sample_byvisit_file: str = FAIB_HPS_SAMPLE_BYVISIT_OPTION,
+    tree_detail_file: str = FAIB_HPS_TREE_DETAIL_OPTION,
+    dry_run: bool = FAIB_HPS_DRY_RUN_OPTION,
+    quiet: bool = FAIB_HPS_QUIET_OPTION,
+) -> None:
+    """Prepare HPS tallies from FAIB PSP extracts."""
+
+    target_root = root
+    if fetch:
+        destination = cache_dir or root
+        try:
+            dataset = build_faib_dataset_source(
+                "psp",
+                destination=destination,
+                filenames=(plot_header_file, sample_byvisit_file, tree_detail_file),
+                overwrite=overwrite,
+            )
+            downloaded = list(dataset.fetch())
+        except Exception as exc:  # noqa: BLE001
+            console.print(f"[red]Failed to download FAIB PSP files:[/red] {exc}")
+            raise typer.Exit(code=1) from exc
+        target_root = destination
+        if not quiet:
+            console.print(
+                f"[green]Prepared[/green] {len(downloaded)} files in {destination} "
+                f"(overwrite={overwrite})"
+            )
+
+    plot_header_path = target_root / plot_header_file
+    sample_byvisit_path = target_root / sample_byvisit_file
+    tree_detail_path = target_root / tree_detail_file
+
+    missing = [
+        str(path)
+        for path in (plot_header_path, sample_byvisit_path, tree_detail_path)
+        if not path.exists()
+    ]
+    if missing:
+        console.print("[red]Missing required FAIB PSP files:[/red] " + ", ".join(missing))
+        raise typer.Exit(code=1)
+
+    criteria = HPSelectionCriteria(
+        first_visit_only=not include_all_visits,
+        allowed_sample_types=tuple(sample_type) if sample_type else None,
+        max_plots=max_plots,
+    )
+    selections = load_hps_plot_selections(
+        plot_header_path,
+        sample_byvisit_path,
+        baf=baf,
+        criteria=criteria,
+        encoding=encoding,
+    )
+    if not selections:
+        console.print("[yellow]No PSP plots matched the provided filters.[/yellow]")
+        raise typer.Exit(code=1)
+
+    live_status = tuple(status) if status else ("L",)
+    result = run_hps_pipeline(
+        tree_detail_path,
+        selections,
+        dbh_column="DBH",
+        status_column="LV_D",
+        live_status=live_status,
+        bin_width=bin_width,
+        bin_origin=bin_origin,
+        chunk_size=chunk_size,
+        encoding=encoding,
+    )
+
+    manifest_frame = result.manifest
+    if manifest_frame.empty:
+        console.print(
+            "[yellow]Selected plots produced no tallies. Check filters or status codes.[/yellow]"
+        )
+        raise typer.Exit(code=1)
+
+    total_trees = int(manifest_frame["trees"].sum()) if "trees" in manifest_frame else 0
+    plot_count = len(result.tallies)
+
+    if dry_run:
+        console.print(
+            f"[cyan][dry-run][/cyan] {plot_count} plots would be written " f"(trees={total_trees})."
+        )
+        raise typer.Exit()
+
+    manifest_path = manifest or (output / "manifest.csv")
+    export_hps_outputs(
+        result.tallies,
+        manifest_frame,
+        output_dir=output,
+        manifest_path=manifest_path,
+        quiet=quiet,
+    )
+    if not quiet:
+        console.print(
+            f"[green]Prepared[/green] {plot_count} plots with {total_trees} live trees → {output}"
+        )
 
 
 @app.command("ingest-fia")

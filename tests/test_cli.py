@@ -292,6 +292,71 @@ def test_faib_manifest_command(tmp_path: Path) -> None:
     assert not df.empty
 
 
+def _write_hps_cli_fixtures(base: Path) -> None:
+    base.mkdir(parents=True, exist_ok=True)
+    plot_header = pd.DataFrame(
+        {
+            "CLSTR_ID": ["A"],
+            "VISIT_NUMBER": [1],
+            "PLOT": [1],
+            "SITE_IDENTIFIER": ["SITE-1"],
+        }
+    )
+    sample_byvisit = pd.DataFrame(
+        {
+            "CLSTR_ID": ["A"],
+            "VISIT_NUMBER": [1],
+            "FIRST_MSMT": ["Y"],
+            "MEAS_DT": ["2021-07-01"],
+            "SAMP_TYP": ["P"],
+            "SAMPLE_ESTABLISHMENT_TYPE": ["BASE"],
+        }
+    )
+    tree_detail = pd.DataFrame(
+        {
+            "CLSTR_ID": ["A", "A"],
+            "VISIT_NUMBER": [1, 1],
+            "PLOT": [1, 1],
+            "DBH": [12.4, 24.8],
+            "LV_D": ["L", "L"],
+        }
+    )
+    plot_header.to_csv(base / "faib_plot_header.csv", index=False)
+    sample_byvisit.to_csv(base / "faib_sample_byvisit.csv", index=False)
+    tree_detail.to_csv(base / "faib_tree_detail.csv", index=False)
+
+
+def test_ingest_faib_hps_command(tmp_path: Path) -> None:
+    data_dir = tmp_path / "raw"
+    output_dir = tmp_path / "output"
+    manifest_path = tmp_path / "manifest.csv"
+    _write_hps_cli_fixtures(data_dir)
+
+    result = runner.invoke(
+        app,
+        [
+            "ingest-faib-hps",
+            str(data_dir),
+            "--no-fetch",
+            "--plot-header-file",
+            "faib_plot_header.csv",
+            "--sample-byvisit-file",
+            "faib_sample_byvisit.csv",
+            "--tree-detail-file",
+            "faib_tree_detail.csv",
+            "--output",
+            str(output_dir),
+            "--manifest",
+            str(manifest_path),
+            "--status",
+            "L",
+        ],
+    )
+    assert result.exit_code == 0
+    assert manifest_path.exists()
+    assert any(output_dir.glob("*.csv"))
+
+
 def test_ingest_fia_command(tmp_path: Path) -> None:
     fixtures = Path("tests/fixtures/fia")
     output = tmp_path / "fia.csv"

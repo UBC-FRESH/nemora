@@ -100,6 +100,6 @@ src/nemora/
 
 ## Next Steps
 
-1. Port the HPS dataset prep script into a `TransformPipeline` and surface it through the ingest CLI.
-2. Introduce skip-by-default live download checks (FAIB + FIA) to watch for upstream schema drift.
-3. Draft ingest module API docs to sit alongside the how-to guide and keep module parity visible.
+1. Introduce skip-by-default live download checks (FAIB + FIA) to watch for upstream schema drift.
+2. Draft ingest module API docs to sit alongside the how-to guide and keep module parity visible.
+3. Update `scripts/prepare_hps_dataset.py` to delegate to the new ingest pipeline helpers and document the deprecation path.

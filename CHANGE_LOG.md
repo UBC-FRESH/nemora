@@ -154,5 +154,6 @@
 - Wrapped FAIB stand-table aggregation in a reusable `TransformPipeline` builder so CLI, manifest generation, and tests reuse identical logic; introduced a `DatasetSource` helper that standardises FAIB downloads and caching metadata.
 - Updated ingest CLI fetch handling to consume the new dataset source, ensuring provenance is reported consistently with FIA helpers and simplifying future caching automation.
 - Expanded `docs/howto/ingest.md` with DatasetSource usage examples, FAIB pipeline walkthroughs, and caching guidance covering both FAIB and FIA workflows.
+- Ported the HPS dataset preparation flow into `nemora.ingest.hps`, added an `ingest-faib-hps` CLI command, and wired helpers to persist tallies/manifest outputs through the ingest abstractions.
 - Added regression coverage for the new pipeline/dataset helpers and refreshed CLI fetch tests to exercise the abstractions.
 - Tests executed: `pytest tests/test_ingest_faib.py tests/test_cli.py::test_ingest_faib_command tests/test_cli.py::test_ingest_faib_command_with_fetch tests/test_cli.py::test_faib_manifest_command`.

@@ -20,6 +20,16 @@ from nemora.ingest.faib import (
     load_non_psp_dictionary,
     load_psp_dictionary,
 )
+from nemora.ingest.hps import (
+    SelectionCriteria as HPSelectionCriteria,
+)
+from nemora.ingest.hps import (
+    export_hps_outputs,
+    run_hps_pipeline,
+)
+from nemora.ingest.hps import (
+    load_plot_selections as load_hps_plot_selections,
+)
 
 
 def test_manifest_records_exist() -> None:
@@ -162,6 +172,90 @@ def test_build_faib_stand_table_pipeline() -> None:
     result = pipeline.run(tree_detail)
     assert list(result.columns) == ["dbh_cm", "tally"]
     assert result["tally"].sum() == pytest.approx(5.0)
+
+
+def _write_hps_csvs(tmp_path: Path) -> tuple[Path, Path, Path]:
+    plot_header = pd.DataFrame(
+        {
+            "CLSTR_ID": ["A"],
+            "VISIT_NUMBER": [1],
+            "PLOT": [1],
+            "SITE_IDENTIFIER": ["SITE-1"],
+        }
+    )
+    sample_byvisit = pd.DataFrame(
+        {
+            "CLSTR_ID": ["A"],
+            "VISIT_NUMBER": [1],
+            "FIRST_MSMT": ["Y"],
+            "MEAS_DT": ["2020-06-01"],
+            "SAMP_TYP": ["P"],
+            "SAMPLE_ESTABLISHMENT_TYPE": ["BASE"],
+        }
+    )
+    tree_detail = pd.DataFrame(
+        {
+            "CLSTR_ID": ["A", "A", "A"],
+            "VISIT_NUMBER": [1, 1, 1],
+            "PLOT": [1, 1, 1],
+            "DBH": [12.3, 24.9, 30.1],
+            "LV_D": ["L", "L", "D"],
+        }
+    )
+    plot_header_path = tmp_path / "faib_plot_header.csv"
+    sample_byvisit_path = tmp_path / "faib_sample_byvisit.csv"
+    tree_detail_path = tmp_path / "faib_tree_detail.csv"
+    plot_header.to_csv(plot_header_path, index=False)
+    sample_byvisit.to_csv(sample_byvisit_path, index=False)
+    tree_detail.to_csv(tree_detail_path, index=False)
+    return plot_header_path, sample_byvisit_path, tree_detail_path
+
+
+def test_run_hps_pipeline(tmp_path: Path) -> None:
+    plot_header_path, sample_byvisit_path, tree_detail_path = _write_hps_csvs(tmp_path)
+    selections = load_hps_plot_selections(
+        plot_header_path,
+        sample_byvisit_path,
+        baf=12.0,
+        criteria=HPSelectionCriteria(),
+        encoding="latin1",
+    )
+    result = run_hps_pipeline(
+        tree_detail_path,
+        selections,
+        live_status=("L",),
+        bin_width=1.0,
+        bin_origin=0.0,
+        chunk_size=10,
+    )
+    assert len(result.tallies) == 1
+    plot_id, frame = next(iter(result.tallies.items()))
+    assert plot_id.startswith("A_v1_p1")
+    assert frame["tally"].sum() == 2
+    assert not result.manifest.empty
+    assert int(result.manifest.iloc[0]["trees"]) == 2
+
+
+def test_export_hps_outputs(tmp_path: Path) -> None:
+    plot_header_path, sample_byvisit_path, tree_detail_path = _write_hps_csvs(tmp_path)
+    selections = load_hps_plot_selections(
+        plot_header_path,
+        sample_byvisit_path,
+        baf=12.0,
+        criteria=HPSelectionCriteria(),
+    )
+    result = run_hps_pipeline(tree_detail_path, selections)
+    output_dir = tmp_path / "output"
+    manifest_path = tmp_path / "manifest.csv"
+    export_hps_outputs(
+        result.tallies,
+        result.manifest,
+        output_dir=output_dir,
+        manifest_path=manifest_path,
+        quiet=True,
+    )
+    assert manifest_path.exists()
+    assert any(output_dir.glob("*.csv"))
 
 
 def test_download_faib_csvs(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
