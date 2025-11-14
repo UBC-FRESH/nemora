@@ -43,6 +43,7 @@ Status: In progress — stand-table aggregation, FTP fetch helper (with overwrit
 - ✅ Add CLI regression coverage for `nemora ingest-faib-hps` to verify tally/manifest outputs.
 - [ ] Schedule nightly GitHub Actions job (`nightly-ingest.yml`) that sets `NEMORA_RUN_FAIB_INTEGRATION=1` / `NEMORA_RUN_FIA_INTEGRATION=1` and executes the live download tests to catch upstream schema drift.
   - ✅ Workflow landed; failures auto-create GitHub issues labeled `nightly-ingest-failure` for triage.
+  - ✅ Monitoring: rely on GitHub email notifications for workflow-failure issues (watch the repo and enable workflow email alerts under *Settings → Notifications*).
 
 ## Documentation
 

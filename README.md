@@ -46,6 +46,26 @@ truth for day-to-day work.
 Live documentation is published on Read the Docs: https://nemora.readthedocs.io/en/latest/
 The site tracks the main branch and will expand as new modules come online.
 
+## Nightly Monitoring
+
+A nightly GitHub Actions workflow (`Nightly Ingest Integration`) exercises live FAIB/FIA downloads.
+Failures automatically open an issue labeled `nightly-ingest-failure`. To receive notifications:
+
+1. Watch this repository (top-right ➜ **Watch** ➜ *All Activity*) so issue creation triggers emails.
+2. In GitHub **Settings → Notifications**, ensure email alerts for *Issues* and *Actions workflow
+   runs* are enabled.
+3. When an issue arrives, inspect the linked workflow logs to determine whether the failure is
+   transient or indicates upstream schema changes.
+
+Re-run the workflow locally with:
+
+```bash
+NEMORA_RUN_FAIB_INTEGRATION=1 NEMORA_RUN_FIA_INTEGRATION=1 \
+  pytest tests/test_ingest_faib.py::test_build_faib_dataset_source_integration \
+         tests/test_ingest_faib.py::test_download_faib_csvs_integration \
+         tests/test_ingest_fia.py::test_download_fia_tables_integration
+```
+
 ## Relationship to Other Toolkits
 
 - **ForestFit (R)** – Nemora borrows ideas from the ForestFit literature and logs planned imports in

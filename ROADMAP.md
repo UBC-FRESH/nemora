@@ -67,7 +67,7 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
    - [x] Expose FIA download helper via `DatasetSource` fetcher abstraction and integrate into ingest module planning.
    - [x] Document FIA CLI usage + caching guidance in `docs/howto/ingest.md`.
    - [x] Promote FAIB pipeline into `TransformPipeline` implementation and add CLI entry point.
-   - [ ] Configure nightly FAIB/FIA ingest integration workflow (GitHub Actions cron + env-var gated pytest run).
+   - [x] Configure nightly FAIB/FIA ingest integration workflow (GitHub Actions cron + env-var gated pytest run).
 2. **Sampling module prototypes**
    - [ ] Draft numeric/analytic PDF→CDF inversion helpers in notebooks.
    - [ ] Specify bootstrap/Monte Carlo API surface to align with distfit outputs.
