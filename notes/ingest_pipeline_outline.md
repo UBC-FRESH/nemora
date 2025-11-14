@@ -32,6 +32,7 @@ Status: In progress — stand-table aggregation, FTP fetch helper (with overwrit
    - Write per-plot CSVs under `examples/faib_psp_baf{N}/`.
    - Emit a tidy stand-table parquet for fast analytics (TODO; current pipeline writes CSV + manifest).
    - ✅ Export HPS tallies + manifest using shared helpers (`export_hps_outputs`).
+   - [ ] Promote Parquet manifest output (`--parquet` / `write_parquet=True`) in docs/examples so downstream analytics default to columnar format; evaluate making Parquet the primary artifact once adoption is confirmed.
 
 ## Tests
 
@@ -44,6 +45,7 @@ Status: In progress — stand-table aggregation, FTP fetch helper (with overwrit
 - [ ] Schedule nightly GitHub Actions job (`nightly-ingest.yml`) that sets `NEMORA_RUN_FAIB_INTEGRATION=1` / `NEMORA_RUN_FIA_INTEGRATION=1` and executes the live download tests to catch upstream schema drift.
   - ✅ Workflow landed; failures auto-create GitHub issues labeled `nightly-ingest-failure` for triage.
   - ✅ Monitoring: rely on GitHub email notifications for workflow-failure issues (watch the repo and enable workflow email alerts under *Settings → Notifications*).
+- [ ] Track `nemora ingest-benchmark` performance output over time (capture summary stats in docs or nightly runs, surface thresholds for alerting when runtimes spike).
 
 ## Documentation
 

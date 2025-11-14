@@ -69,9 +69,9 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
    - [x] Promote FAIB pipeline into `TransformPipeline` implementation and add CLI entry point.
    - [x] Configure nightly FAIB/FIA ingest integration workflow (GitHub Actions cron + env-var gated pytest run).
 2. **Sampling module prototypes**
-   - [ ] Draft numeric/analytic PDF→CDF inversion helpers in notebooks.
-   - [ ] Specify bootstrap/Monte Carlo API surface to align with distfit outputs.
-   - [ ] Identify regression tests required for mixture integration.
+   - [ ] Draft numeric/analytic PDF→CDF inversion helpers in notebooks. *(See `notes/sampling_module_plan.md` for the inverse-CDF capability matrix task.)*
+   - [ ] Specify bootstrap/Monte Carlo API surface to align with distfit outputs (naming, RNG strategy, grouped fit metadata).
+   - [ ] Identify regression tests required for mixture integration (deterministic RNG fixtures + Hypothesis sampling tests).
 3. **Documentation TODOs**
    - [ ] Update how-to guides as new modules land (`ingest`, `sampling`, etc.).
    - [x] Add module API pages (placeholders present).

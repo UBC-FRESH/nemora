@@ -47,7 +47,7 @@ src/nemora/
    - [ ] Implement key connectors (BC FAIB, FIA, etc.), add CLI helpers, and unit/integration tests against sample raw datasets. *(FAIB fetch + manifest CLI landed; FIA helper + CLI shipping; HPS pipeline live; nightly integration coverage pending.)*
    - [x] Verify FTP access to FAIB PSP/non-PSP datasets and capture download instructions/DataLad strategy (caching helpers + env-gated integration test).
    - [x] Parse FAIB PSP/non-PSP data dictionaries (XLSX) and surface schema metadata for ingest docs/tests.
-   - [ ] Flesh out FAIB ingest pipeline per `notes/ingest_pipeline_outline.md` (fetch, transform, output).
+   - [ ] Flesh out FAIB ingest pipeline per `notes/ingest_pipeline_outline.md` (fetch, transform, output), including Parquet manifest adoption guidance + ingest benchmarking metrics surfaced in docs/nightly runs.
 
 5. **Sampling engine (`nemora.sampling`)**
    - [x] Catalogue existing sampling utilities (mixtures, truncated normals, etc.) and migrate next.
@@ -109,4 +109,4 @@ src/nemora/
 
 1. Land nightly FAIB/FIA ingest integration workflow via GitHub Actions (exports `NEMORA_RUN_FAIB_INTEGRATION` / `NEMORA_RUN_FIA_INTEGRATION`, runs targeted pytest selection, surfaces failures via Actions notifications). *(Roadmap Phase 2, Detailed Next Steps — add under ingest.)*
 2. Draft ingest module API docs to sit alongside the how-to guide and keep module parity visible. *(Docs/communication workstream, Roadmap Phase 2.)*
-3. Scope next ingest enhancements: FAIB manifest parquet export + sampling benchmarking hooks for ingest outputs.
+3. Drive Parquet manifest adoption (docs/examples) and capture ingest benchmarking metrics (reporting location + thresholds).

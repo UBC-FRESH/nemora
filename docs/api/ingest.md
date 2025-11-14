@@ -13,7 +13,7 @@ The key entry points mirror the concepts introduced in the
 
 ```{seealso}
 - [`docs/howto/ingest.md`](../howto/ingest.md) for step-by-step ingest workflows.
-- [`nemora.cli`](nemora.cli) for Typer commands such as `ingest-faib`,
+- [`nemora.cli`](../api/nemora.md) for Typer commands such as `ingest-faib`,
   `faib-manifest`, and `ingest-faib-hps` that wrap these helpers.
 ```
 
