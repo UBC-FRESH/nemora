@@ -160,5 +160,5 @@
 - Authored an ingest API reference page and refreshed the roadmap notes/docs to surface the new module parity.
 - Updated `scripts/prepare_hps_dataset.py` to delegate to the shared ingest pipeline while retaining existing CLI compatibility.
 - Manifest generation can now emit a Parquet copy (`--parquet` flag / `write_parquet=True`) for downstream analytics, and an `ingest-benchmark` CLI command times the HPS pipeline without writing outputs.
-- Sampling module updates: configurable `SamplingConfig` controls numeric integration (grid density, trapezoid/quad backends) and `bootstrap_inventory` can now return a `BootstrapResult` carrying metadata/stacked samples.
+- Sampling module updates: configurable `SamplingConfig` controls numeric integration (grid density, trapezoid/quad backends), `bootstrap_inventory` can now return a `BootstrapResult` carrying metadata/stacked samples, and analytic inverse CDFs were wired up for Weibull, exponential, Pareto, uniform, and lognormal distributions to enable direct inverse-transform sampling.
 - Tests executed: `pytest tests/test_ingest_faib.py tests/test_cli.py::test_ingest_faib_command tests/test_cli.py::test_ingest_faib_command_with_fetch tests/test_cli.py::test_faib_manifest_command`.

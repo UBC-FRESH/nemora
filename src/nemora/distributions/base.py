@@ -14,6 +14,7 @@ import numpy as np
 import yaml
 
 Pdf = Callable[[np.ndarray, Mapping[str, float]], np.ndarray]
+InverseCdf = Callable[[np.ndarray, Mapping[str, float]], np.ndarray]
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,7 @@ class Distribution:
     parameters: tuple[str, ...]
     pdf: Pdf
     cdf: Pdf | None = None
+    inverse_cdf: InverseCdf | None = None
     bounds: dict[str, tuple[float | None, float | None]] | None = None
     notes: str | None = None
     extras: dict[str, Any] | None = None
@@ -70,6 +72,11 @@ def _iter_distributions(candidate: Any) -> Iterable[Distribution]:
         cdf_callable = (
             _load_object(candidate["cdf"]) if "cdf" in candidate and candidate["cdf"] else None
         )
+        inverse_callable = (
+            _load_object(candidate["inverse_cdf"])
+            if "inverse_cdf" in candidate and candidate["inverse_cdf"]
+            else None
+        )
         bounds = candidate.get("bounds")
         raw_parameters = candidate.get("parameters", [])
         parameters = tuple(str(param) for param in raw_parameters)
@@ -78,6 +85,7 @@ def _iter_distributions(candidate: Any) -> Iterable[Distribution]:
             parameters=parameters,
             pdf=pdf_callable,
             cdf=cdf_callable,
+            inverse_cdf=inverse_callable,
             bounds=bounds,
             notes=candidate.get("notes"),
         )

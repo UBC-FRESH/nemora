@@ -8,7 +8,8 @@ from pathlib import Path
 
 import numpy as np
 from scipy.special import gamma as gamma_fn
-from scipy.stats import fatiguelife, johnsonsb
+from scipy.special import ndtri
+from scipy.stats import fatiguelife, johnsonsb, norm
 from scipy.stats import gamma as gamma_dist
 
 from .base import (
@@ -65,11 +66,96 @@ def gamma_pdf(x: np.ndarray, params: Mapping[str, float]) -> np.ndarray:
     )
 
 
+def _clip_unit(u: np.ndarray | float) -> np.ndarray:
+    arr = np.asarray(u, dtype=float)
+    return np.clip(arr, 1e-12, 1 - 1e-12)
+
+
+def weibull_cdf(x: np.ndarray, params: Mapping[str, float]) -> np.ndarray:
+    arr = np.asarray(x, dtype=float)
+    arr = np.clip(arr, 0.0, None)
+    a = params["a"]
+    beta = params["beta"]
+    with np.errstate(over="ignore"):
+        values = 1.0 - np.exp(-np.power(arr / beta, a))
+    return np.nan_to_num(values, nan=0.0, posinf=1.0, neginf=0.0)
+
+
+def weibull_inverse_cdf(u: np.ndarray, params: Mapping[str, float]) -> np.ndarray:
+    arr = _clip_unit(u)
+    a = params["a"]
+    beta = params["beta"]
+    with np.errstate(divide="ignore"):
+        return beta * np.power(-np.log1p(-arr), 1.0 / a)
+
+
+def exponential_cdf(x: np.ndarray, params: Mapping[str, float]) -> np.ndarray:
+    arr = np.asarray(x, dtype=float)
+    arr = np.clip(arr, 0.0, None)
+    beta = params["beta"]
+    values = 1.0 - np.exp(-arr / beta)
+    return np.nan_to_num(values, nan=0.0, posinf=1.0, neginf=0.0)
+
+
+def exponential_inverse_cdf(u: np.ndarray, params: Mapping[str, float]) -> np.ndarray:
+    arr = _clip_unit(u)
+    beta = params["beta"]
+    with np.errstate(divide="ignore"):
+        return -beta * np.log1p(-arr)
+
+
+def uniform_cdf(x: np.ndarray, params: Mapping[str, float]) -> np.ndarray:
+    arr = np.asarray(x, dtype=float)
+    b = params["b"]
+    values = arr / b
+    values = np.clip(values, 0.0, 1.0)
+    return values
+
+
+def uniform_inverse_cdf(u: np.ndarray, params: Mapping[str, float]) -> np.ndarray:
+    arr = _clip_unit(u)
+    b = params["b"]
+    return b * arr
+
+
+def pareto_cdf(x: np.ndarray, params: Mapping[str, float]) -> np.ndarray:
+    arr = np.asarray(x, dtype=float)
+    arr = np.clip(arr, params["b"], None)
+    b_val = params["b"]
+    p_val = params["p"]
+    values = 1.0 - np.power(b_val / arr, p_val)
+    return np.nan_to_num(values, nan=0.0, posinf=1.0, neginf=0.0)
+
+
+def pareto_inverse_cdf(u: np.ndarray, params: Mapping[str, float]) -> np.ndarray:
+    arr = _clip_unit(u)
+    b_val = params["b"]
+    p_val = params["p"]
+    return b_val * np.power(1.0 - arr, -1.0 / p_val)
+
+
+def lognormal_cdf(x: np.ndarray, params: Mapping[str, float]) -> np.ndarray:
+    arr = np.asarray(x, dtype=float)
+    arr = np.clip(arr, 1e-12, None)
+    mu = params["mu"]
+    sigma = float(np.sqrt(max(params["sigma2"], 1e-12)))
+    return norm.cdf((np.log(arr) - mu) / sigma)
+
+
+def lognormal_inverse_cdf(u: np.ndarray, params: Mapping[str, float]) -> np.ndarray:
+    arr = _clip_unit(u)
+    mu = params["mu"]
+    sigma = float(np.sqrt(max(params["sigma2"], 1e-12)))
+    return np.exp(mu + sigma * ndtri(arr))
+
+
 STANDARD_DISTRIBUTIONS = [
     Distribution(
         name="weibull",
         parameters=("a", "beta", "s"),
         pdf=weibull_pdf,
+        cdf=weibull_cdf,
+        inverse_cdf=weibull_inverse_cdf,
         notes="Complete-form Weibull via generalized gamma representation.",
     ),
     Distribution(
@@ -209,8 +295,30 @@ GENERALIZED_SECANT_DISTRIBUTIONS = _build_generalized_secant_distributions()
 STANDARD_DISTRIBUTIONS.extend(GENERALIZED_SECANT_DISTRIBUTIONS)
 
 
+def _apply_inverse_metadata(dist: Distribution) -> None:
+    """Attach analytic CDF/inverse metadata where closed forms exist."""
+
+    name = dist.name.lower()
+    if name in {"weibull", "w"}:
+        dist.cdf = weibull_cdf
+        dist.inverse_cdf = weibull_inverse_cdf
+    elif name == "exp":
+        dist.cdf = exponential_cdf
+        dist.inverse_cdf = exponential_inverse_cdf
+    elif name == "u":
+        dist.cdf = uniform_cdf
+        dist.inverse_cdf = uniform_inverse_cdf
+    elif name == "pareto":
+        dist.cdf = pareto_cdf
+        dist.inverse_cdf = pareto_inverse_cdf
+    elif name == "ln":
+        dist.cdf = lognormal_cdf
+        dist.inverse_cdf = lognormal_inverse_cdf
+
+
 def _register_builtin() -> None:
     for dist in STANDARD_DISTRIBUTIONS + GENERALIZED_BETA_DISTRIBUTIONS:
+        _apply_inverse_metadata(dist)
         register_distribution(dist, overwrite=True)
 
 

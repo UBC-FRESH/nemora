@@ -42,6 +42,15 @@ def test_sample_distribution_returns_expected_shape() -> None:
     assert np.all(draws >= 0)
 
 
+def test_sample_distribution_weibull_inverse_matches_formula() -> None:
+    params = {"a": 2.0, "beta": 5.0, "s": 1.0}
+    rng = np.random.default_rng(2025)
+    draws = sample_distribution("weibull", params, size=5, random_state=rng)
+    rng_expected = np.random.default_rng(2025)
+    expected = params["beta"] * (-np.log1p(-rng_expected.random(5))) ** (1 / params["a"])
+    np.testing.assert_allclose(draws, expected)
+
+
 def test_sample_mixture_fit_matches_component_weights() -> None:
     rng = np.random.default_rng(1234)
     components = [

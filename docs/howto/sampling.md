@@ -47,6 +47,9 @@ from nemora.sampling import sample_distribution
 draws = sample_distribution("gamma", {"beta": 4.0, "p": 3.0, "s": 1.0}, size=500)
 ```
 
+Distributions with closed-form inverse CDFs (Weibull, exponential, Pareto,
+uniform, lognormal) use analytic inversion internally for improved accuracy.
+
 ## Sample from a mixture fit
 
 ```python

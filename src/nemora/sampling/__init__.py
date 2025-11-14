@@ -171,6 +171,9 @@ def sample_distribution(
     else:
         rng = random_state or np.random.default_rng()
     dist = get_distribution(distribution)
+    if dist.inverse_cdf is not None:
+        u = rng.random(size)
+        return dist.inverse_cdf(u, params)
     method: Literal["analytic", "numeric"] = "analytic" if dist.cdf is not None else "numeric"
     xs, cdf_vals = _prepare_cdf_grid(
         distribution,
