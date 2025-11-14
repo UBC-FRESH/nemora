@@ -19,6 +19,26 @@ y = cdf(x)
 When a distribution exposes an analytic CDF, `pdf_to_cdf(..., method="analytic")`
 delegates to it; otherwise the helper falls back to numeric integration.
 
+### Configuring numeric integration
+
+`pdf_to_cdf` accepts a `SamplingConfig` so you can control grid density,
+integration backend, and quadrature tolerances:
+
+```python
+from nemora.sampling import SamplingConfig, pdf_to_cdf
+
+cfg = SamplingConfig(grid_points=2048, integration_method="quad", quad_rel_tol=1e-7)
+cdf = pdf_to_cdf(
+    "gamma",
+    {"beta": 4.0, "p": 3.0, "s": 1.0},
+    method="numeric",
+    config=cfg,
+)
+```
+
+The default uses a trapezoid grid; switching to `"quad"` delegates to
+`scipy.integrate.quad` with the tolerances above.
+
 ## Sample from a distribution
 
 ```python
@@ -52,13 +72,25 @@ draws = sample_mixture_fit(mixture, size=1000)
 ```python
 import numpy as np
 from nemora.core import FitResult
-from nemora.sampling import bootstrap_inventory
+from nemora.sampling import BootstrapResult, bootstrap_inventory
 
 fit = FitResult(distribution="gamma", parameters={"beta": 5.0, "p": 2.5, "s": 1.0})
 bins = np.array([10.0, 20.0, 30.0])
 tallies = np.array([5, 3, 2], dtype=float)
-samples = bootstrap_inventory(fit, bins, tallies, resamples=5, sample_size=25)
+result: BootstrapResult = bootstrap_inventory(
+    fit,
+    bins,
+    tallies,
+    resamples=5,
+    sample_size=25,
+    return_result=True,
+)
+samples = result.samples
+stacked = result.stacked()
 ```
+
+Passing `return_result=True` yields a `BootstrapResult` containing the sampled
+arrays and metadata (distribution, parameters, bins, tallies, RNG seed).
 
 .. warning::
    These APIs are experimental. Expect refinements (additional configuration,
