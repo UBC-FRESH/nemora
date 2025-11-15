@@ -30,7 +30,7 @@ class SamplingConfig:
 
     grid_points: int = 2048
     support_multiplier: float = 5.0
-    integration_method: Literal["trapezoid", "quad"] = "trapezoid"
+    integration_method: Literal["trapezoid", "simpson", "quad"] = "trapezoid"
     quad_abs_tol: float = 1e-8
     quad_rel_tol: float = 1e-6
 
@@ -78,9 +78,16 @@ def _numeric_cdf(
 ) -> np.ndarray:
     if xs.size < 2:
         return np.zeros_like(xs, dtype=float)
-    if cfg.integration_method == "trapezoid":
+    if cfg.integration_method in {"trapezoid", "simpson"}:
         pdf_values = pdf_callable(xs)
-        cdf = integrate.cumulative_trapezoid(pdf_values, xs, initial=0.0)
+        if cfg.integration_method == "trapezoid":
+            cdf = integrate.cumulative_trapezoid(pdf_values, xs, initial=0.0)
+        else:  # simpson
+            cdf = np.zeros_like(xs, dtype=float)
+            if xs.size > 1:
+                cdf[1] = integrate.cumulative_trapezoid(pdf_values[:2], xs[:2], initial=0.0)[-1]
+            for idx in range(2, xs.size):
+                cdf[idx] = integrate.simpson(pdf_values[: idx + 1], x=xs[: idx + 1])
     else:
 
         def scalar_pdf(value: float) -> float:

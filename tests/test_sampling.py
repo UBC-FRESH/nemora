@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from scipy.stats import gamma as scipy_gamma
 
 from nemora.core import FitResult, MixtureComponentFit, MixtureFitResult
 from nemora.sampling import (
@@ -28,6 +29,32 @@ def test_pdf_to_cdf_numeric(distribution: str, params: dict[str, float]) -> None
     assert np.all(np.diff(cdf_values) >= 0)  # monotonic
     assert cdf_values[0] >= 0
     assert cdf_values[-1] <= 1
+
+
+def test_pdf_to_cdf_quad_matches_gamma() -> None:
+    cfg = SamplingConfig(
+        grid_points=1024,
+        support_multiplier=10.0,
+        integration_method="quad",
+        quad_abs_tol=1e-9,
+        quad_rel_tol=1e-8,
+    )
+    params = {"beta": 4.0, "p": 3.0, "s": 1.0}
+    cdf_fn = pdf_to_cdf("gamma", params, method="numeric", config=cfg)
+    support = cfg.support_multiplier * params["beta"]
+    values = np.linspace(0.0, support, 10)
+    ours = cdf_fn(values)
+    expected = scipy_gamma.cdf(values, params["p"], scale=params["beta"])
+    np.testing.assert_allclose(ours, expected, atol=5e-3)
+
+
+def test_pdf_to_cdf_simpson_monotonic() -> None:
+    cfg = SamplingConfig(grid_points=256, integration_method="simpson")
+    params = {"a": 2.0, "beta": 8.0, "s": 1.0}
+    cdf_fn = pdf_to_cdf("weibull", params, method="numeric", config=cfg)
+    values = np.linspace(0.0, 30.0, 20)
+    cdf_values = cdf_fn(values)
+    assert np.all(np.diff(cdf_values) >= -1e-9)
 
 
 def test_sample_distribution_returns_expected_shape() -> None:

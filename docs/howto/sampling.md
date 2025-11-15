@@ -37,7 +37,8 @@ cdf = pdf_to_cdf(
 ```
 
 The default uses a trapezoid grid; switching to `"quad"` delegates to
-`scipy.integrate.quad` with the tolerances above.
+`scipy.integrate.quad` with the tolerances above. You can also set
+`integration_method="simpson"` to integrate via Simpson's rule.
 
 ## Sample from a distribution
 
