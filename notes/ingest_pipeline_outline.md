@@ -14,42 +14,42 @@ Status: In progress — stand-table aggregation, FTP fetch helper (with overwrit
 1. **Fetch**
    - Use `DatasetSource(fetcher=...)` to download `faib_plot_header`, `faib_sample_byvisit`, `faib_tree_detail`, etc.
    - Cache CSV extracts under `data/external/faib/` (gitignored) and support overwrite-safe refreshes via `.part` temp files.
-   - ✅ `generate_faib_manifest` now wraps `download_faib_csvs`, enabling automated fetch + manifest creation via CLI/script.
-   - ✅ FIA prototype helper aggregates `TREE`/`COND`/`PLOT` tables into stand tables (plot CN filter, DBH conversion).
-   - ✅ Trimmed FIA fixtures (`tests/fixtures/fia/`) recorded for deterministic tests.
-   - ✅ CLI supports `--fetch-state` to download state-specific tables before aggregation.
-   - ✅ Promote FIA download helper into a reusable `DatasetSource` fetcher once the interface is finalised.
-   - ✅ Wrap FAIB manifest + stand-table flow in a `TransformPipeline` + CLI entry once abstractions stabilise.
+   - [x] `generate_faib_manifest` now wraps `download_faib_csvs`, enabling automated fetch + manifest creation via CLI/script.
+   - [x] FIA prototype helper aggregates `TREE`/`COND`/`PLOT` tables into stand tables (plot CN filter, DBH conversion).
+   - [x] Trimmed FIA fixtures (`tests/fixtures/fia/`) recorded for deterministic tests.
+   - [x] CLI supports `--fetch-state` to download state-specific tables before aggregation.
+   - [x] Promote FIA download helper into a reusable `DatasetSource` fetcher once the interface is finalised.
+   - [x] Wrap FAIB manifest + stand-table flow in a `TransformPipeline` + CLI entry once abstractions stabilise.
 
 2. **Transform**
    - Join headers and sample metadata by `(CLSTR_ID, VISIT_NUMBER, PLOT)`.
    - Filter PSP visits (`SAMP_TYP` codes) and compute per-tree expansion factors.
    - Bin DBH to centimetre midpoints, then aggregate tallies by BAF.
    - Produce manifest files summarising dataset metadata (region, plot count, BAF, truncation flags).
-   - ✅ Stream PSP tree detail into HPS tallies via `run_hps_pipeline` (shared by CLI + notebooks).
+   - [x] Stream PSP tree detail into HPS tallies via `run_hps_pipeline` (shared by CLI + notebooks).
 
 3. **Output**
    - Write per-plot CSVs under `examples/faib_psp_baf{N}/`.
-   - Emit a tidy stand-table parquet for fast analytics (TODO; current pipeline writes CSV + manifest).
-   - ✅ Export HPS tallies + manifest using shared helpers (`export_hps_outputs`).
-   - [ ] Promote Parquet manifest output (`--parquet` / `write_parquet=True`) in docs/examples so downstream analytics default to columnar format; evaluate making Parquet the primary artifact once adoption is confirmed.
+   - [x] Emit a tidy stand-table parquet for fast analytics (CLI/docs promote `--parquet` adoption).
+   - [x] Export HPS tallies + manifest using shared helpers (`export_hps_outputs`).
+   - [ ] Track Parquet manifest adoption across docs/examples and decide when to make the format the default artifact.
 
 ## Tests
 
 - Unit tests covering join logic, DBH binning, and BAF subsampling using small CSV fixtures.
 - Integration test (optional skip) that downloads a tiny slice via FTP to ensure schema alignment (pending).
-- ✅ Add FAIB pipeline regression suite (manifest orchestration + stand-table checks) once pipeline is formalised.
+- [x] Add FAIB pipeline regression suite (manifest orchestration + stand-table checks) once pipeline is formalised.
 - CLI smoke test added for `nemora faib-manifest`; extend with end-to-end download once CI policy confirmed.
-- Add regression harness for FIA aggregation once trimmed fixtures are authored (TODO). ✅ basic coverage in `tests/test_ingest_fia.py`; extend with CLI once implemented.
-- ✅ Add CLI regression coverage for `nemora ingest-faib-hps` to verify tally/manifest outputs.
-- [ ] Schedule nightly GitHub Actions job (`nightly-ingest.yml`) that sets `NEMORA_RUN_FAIB_INTEGRATION=1` / `NEMORA_RUN_FIA_INTEGRATION=1` and executes the live download tests to catch upstream schema drift.
-  - ✅ Workflow landed; failures auto-create GitHub issues labeled `nightly-ingest-failure` for triage.
-  - ✅ Monitoring: rely on GitHub email notifications for workflow-failure issues (watch the repo and enable workflow email alerts under *Settings → Notifications*).
+- [x] Add regression harness for FIA aggregation once trimmed fixtures are authored (baseline coverage lives in `tests/test_ingest_fia.py`; extend CLI cases later).
+- [x] Add CLI regression coverage for `nemora ingest-faib-hps` to verify tally/manifest outputs.
+- [x] Schedule nightly GitHub Actions job (`nightly-ingest.yml`) that sets `NEMORA_RUN_FAIB_INTEGRATION=1` / `NEMORA_RUN_FIA_INTEGRATION=1` and executes the live download tests to catch upstream schema drift.
+  - [x] Workflow landed; failures auto-create GitHub issues labeled `nightly-ingest-failure` for triage.
+  - [x] Monitoring: rely on GitHub email notifications for workflow-failure issues (watch the repo and enable workflow email alerts under *Settings → Notifications*).
 - [ ] Track `nemora ingest-benchmark` performance output over time (capture summary stats in docs or nightly runs, surface thresholds for alerting when runtimes spike).
 
 ## Documentation
 
 - Expand `docs/howto/ingest.md` (updated with FAIB portal/FTP notes, `--overwrite`, and `--max-rows`; add full pipeline walkthrough once ETL lands).
 - Add CLI usage examples (`nemora ingest-faib --fetch --overwrite`) showing cache management (done).
-- ✅ Extend how-to coverage for FIA CLI workflows, DatasetSource usage, and caching strategy.
-- ✅ Document HPS pipeline usage and CLI workflow in `docs/howto/ingest.md`.
+- [x] Extend how-to coverage for FIA CLI workflows, DatasetSource usage, and caching strategy.
+- [x] Document HPS pipeline usage and CLI workflow in `docs/howto/ingest.md`.

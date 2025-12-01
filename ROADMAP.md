@@ -20,7 +20,7 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 
 ## Phase 2 — Core Module Expansion (sequenced after distfit alpha)
 - `nemora.distributions`
-  - [ ] Document extension points, add user-facing registry helpers.
+  - [x] Document extension points, add user-facing registry helpers.
   - [ ] Move remaining distribution metadata (bounds, defaults) from ad-hoc code.
 - `nemora.sampling`
   - [x] Implement PDF→CDF inversion (analytic + numeric).
@@ -56,26 +56,18 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 - [ ] Outreach (blog posts, mailing lists, working group updates).
 
 ## Detailed Next Steps Notes
-1. **Phase 2 Kickoff — Ingest module design**
-   - [x] Finalise `DatasetSource` / `TransformPipeline` abstractions in `notes/nemora_modular_reorg_plan.md`.
-   - [x] Stub `nemora/ingest/__init__.py` and outline initial pipeline modules.
-   - [x] Prepare BC FAIB fixture manifests for integration tests (`examples/faib_manifest`, CLI).
-   - [x] Automate FAIB fetch → manifest → stand-table ETL flow (cache management, CLI integration test).
-   - [x] Schedule FIA dataset scoping session once FAIB automation is stable (`notes/fia_ingest_scoping.md` drafted; HI sample downloaded to `data/external/fia/raw` for schema review).
-   - [x] Trim FIA HI sample into test fixtures (`tests/fixtures/fia/`) and wire ingest tests to use them.
-   - [x] Build FIA CLI/ETL workflow (state + filters) once fixtures/regression harness are in place.
-   - [x] Expose FIA download helper via `DatasetSource` fetcher abstraction and integrate into ingest module planning.
-   - [x] Document FIA CLI usage + caching guidance in `docs/howto/ingest.md`.
-   - [x] Promote FAIB pipeline into `TransformPipeline` implementation and add CLI entry point.
-   - [x] Configure nightly FAIB/FIA ingest integration workflow (GitHub Actions cron + env-var gated pytest run).
-2. **Sampling module prototypes**
-   - [ ] Draft numeric/analytic PDF→CDF inversion helpers in notebooks. *(See `notes/sampling_module_plan.md` for the inverse-CDF capability matrix task.)*
-   - [ ] Specify bootstrap/Monte Carlo API surface to align with distfit outputs (naming, RNG strategy, grouped fit metadata).
-   - [ ] Identify regression tests required for mixture integration (deterministic RNG fixtures + Hypothesis sampling tests).
-3. **Documentation TODOs**
-   - [ ] Update how-to guides as new modules land (`ingest`, `sampling`, etc.).
-   - [x] Add module API pages (placeholders present).
-   - [ ] Highlight CLI + Python API parity intent.
+1. **Distribution registry hardening**
+   - [ ] Inventory bounds/defaults/extras scattered across distfit, sampling, and ingest helpers; relocate the metadata into `src/nemora/distributions` and surface it through helper APIs.
+   - [ ] Expand regression tests plus CLI helpers so contributors can list registry metadata and confirm plugin registrations at runtime.
+   - [ ] Publish an updated registry reference (docs + README) connecting the Python helpers, CLI inspection, YAML configs, and entry-point plugins.
+2. **Sampling module adoption**
+   - [ ] Wire `BootstrapResult` into upcoming synthforest/simulation plans and document how downstream modules consume its metadata.
+   - [ ] Add property-based or numerical accuracy tests that exercise the trapezoid/Simpson/quad integration modes against SciPy references.
+   - [ ] Extend docs/examples so sampling workflows demonstrate ingest-produced Parquet manifests and the configurable numeric integration settings.
+3. **Ingest monitoring & benchmarking**
+   - [ ] Capture `nemora ingest-benchmark` runtime stats (CLI + nightly workflow) and surface the trend in docs or CHANGE_LOG for visibility.
+   - [ ] Document the nightly FAIB/FIA workflow rerun + notification process in `CONTRIBUTING.md` so contributors can verify the job locally.
+   - [ ] Evaluate whether manifest Parquet adoption should become the default artifact once benchmarks confirm no downstream regressions.
 
 ## Backlog & Ideas
 - [ ] Investigate GPU acceleration for large tally batches.

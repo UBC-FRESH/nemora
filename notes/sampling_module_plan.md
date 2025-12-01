@@ -12,20 +12,21 @@ Status: Working outline for Phase 2 sampling deliverables.
 ## Immediate priorities
 
 1. **Analytic inversion coverage**
-   - Analytic candidates: `exp`, `pareto`, `u` (uniform), `weibull`, `ln` (lognormal), `logistic`/`fisk` (verify formulas). Everything else falls back to numeric integration/`scipy.stats` quantiles. Action: capture formulas + SciPy references per distribution (`notes/sampling_inverse_matrix.md`) and add tests comparing to `scipy.stats`.
-   - Implement `inverse_cdf` hooks within the distribution registry; fall back to SciPy where possible.
-   - Add regression tests comparing analytic inversion to SciPy stats implementations.
+   - [x] Capture formulas + SciPy references for analytic candidates (`exp`, `pareto`, `u`, `weibull`, `ln`) in `notes/sampling_inverse_matrix.md`.
+   - [x] Implement `inverse_cdf` hooks within the distribution registry and fall back to SciPy where closed forms are unavailable.
+   - [x] Add regression tests comparing analytic inversion to SciPy stats implementations.
+   - [ ] Decide whether to add logistic/fisk inverses or document their numeric fallback explicitly.
 2. **Numeric PDF→CDF integration**
-   - Extend `pdf_to_cdf` to accept adaptive quadrature/backends (Simpson/trapezoid grids vs `scipy.integrate.quad`) and expose tolerances via config.
-   - Cache numeric grids for reuse when sampling repeatedly from the same fit.
-   - Validate numeric integration against analytic references to quantify error bounds. *(Initial gamma test: 4k-point trapezoid grid vs SciPy `gamma.cdf` max abs error ≈ 1.5e-5; `quad` integration matched at same tolerance — capture these benchmarks in docs.)*
+   - [x] Extend `pdf_to_cdf` to accept trapezoid/Simpson grids and `scipy.integrate.quad`, exposing tolerances via `SamplingConfig`.
+   - [ ] Cache numeric grids for reuse when sampling repeatedly from the same fit.
+   - [ ] Validate numeric integration against additional reference distributions and capture error bounds/benchmarks in docs.
 3. **Bootstrap API surface**
-   - Finalise `bootstrap_inventory` interface (naming, return types) and document expected inputs (bins, tallies, RNG). Proposal: return `BootstrapResult` containing stacked DataFrame + RNG metadata rather than a list.
-   - Provide helpers for sampling direct DBH vectors vs (dbh, tally) table outputs.
-   - Ensure compatibility with grouped fits (respect grouped Weibull offset metadata, propagate solver diagnostics into bootstrap notes).
+   - [x] Finalise `bootstrap_inventory` interface and introduce `BootstrapResult` with metadata + helper methods, documenting usage in `docs/howto/sampling.md`.
+   - [ ] Provide helpers/examples for sampling DBH vectors vs stand tables and clarify grouped-fit metadata propagation.
+   - [ ] Ensure compatibility with synthforest by planning how `BootstrapResult` feeds downstream workflows.
 4. **Mixture sampling enhancements**
-   - Allow direct seeding via `numpy.random.Generator` and integrate with mixture diagnostics.
-   - Add support for truncated mixtures and mixture-of-experts weighting if needed by synthforest.
+   - [ ] Allow direct seeding via `numpy.random.Generator` for mixture helpers and integrate diagnostics.
+   - [ ] Add support for truncated mixtures / mixture-of-experts weighting if synthforest requires them.
 
 ## Documentation tasks
 
@@ -47,12 +48,9 @@ Status: Working outline for Phase 2 sampling deliverables.
 
 ## Next actions
 
-- [ ] Draft distribution-specific inverse CDF capability matrix.
-  - [ ] Enumerate current registry distributions (`b1`, `b2`, `birnbaum_saunders`, … `weibull`) and mark whether analytic inverse exists (e.g., `exp`, `pareto`, `u`, `ln`, `weibull`) vs numeric fallback + SciPy reference.
-  - [ ] Implement helper for analytic cases (Weibull: `s + beta * (-ln(1-u))**(1/a)`, Lognormal: `exp(mu + sigma * Phi^{-1}(u))`, Pareto, Uniform, Exponential).
-- [ ] Experiment with adaptive quadrature performance for numeric CDFs.
-  - [x] Prototype trapezoid grid (4k points) vs `scipy.integrate.quad` for Gamma distribution; both achieved max abs error ≈ 1.5e-5 vs SciPy `gamma.cdf`.
-  - [ ] Add configurable grid density + tolerance to `pdf_to_cdf`, expose benchmarking notebook in docs.
-- [ ] Prototype enhanced bootstrap API and align naming with synthforest requirements.
-  - [x] Draft proposal: return `BootstrapResult` (DataFrame + metadata) instead of raw list; include RNG seed, grouped-fit context, ability to sample DBH vectors.
-  - [ ] Align naming/structure with upcoming synthforest sampling needs; add plan to `notes/sampling_module_plan.md` + `docs/howto/sampling.md`.
+- [x] Draft distribution-specific inverse CDF capability matrix and wire analytic helpers into the registry.
+- [x] Add configurable grid density/tolerance options to `pdf_to_cdf`; document the gamma benchmark results.
+- [ ] Cache/reuse numeric grids (or memoized integration results) for repeated sampling workloads.
+- [ ] Add property-based / numeric accuracy tests covering trapezoid, Simpson, and quad integration modes.
+- [x] Introduce `BootstrapResult`, document its metadata contract, and expose helper methods (e.g., `stacked`).
+- [ ] Align naming/structure with upcoming synthforest sampling needs, including DBH vector helpers and grouped-fit metadata propagation.
