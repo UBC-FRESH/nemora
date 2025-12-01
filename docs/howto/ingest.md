@@ -224,6 +224,8 @@ nemora ingest-faib-hps data/external/faib --no-fetch --output data/examples/hps_
 nemora ingest-faib-hps data/external/faib --cache-dir data/external/psp/raw --output data/examples/hps_baf12 --fetch
 # Benchmark the HPS pipeline (timing only, no output)
 nemora ingest-benchmark data/external/faib --no-fetch --iterations 5
+# Benchmark and capture metrics (JSONL) for later trend analysis
+nemora ingest-benchmark data/external/faib --no-fetch --iterations 3 --report-path logs/ingest_benchmark.jsonl
 
 # Generate trimmed fixtures + manifest (used in tests)
 python scripts/generate_faib_manifest.py examples/faib_manifest --dataset psp

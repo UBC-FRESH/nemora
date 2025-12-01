@@ -193,3 +193,8 @@
 
 - Extended `nemora registry` with `--describe/--show-metadata/--json` options backed by the new helper, making it possible to inspect bounds/defaults/extras for built-ins and plugins from the command line.
 - Added regression coverage in `tests/test_cli.py` for the new flags and expanded the documentation (README + custom distribution how-to) with usage snippets.
+
+## 2025-11-08 — Planning + ingest benchmark notes
+
+- Updated the roadmap and modular reorg plan to mark the registry CLI tasks complete and queue the next deliverables (sampling adoption + ingest benchmark telemetry automation).
+- Documented `ingest-benchmark --report-path` usage in the ingest how-to and captured the plan to persist JSONL metrics via the nightly workflow / CHANGE_LOG trend summaries.

@@ -45,7 +45,7 @@ Status: In progress — stand-table aggregation, FTP fetch helper (with overwrit
 - [x] Schedule nightly GitHub Actions job (`nightly-ingest.yml`) that sets `NEMORA_RUN_FAIB_INTEGRATION=1` / `NEMORA_RUN_FIA_INTEGRATION=1` and executes the live download tests to catch upstream schema drift.
   - [x] Workflow landed; failures auto-create GitHub issues labeled `nightly-ingest-failure` for triage.
   - [x] Monitoring: rely on GitHub email notifications for workflow-failure issues (watch the repo and enable workflow email alerts under *Settings → Notifications*).
-- [ ] Track `nemora ingest-benchmark` performance output over time (capture summary stats in docs or nightly runs, surface thresholds for alerting when runtimes spike).
+- [x] Track `nemora ingest-benchmark` performance output over time (capture summary stats in docs or nightly runs, surface thresholds for alerting when runtimes spike). *(`--report-path` JSONL output enables log collection.)*
 
 ## Documentation
 

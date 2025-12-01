@@ -110,8 +110,11 @@ src/nemora/
 1. [x] Consolidate distribution metadata (bounds/defaults/extras) into `nemora.distributions`, add registry helper docs/tests, and align top-level roadmap tasks with the new coverage.
 2. [ ] Extend the sampling roadmap: wire `BootstrapResult` outputs into synthforest/simulations, cache/reuse numeric CDF grids for repeated sampling workloads, and document CLI usage for the new integration controls (accuracy tests against SciPy are already in place).
 3. [ ] Capture ingest benchmarking metrics (from `nemora ingest-benchmark` and nightly runs), decide how to surface trends, and document the workflow in README/CONTRIBUTING for ongoing monitoring.
-4. [ ] Build registry inspection tooling:
-   - [ ] Expose a Python helper (e.g., `list_registry_metadata()`) that returns each distribution’s bounds/defaults/extras for downstream modules/tests.
-   - [ ] Add a `nemora registry --describe <name>` / `--show-metadata` CLI path that prints the helper output (JSON and human-readable table) so contributors can audit plugin registrations.
-   - [ ] Extend `tests/test_registry.py` (and CLI smoke tests) to cover the helper/CLI plus plugin edge cases; ensure failures remain descriptive.
-   - [ ] Update docs/README to explain how to inspect the registry (linking to the helper, CLI command, and YAML/entry-point sections).
+4. [x] Build registry inspection tooling:
+   - [x] Expose a Python helper (`list_registry_metadata`) that returns each distribution’s bounds/defaults/extras for downstream modules/tests.
+   - [x] Add a `nemora registry --describe/--show-metadata/--json` CLI path that prints the helper output so contributors can audit plugin registrations.
+   - [x] Extend `tests/test_registry.py` (and CLI smoke tests) to cover the helper/CLI plus plugin edge cases; ensure failures remain descriptive.
+   - [x] Update docs/README to explain how to inspect the registry (linking to the helper, CLI command, and YAML/entry-point sections).
+5. [ ] Automate ingest benchmark telemetry collection:
+   - [ ] Wire the `ingest-benchmark --report-path` JSONL output into the nightly workflow (persist as artifact + attach issue snippet on failure).
+   - [ ] Summarise rolling metrics in docs/CHANGE_LOG so trend shifts are visible, and define alert thresholds for future automation.

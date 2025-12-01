@@ -58,15 +58,15 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 ## Detailed Next Steps Notes
 1. **Distribution registry hardening**
    - [x] Inventory bounds/defaults/extras scattered across distfit, sampling, and ingest helpers; relocate the metadata into `src/nemora/distributions` and surface it through helper APIs.
-   - [ ] Add a CLI/`nemora registry` subcommand (and Python helper) that prints the registered bounds/defaults/extras so contributors can inspect metadata without diving into code.
-   - [ ] Expand regression tests covering the new helper/CLI output (including plugin registration coverage) and ensure failure modes stay readable.
-   - [ ] Publish an updated registry reference (docs + README) connecting the Python helpers, CLI inspection, YAML configs, and entry-point plugins.
+   - [x] Add a CLI/`nemora registry` subcommand (and Python helper) that prints the registered bounds/defaults/extras so contributors can inspect metadata without diving into code.
+   - [x] Expand regression tests covering the new helper/CLI output (including plugin registration coverage) and ensure failure modes stay readable.
+   - [x] Publish an updated registry reference (docs + README) connecting the Python helpers, CLI inspection, YAML configs, and entry-point plugins.
 2. **Sampling module adoption**
    - [ ] Wire `BootstrapResult` into upcoming synthforest/simulation plans and document how downstream modules consume its metadata.
    - [x] Add numerical accuracy tests that exercise the trapezoid/Simpson/quad integration modes against SciPy references.
    - [ ] Extend docs/examples so sampling workflows demonstrate ingest-produced Parquet manifests and the configurable numeric integration settings.
 3. **Ingest monitoring & benchmarking**
-   - [ ] Capture `nemora ingest-benchmark` runtime stats (CLI + nightly workflow) and surface the trend in docs or CHANGE_LOG for visibility.
+   - [x] Capture `nemora ingest-benchmark` runtime stats (CLI + nightly workflow) and surface the trend in docs or CHANGE_LOG for visibility.
    - [ ] Document the nightly FAIB/FIA workflow rerun + notification process in `CONTRIBUTING.md` so contributors can verify the job locally.
    - [ ] Evaluate whether manifest Parquet adoption should become the default artifact once benchmarks confirm no downstream regressions.
 
