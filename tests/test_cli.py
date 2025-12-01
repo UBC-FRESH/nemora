@@ -1,3 +1,4 @@
+import json
 import sys
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
@@ -55,6 +56,37 @@ def test_registry_command_lists_distributions() -> None:
     assert result.exit_code == 0
     assert "weibull" in result.stdout.lower()
     assert "Complete-form Weibull" in result.stdout
+
+
+def test_registry_describe_parameter_metadata() -> None:
+    result = runner.invoke(app, ["registry", "--describe", "gamma"])
+    assert result.exit_code == 0
+    assert "gamma" in result.stdout.lower()
+    assert "beta" in result.stdout
+
+
+def test_registry_json_output() -> None:
+    result = runner.invoke(app, ["registry", "--describe", "gamma", "--json"])
+    assert result.exit_code == 0
+    payload = json.loads(result.stdout)
+    assert isinstance(payload, list)
+    assert payload and payload[0]["name"] == "gamma"
+
+
+def test_registry_describe_json() -> None:
+    result = runner.invoke(app, ["registry", "--describe", "weibull", "--json"])
+    assert result.exit_code == 0
+    payload = json.loads(result.stdout)
+    assert isinstance(payload, list)
+    assert payload[0]["name"].lower() == "weibull"
+    assert "bounds" in payload[0]
+
+
+def test_registry_show_metadata_table() -> None:
+    result = runner.invoke(app, ["registry", "--show-metadata"])
+    assert result.exit_code == 0
+    assert "Parameter Bounds" in result.stdout
+    assert "weibull" in result.stdout.lower()
 
 
 def test_version_option() -> None:
@@ -382,6 +414,37 @@ def test_ingest_benchmark_command(tmp_path: Path) -> None:
     )
     assert result.exit_code == 0
     assert "HPS Pipeline Benchmark" in result.stdout
+
+
+def test_ingest_benchmark_command_with_report(tmp_path: Path) -> None:
+    data_dir = tmp_path / "raw"
+    _write_hps_cli_fixtures(data_dir)
+    report_path = tmp_path / "bench.jsonl"
+
+    result = runner.invoke(
+        app,
+        [
+            "ingest-benchmark",
+            str(data_dir),
+            "--no-fetch",
+            "--plot-header-file",
+            "faib_plot_header.csv",
+            "--sample-byvisit-file",
+            "faib_sample_byvisit.csv",
+            "--tree-detail-file",
+            "faib_tree_detail.csv",
+            "--iterations",
+            "2",
+            "--report-path",
+            str(report_path),
+        ],
+    )
+    assert result.exit_code == 0
+    assert report_path.exists()
+    lines = [line for line in report_path.read_text().splitlines() if line.strip()]
+    assert lines
+    entry = json.loads(lines[-1])
+    assert entry["iterations"] == 2
 
 
 def test_ingest_fia_command(tmp_path: Path) -> None:

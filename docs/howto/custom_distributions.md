@@ -113,6 +113,14 @@ nemora registry
 The CLI lists built-in and plugin distributions in alphabetical order. Use `nemora --verbose
 distribution-name` (planned) to inspect parameters and metadata.
 
+To inspect parameter bounds and extras for a specific entry:
+
+```bash
+nemora registry --describe weibull --json
+```
+
+Pass `--show-metadata` to print all distributions in a human-readable table.
+
 Programmatic workflows can call `nemora.distributions.list_registry_metadata()` to inspect bounds
 and extras without parsing CLI output:
 
@@ -122,6 +130,9 @@ from nemora.distributions import list_registry_metadata
 for entry in list_registry_metadata():
     print(entry["name"], entry["parameters"], entry["bounds"].get("a"))
 ```
+
+CLI users can run `nemora registry --describe gamma --show-metadata` (or `--json`) to print the same
+information without writing Python.
 
 ## Testing custom distributions
 

@@ -183,3 +183,13 @@
 
 - Added `nemora.distributions.list_registry_metadata()` so downstream modules and tests can programmatically inspect per-distribution parameters, merged bounds, notes, and extras without reaching into the registry internals.
 - Extended `tests/test_registry.py` to cover the helper (built-ins and plugin metadata) and updated the custom distribution how-to + README so contributors know how to call it before the richer CLI view lands.
+
+## 2025-11-08 — Registry CLI & ingest benchmarking
+
+- Enhanced `nemora registry` with `--describe/--show-metadata/--json` options that render the new metadata helper in tables or JSON, plus CLI/pytest coverage to guard the pathways.
+- Added `--report-path` to `nemora ingest-benchmark` so runtime metrics are appended as JSON lines for trend tracking; docs and the ingest pipeline outline now call out the reporting workflow.
+
+## 2025-11-08 — CLI metadata view
+
+- Extended `nemora registry` with `--describe/--show-metadata/--json` options backed by the new helper, making it possible to inspect bounds/defaults/extras for built-ins and plugins from the command line.
+- Added regression coverage in `tests/test_cli.py` for the new flags and expanded the documentation (README + custom distribution how-to) with usage snippets.

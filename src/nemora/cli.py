@@ -4,14 +4,16 @@
 
 from __future__ import annotations
 
+import json
 import math
 import numbers
 import statistics
 import subprocess
 import time
 from collections.abc import Iterable
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import typer
 from rich.console import Console
@@ -19,7 +21,7 @@ from rich.table import Table
 
 from . import __version__
 from .dataprep import PlotSelection
-from .distributions import get_distribution, list_distributions
+from .distributions import get_distribution, list_distributions, list_registry_metadata
 from .ingest.faib import (
     FAIBManifestResult,
     auto_select_bafs,
@@ -57,6 +59,26 @@ from .workflows.hps import fit_hps_inventory
 
 app = typer.Typer(help="Nemora distribution fitting CLI (distfit alpha).")
 console = Console()
+
+REGISTRY_DESCRIBE_OPTION = typer.Option(
+    None,
+    "--describe",
+    "-d",
+    help="Show metadata for a specific distribution (case-insensitive).",
+    show_default=False,
+)
+REGISTRY_SHOW_METADATA_OPTION = typer.Option(
+    False,
+    "--show-metadata",
+    help="Include parameter bounds/extras when listing distributions.",
+    show_default=False,
+)
+REGISTRY_JSON_OPTION = typer.Option(
+    False,
+    "--json",
+    help="Output registry metadata as JSON (compatible with --describe/--show-metadata).",
+    show_default=False,
+)
 
 
 def _prepare_hps_inputs(
@@ -399,6 +421,12 @@ FAIB_HPS_TREE_DETAIL_OPTION = typer.Option(
     help="Filename of the FAIB tree detail CSV.",
     show_default=True,
 )
+INGEST_BENCHMARK_REPORT_OPTION = typer.Option(
+    None,
+    "--report-path",
+    help="Append JSON benchmark metrics to this path (newline-delimited).",
+    show_default=False,
+)
 
 FAIB_HPS_DRY_RUN_OPTION = typer.Option(
     False,
@@ -497,9 +525,59 @@ def cli_callback(  # noqa: B008
         raise typer.Exit()
 
 
+def _format_bound(value: float | None) -> str:
+    if value is None:
+        return "—"
+    return f"{value:.6g}"
+
+
+def _print_registry_metadata(entries: list[dict[str, object]], *, json_output: bool) -> None:
+    if json_output:
+        console.print(json.dumps(entries, indent=2, default=str))
+        return
+    for entry in entries:
+        name = str(entry.get("name", ""))
+        notes = entry.get("notes") or ""
+        console.print(f"[bold]{name}[/bold] {notes}")
+        parameters = cast(tuple[str, ...], entry.get("parameters") or ())
+        bounds = cast(dict[str, tuple[float | None, float | None]], entry.get("bounds") or {})
+        bounds_table = Table(
+            title="Parameter Bounds",
+            show_header=True,
+            header_style="bold magenta",
+        )
+        bounds_table.add_column("Parameter")
+        bounds_table.add_column("Lower", justify="right")
+        bounds_table.add_column("Upper", justify="right")
+        for param in parameters:
+            lower, upper = bounds.get(param, (None, None))
+            bounds_table.add_row(param, _format_bound(lower), _format_bound(upper))
+        console.print(bounds_table)
+        extras = entry.get("extras")
+        if extras:
+            console.print(f"Extras: {extras}")
+        console.print()
+
+
 @app.command()
-def registry() -> None:
+def registry(  # noqa: B008
+    describe: str | None = REGISTRY_DESCRIBE_OPTION,
+    show_metadata: bool = REGISTRY_SHOW_METADATA_OPTION,
+    json_output: bool = REGISTRY_JSON_OPTION,
+) -> None:
     """List registered distributions."""
+    metadata_mode = describe is not None or show_metadata or json_output
+    if metadata_mode:
+        if describe:
+            entries = list_registry_metadata(names=[describe])
+            if not entries:
+                console.print(f"[red]Unknown distribution '{describe}'.[/red]")
+                raise typer.Exit(code=1)
+        else:
+            entries = list_registry_metadata()
+        _print_registry_metadata(entries, json_output=json_output)
+        return
+
     table = Table(title="Registered Distributions")
     table.add_column("Name")
     table.add_column("Parameters")
@@ -825,6 +903,7 @@ def ingest_benchmark(  # noqa: B008
     plot_header_file: str = FAIB_HPS_PLOT_HEADER_OPTION,
     sample_byvisit_file: str = FAIB_HPS_SAMPLE_BYVISIT_OPTION,
     tree_detail_file: str = FAIB_HPS_TREE_DETAIL_OPTION,
+    report_path: Path | None = INGEST_BENCHMARK_REPORT_OPTION,
 ) -> None:
     """Benchmark the FAIB→HPS pipeline without writing outputs."""
 
@@ -892,6 +971,26 @@ def ingest_benchmark(  # noqa: B008
         f"[green]Tree total:[/green] {tree_total} "
         f"(plots={len(final_result.tallies)}, live_status={', '.join(live_status)})"
     )
+    if report_path is not None:
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        metrics = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "iterations": iterations,
+            "average_seconds": avg,
+            "fastest_seconds": fastest,
+            "slowest_seconds": slowest,
+            "tree_total": tree_total,
+            "plots": len(final_result.tallies),
+            "live_status": list(live_status),
+            "baf": baf,
+            "bin_width": bin_width,
+            "bin_origin": bin_origin,
+            "chunk_size": chunk_size,
+        }
+        with report_path.open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(metrics))
+            handle.write("\n")
+        console.print(f"[blue]Appended benchmark metrics to {report_path}[/blue]")
 
 
 @app.command("ingest-fia")
