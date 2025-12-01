@@ -162,3 +162,9 @@
 - Manifest generation can now emit a Parquet copy (`--parquet` flag / `write_parquet=True`) for downstream analytics, and an `ingest-benchmark` CLI command times the HPS pipeline without writing outputs.
 - Sampling module updates: configurable `SamplingConfig` controls numeric integration (grid density, trapezoid/quad backends), `bootstrap_inventory` can now return a `BootstrapResult` carrying metadata/stacked samples, and analytic inverse CDFs were wired up for Weibull, exponential, Pareto, uniform, and lognormal distributions to enable direct inverse-transform sampling.
 - Tests executed: `pytest tests/test_ingest_faib.py tests/test_cli.py::test_ingest_faib_command tests/test_cli.py::test_ingest_faib_command_with_fetch tests/test_cli.py::test_faib_manifest_command`.
+
+## 2025-11-08 — Roadmap and planning refresh
+
+- Brought the Phase 2 roadmap up to date: marked the distribution extension-point work complete, added new “Detailed Next Steps” items for registry metadata consolidation, sampling adoption, and ingest benchmarking so the plan matches current priorities.
+- Synced `notes/nemora_modular_reorg_plan.md` with the delivered FAIB/FIA connectors, ingest docs, and nightly monitoring while queuing the distribution-metadata audit, sampling follow-through, and ingest metric capture as the next sequenced tasks.
+- Updated `notes/ingest_pipeline_outline.md` and `notes/sampling_module_plan.md` to mark finished work with `[x]`, highlight the remaining metric-tracking/sampling items, and keep contributors aligned on what is actually pending vs. complete.
