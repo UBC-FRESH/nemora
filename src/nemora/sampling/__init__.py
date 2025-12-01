@@ -14,6 +14,10 @@ from ..core import FitResult, MixtureFitResult
 from ..distfit.mixture import sample_mixture as distfit_sample_mixture
 from ..distributions import Pdf, get_distribution
 
+_CDF_CACHE: dict[
+    tuple[str, tuple[tuple[str, float], ...], str, int, float], tuple[np.ndarray, np.ndarray]
+] = {}
+
 __all__ = [
     "BootstrapResult",
     "SamplingConfig",
@@ -33,6 +37,7 @@ class SamplingConfig:
     integration_method: Literal["trapezoid", "simpson", "quad"] = "trapezoid"
     quad_abs_tol: float = 1e-8
     quad_rel_tol: float = 1e-6
+    cache_numeric_cdf: bool = False
 
 
 @dataclass(slots=True)
@@ -145,13 +150,36 @@ def pdf_to_cdf(
     chosen_method = method
     if method == "analytic" and dist.cdf is None:
         chosen_method = "numeric"
-    xs, cdf_vals = _prepare_cdf_grid(
-        distribution,
-        params,
-        method=chosen_method,
-        grid=grid,
-        cfg=cfg,
-    )
+
+    cache_key = None
+    if cfg.cache_numeric_cdf and chosen_method == "numeric" and grid is None:
+        cache_key = (
+            distribution,
+            tuple(sorted(params.items(), key=lambda item: item[0])),
+            cfg.integration_method,
+            cfg.grid_points,
+            cfg.support_multiplier,
+        )
+        cached = _CDF_CACHE.get(cache_key)
+        if cached is not None:
+            xs, cdf_vals = cached
+        else:
+            xs, cdf_vals = _prepare_cdf_grid(
+                distribution,
+                params,
+                method=chosen_method,
+                grid=grid,
+                cfg=cfg,
+            )
+            _CDF_CACHE[cache_key] = (xs, cdf_vals)
+    else:
+        xs, cdf_vals = _prepare_cdf_grid(
+            distribution,
+            params,
+            method=chosen_method,
+            grid=grid,
+            cfg=cfg,
+        )
 
     def cdf_func(values: np.ndarray) -> np.ndarray:
         vals = np.asarray(values, dtype=float)

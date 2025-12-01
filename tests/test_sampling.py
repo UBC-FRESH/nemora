@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 from scipy.stats import gamma as scipy_gamma
 
+from nemora import sampling as sampling_module
 from nemora.core import FitResult, MixtureComponentFit, MixtureFitResult
 from nemora.sampling import (
     BootstrapResult,
@@ -42,6 +43,30 @@ def test_pdf_to_cdf_numeric_methods_match_gamma(cfg: SamplingConfig, tolerance: 
     ours = cdf_fn(values)
     expected = scipy_gamma.cdf(values, params["p"], scale=params["beta"])
     np.testing.assert_allclose(ours, expected, atol=tolerance)
+
+
+def test_pdf_to_cdf_caching_reuses_numeric_grid(monkeypatch: pytest.MonkeyPatch) -> None:
+    params = {"beta": 4.0, "p": 3.0, "s": 1.0}
+    cfg = SamplingConfig(
+        grid_points=256,
+        support_multiplier=8.0,
+        integration_method="trapezoid",
+        cache_numeric_cdf=True,
+    )
+    call_counter = {"count": 0}
+
+    original = sampling_module._numeric_cdf
+
+    def counting_numeric_cdf(xs: np.ndarray, pdf_callable, *, cfg: SamplingConfig) -> np.ndarray:
+        call_counter["count"] += 1
+        return original(xs, pdf_callable, cfg=cfg)
+
+    monkeypatch.setattr(sampling_module, "_numeric_cdf", counting_numeric_cdf)
+    cdf_fn = pdf_to_cdf("gamma", params, method="numeric", config=cfg)
+    cdf_fn(np.linspace(0.0, cfg.support_multiplier * params["beta"], 10))
+    # Second call should hit the cache and avoid invoking the numeric integrator.
+    cdf_fn(np.linspace(0.0, cfg.support_multiplier * params["beta"], 10))
+    assert call_counter["count"] == 1
 
 
 def test_pdf_to_cdf_numeric_monotonicity() -> None:
