@@ -168,3 +168,9 @@
 - Brought the Phase 2 roadmap up to date: marked the distribution extension-point work complete, added new “Detailed Next Steps” items for registry metadata consolidation, sampling adoption, and ingest benchmarking so the plan matches current priorities.
 - Synced `notes/nemora_modular_reorg_plan.md` with the delivered FAIB/FIA connectors, ingest docs, and nightly monitoring while queuing the distribution-metadata audit, sampling follow-through, and ingest metric capture as the next sequenced tasks.
 - Updated `notes/ingest_pipeline_outline.md` and `notes/sampling_module_plan.md` to mark finished work with `[x]`, highlight the remaining metric-tracking/sampling items, and keep contributors aligned on what is actually pending vs. complete.
+
+## 2025-11-08 — Distribution metadata & sampling accuracy
+
+- Centralised Nemora’s canonical parameter bounds via `default_parameter_bounds` inside `src/nemora/distributions`, hooked `default_fit_config` to consume the shared helper, and documented the API in the custom distributions how-to so CLI/fitting helpers all share one metadata source.
+- Added regression coverage for the new helper in `tests/test_registry.py` and ensured the roadmap/plan documents reflect the completed metadata consolidation plus the remaining ingestion/sampling follow-ups.
+- Hardened sampling accuracy tests: new SciPy-backed assertions cover trapezoid, Simpson, and quad integration modes, while the sampling how-to now calls out how downstream modules (synthforest, simulations, ingest benchmarking) should consume `BootstrapResult` metadata.

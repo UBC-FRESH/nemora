@@ -7,6 +7,11 @@ extended at runtime. You can plug in additional probability density functions ei
 Python API directly, by installing a plugin that exposes an entry point, or by pointing the toolkit
 at a YAML configuration file.
 
+The helper `nemora.distributions.default_parameter_bounds()` exposes Nemora’s canonical parameter
+constraints (e.g. enforcing positive shape/scale parameters or simplex-constrained `omega` weights).
+CLI and fitting helpers fall back to these defaults whenever an individual `Distribution` does not
+override the `bounds` field.
+
 ## Python API
 
 ```python

@@ -99,3 +99,28 @@ arrays and metadata (distribution, parameters, bins, tallies, RNG seed).
 .. warning::
    These APIs are experimental. Expect refinements (additional configuration,
    performance tuning) as we integrate them with downstream modules.
+
+## Bootstrap result metadata
+
+`bootstrap_inventory(..., return_result=True)` returns a `BootstrapResult`
+containing:
+
+- `samples`: list of `(bin, draw)` arrays
+- `distribution` / `parameters`: metadata from the fit
+- `bins`, `tallies`, `resamples`, `sample_size`, `rng_seed`
+- Convenience helpers: `stacked()` to concatenate samples (future: `to_dataframe()`)
+
+Use the metadata when passing bootstrap outputs into synthforest or simulations.
+
+## Using bootstrap outputs downstream
+
+- **Synthforest** expects paired `(bin, draw)` arrays plus the originating fit metadata so stem or
+  stand generators can report provenance. `BootstrapResult.stacked()` produces the 2-column arrays
+  synthforest will ingest directly.
+- **Simulations** can persist the entire `BootstrapResult` (including RNG seed) to regenerate
+  uncertainty studies or re-run Monte Carlo workflows deterministically.
+- **Ingest + benchmarking notebooks** should write the stacked output to Parquet so future steps can
+  slice by distribution, BAF, or inventory metadata without re-running the bootstrap sampling step.
+
+Downstream modules should rely on the metadata provided here rather than reconstructing provenance
+manually.

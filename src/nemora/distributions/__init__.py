@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 from pathlib import Path
 
 import numpy as np
@@ -33,6 +33,7 @@ __all__ = [
     "clear_registry",
     "GENERALIZED_BETA_DISTRIBUTIONS",
     "GENERALIZED_SECANT_DISTRIBUTIONS",
+    "default_parameter_bounds",
 ]
 
 
@@ -293,6 +294,40 @@ def _build_generalized_secant_distributions() -> list[Distribution]:
 GENERALIZED_SECANT_DISTRIBUTIONS = _build_generalized_secant_distributions()
 
 STANDARD_DISTRIBUTIONS.extend(GENERALIZED_SECANT_DISTRIBUTIONS)
+
+
+_LOWER_BOUNDED_PARAMS: dict[str, tuple[float | None, float | None]] = {
+    "a": (1e-6, None),
+    "b": (1e-6, None),
+    "beta": (1e-6, None),
+    "p": (1e-6, None),
+    "q": (1e-6, None),
+    "sigma2": (1e-6, None),
+    "d": (1e-6, None),
+    "u": (1e-6, None),
+    "v": (1e-6, None),
+    "df": (1e-6, None),
+    "s": (1e-6, None),
+    "alpha": (1e-6, None),
+    "scale": (1e-6, None),
+    "beta1": (1e-6, None),
+}
+
+
+def default_parameter_bounds(
+    parameters: Iterable[str],
+) -> dict[str, tuple[float | None, float | None]]:
+    """Return heuristic bounds for standard Nemora distribution parameters."""
+
+    bounds: dict[str, tuple[float | None, float | None]] = {}
+    for name in parameters:
+        if name.startswith("omega"):
+            bounds[name] = (1e-6, 1.0)
+            continue
+        param_bounds = _LOWER_BOUNDED_PARAMS.get(name)
+        if param_bounds:
+            bounds[name] = param_bounds
+    return bounds
 
 
 def _apply_inverse_metadata(dist: Distribution) -> None:

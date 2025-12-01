@@ -9,6 +9,7 @@ import pytest
 from nemora.distributions import (
     GENERALIZED_BETA_DISTRIBUTIONS,
     clear_registry,
+    default_parameter_bounds,
     get_distribution,
     list_distributions,
 )
@@ -118,6 +119,14 @@ def test_entry_point_registration(monkeypatch: pytest.MonkeyPatch) -> None:
     assert np.allclose(result, 2.5)
 
     _reload_registry()
+
+
+def test_default_parameter_bounds_helper() -> None:
+    bounds = default_parameter_bounds(("a", "omega1", "sigma2", "loc"))
+    assert bounds["a"] == (1e-6, None)
+    assert bounds["omega1"] == (1e-6, 1.0)
+    assert bounds["sigma2"] == (1e-6, None)
+    assert "loc" not in bounds
 
 
 def test_yaml_registration(tmp_path: Path) -> None:

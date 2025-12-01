@@ -107,6 +107,6 @@ src/nemora/
 
 ## Next Steps
 
-1. [ ] Consolidate distribution metadata (bounds/defaults/extras) into `nemora.distributions`, add registry helper docs/tests, and align TOP-level roadmap tasks with the new coverage.
-2. [ ] Extend the sampling roadmap: adopt `BootstrapResult` downstream (synthforest/simulations), add property-based accuracy tests, and document CLI usage for the new numeric integration controls.
+1. [x] Consolidate distribution metadata (bounds/defaults/extras) into `nemora.distributions`, add registry helper docs/tests, and align top-level roadmap tasks with the new coverage.
+2. [ ] Extend the sampling roadmap: wire `BootstrapResult` outputs into synthforest/simulations, cache/reuse numeric CDF grids for repeated sampling workloads, and document CLI usage for the new integration controls (accuracy tests against SciPy are already in place).
 3. [ ] Capture ingest benchmarking metrics (from `nemora ingest-benchmark` and nightly runs), decide how to surface trends, and document the workflow in README/CONTRIBUTING for ongoing monitoring.

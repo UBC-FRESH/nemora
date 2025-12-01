@@ -62,7 +62,7 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
    - [ ] Publish an updated registry reference (docs + README) connecting the Python helpers, CLI inspection, YAML configs, and entry-point plugins.
 2. **Sampling module adoption**
    - [ ] Wire `BootstrapResult` into upcoming synthforest/simulation plans and document how downstream modules consume its metadata.
-   - [ ] Add property-based or numerical accuracy tests that exercise the trapezoid/Simpson/quad integration modes against SciPy references.
+   - [x] Add numerical accuracy tests that exercise the trapezoid/Simpson/quad integration modes against SciPy references.
    - [ ] Extend docs/examples so sampling workflows demonstrate ingest-produced Parquet manifests and the configurable numeric integration settings.
 3. **Ingest monitoring & benchmarking**
    - [ ] Capture `nemora ingest-benchmark` runtime stats (CLI + nightly workflow) and surface the trend in docs or CHANGE_LOG for visibility.

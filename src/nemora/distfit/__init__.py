@@ -12,7 +12,7 @@ from lmfit import Model
 from scipy.optimize import curve_fit
 
 from ..core import FitResult, InventorySpec
-from ..distributions import Distribution, get_distribution
+from ..distributions import Distribution, default_parameter_bounds, get_distribution
 from .grouped import get_grouped_estimator
 
 Objective = Callable[[np.ndarray, np.ndarray, Mapping[str, float]], float]
@@ -61,35 +61,6 @@ def _moment_summary(x: np.ndarray, y: np.ndarray) -> tuple[float, float, float, 
 
 def _positive(value: float, fallback: float = 1.0) -> float:
     return float(value) if value > 0 else float(fallback)
-
-
-def _default_bounds(parameters: tuple[str, ...]) -> dict[str, tuple[float | None, float | None]]:
-    lower_positive = {
-        "a",
-        "b",
-        "beta",
-        "p",
-        "q",
-        "sigma2",
-        "d",
-        "u",
-        "v",
-        "df",
-        "s",
-        "alpha",
-        "scale",
-    }
-    bounds: dict[str, tuple[float | None, float | None]] = {}
-    for name in parameters:
-        lower: float | None = None
-        upper: float | None = None
-        if name in lower_positive or name.startswith("omega"):
-            lower = 1e-6
-        if name.startswith("omega"):
-            upper = 1.0
-        if lower is not None or upper is not None:
-            bounds[name] = (lower, upper)
-    return bounds
 
 
 def _residual_summary(residuals: np.ndarray) -> dict[str, float]:
@@ -199,7 +170,9 @@ def default_fit_config(name: str, x: np.ndarray, y: np.ndarray) -> FitConfig:
             guess = 1.0 / component_count
         initial[param] = _positive(guess, 1.0)
 
-    bounds = _default_bounds(dist.parameters)
+    bounds = default_parameter_bounds(dist.parameters)
+    if dist.bounds:
+        bounds.update(dist.bounds)
     return FitConfig(distribution=name, initial=initial, bounds=bounds or None)
 
 

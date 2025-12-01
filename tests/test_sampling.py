@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 import pytest
 from scipy.stats import gamma as scipy_gamma
@@ -12,47 +14,41 @@ from nemora.sampling import (
     sample_mixture_fit,
 )
 
-
-@pytest.mark.parametrize(
-    "distribution,params",
-    [
-        ("weibull", {"a": 2.0, "beta": 10.0, "s": 1.0}),
-        ("gamma", {"beta": 4.0, "p": 3.0, "s": 1.0}),
-    ],
+ACCURACY_CASES: tuple[tuple[SamplingConfig, float], ...] = (
+    (
+        SamplingConfig(grid_points=8192, support_multiplier=12.0, integration_method="trapezoid"),
+        3e-3,
+    ),
+    (SamplingConfig(grid_points=8192, support_multiplier=12.0, integration_method="simpson"), 3e-3),
+    (
+        SamplingConfig(
+            grid_points=1024,
+            support_multiplier=12.0,
+            integration_method="quad",
+            quad_abs_tol=1e-9,
+            quad_rel_tol=1e-8,
+        ),
+        3e-3,
+    ),
 )
-def test_pdf_to_cdf_numeric(distribution: str, params: dict[str, float]) -> None:
-    cfg = SamplingConfig(grid_points=256, integration_method="trapezoid")
-    grid = np.linspace(0.1, 50.0, cfg.grid_points)
-    cdf_fn = pdf_to_cdf(distribution, params, method="numeric", grid=grid, config=cfg)
-    values = np.array([0.1, 10.0, 20.0, 40.0])
-    cdf_values = cdf_fn(values)
-    assert np.all(np.diff(cdf_values) >= 0)  # monotonic
-    assert cdf_values[0] >= 0
-    assert cdf_values[-1] <= 1
 
 
-def test_pdf_to_cdf_quad_matches_gamma() -> None:
-    cfg = SamplingConfig(
-        grid_points=1024,
-        support_multiplier=10.0,
-        integration_method="quad",
-        quad_abs_tol=1e-9,
-        quad_rel_tol=1e-8,
-    )
+@pytest.mark.parametrize(("cfg", "tolerance"), ACCURACY_CASES)
+def test_pdf_to_cdf_numeric_methods_match_gamma(cfg: SamplingConfig, tolerance: float) -> None:
     params = {"beta": 4.0, "p": 3.0, "s": 1.0}
     cdf_fn = pdf_to_cdf("gamma", params, method="numeric", config=cfg)
     support = cfg.support_multiplier * params["beta"]
-    values = np.linspace(0.0, support, 10)
+    values = np.linspace(0.0, support, 20)
     ours = cdf_fn(values)
     expected = scipy_gamma.cdf(values, params["p"], scale=params["beta"])
-    np.testing.assert_allclose(ours, expected, atol=5e-3)
+    np.testing.assert_allclose(ours, expected, atol=tolerance)
 
 
-def test_pdf_to_cdf_simpson_monotonic() -> None:
-    cfg = SamplingConfig(grid_points=256, integration_method="simpson")
-    params = {"a": 2.0, "beta": 8.0, "s": 1.0}
+def test_pdf_to_cdf_numeric_monotonicity() -> None:
+    params = {"a": 2.0, "beta": 10.0, "s": 1.0}
+    cfg = SamplingConfig(grid_points=256)
     cdf_fn = pdf_to_cdf("weibull", params, method="numeric", config=cfg)
-    values = np.linspace(0.0, 30.0, 20)
+    values = np.linspace(0.0, 30.0, 25)
     cdf_values = cdf_fn(values)
     assert np.all(np.diff(cdf_values) >= -1e-9)
 
