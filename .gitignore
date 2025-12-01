@@ -41,3 +41,5 @@ reference-data/
 *.swp
 .idea/
 .vscode/
+
+notes/coding-agent-conversation-log.txt
