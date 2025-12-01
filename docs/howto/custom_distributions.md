@@ -113,6 +113,16 @@ nemora registry
 The CLI lists built-in and plugin distributions in alphabetical order. Use `nemora --verbose
 distribution-name` (planned) to inspect parameters and metadata.
 
+Programmatic workflows can call `nemora.distributions.list_registry_metadata()` to inspect bounds
+and extras without parsing CLI output:
+
+```python
+from nemora.distributions import list_registry_metadata
+
+for entry in list_registry_metadata():
+    print(entry["name"], entry["parameters"], entry["bounds"].get("a"))
+```
+
 ## Testing custom distributions
 
 When adding a new distribution, unit tests should exercise the PDF across representative DBH vectors

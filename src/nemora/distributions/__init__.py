@@ -34,6 +34,7 @@ __all__ = [
     "GENERALIZED_BETA_DISTRIBUTIONS",
     "GENERALIZED_SECANT_DISTRIBUTIONS",
     "default_parameter_bounds",
+    "list_registry_metadata",
 ]
 
 
@@ -373,3 +374,40 @@ def _load_config_files() -> None:
 _register_builtin()
 load_entry_points()
 _load_config_files()
+
+
+def list_registry_metadata(
+    *,
+    names: Iterable[str] | None = None,
+) -> list[dict[str, object]]:
+    """Return structured metadata for registered distributions.
+
+    Parameters
+    ----------
+    names:
+        Optional iterable of distribution names to filter the registry results. When omitted,
+        all distributions are returned. Matching is case-insensitive.
+    """
+
+    if names is None:
+        requested = set(list_distributions())
+    else:
+        requested = {name.lower() for name in names}
+    metadata: list[dict[str, object]] = []
+    for name in list_distributions():
+        if requested and name.lower() not in requested:
+            continue
+        dist = get_distribution(name)
+        entry_bounds = default_parameter_bounds(dist.parameters)
+        if dist.bounds:
+            entry_bounds.update(dist.bounds)
+        metadata.append(
+            {
+                "name": dist.name,
+                "parameters": dist.parameters,
+                "bounds": entry_bounds,
+                "notes": dist.notes,
+                "extras": dist.extras,
+            }
+        )
+    return metadata

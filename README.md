@@ -12,6 +12,8 @@ still fluid—expect rapid iteration and watch the changelog.
   module (e.g., `InventorySpec`, `FitResult`, reproducible random seeds).
 - **Central distribution registry (`nemora.distributions`)** – a single source of truth for
   forestry-relevant PDFs/CDFs used by ingestion, fitting, sampling, and synthetic generation.
+  Inspect metadata via `nemora.distributions.list_registry_metadata()` (or the CLI `nemora registry`
+  command) to review bounds/defaults/extras for built-ins and plugins.
 - **Distribution fitting (`nemora.distfit`)** – grouped estimators, mixture fitting, and goodness-of-fit
   diagnostics. This is the first module we are pushing to alpha.
 - **Sampling utilities (`nemora.sampling`)** – analytic/numeric PDF→CDF inversion, bootstrap and

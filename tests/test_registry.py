@@ -12,6 +12,7 @@ from nemora.distributions import (
     default_parameter_bounds,
     get_distribution,
     list_distributions,
+    list_registry_metadata,
 )
 from nemora.distributions import base as base_registry
 
@@ -127,6 +128,17 @@ def test_default_parameter_bounds_helper() -> None:
     assert bounds["omega1"] == (1e-6, 1.0)
     assert bounds["sigma2"] == (1e-6, None)
     assert "loc" not in bounds
+
+
+def test_list_registry_metadata_reports_bounds_and_extras() -> None:
+    metadata = list_registry_metadata(names=["weibull", "gamma"])
+    names = {entry["name"] for entry in metadata}
+    assert names == {"weibull", "gamma"}
+    weibull = next(entry for entry in metadata if entry["name"] == "weibull")
+    bounds = weibull["bounds"]
+    assert isinstance(bounds, dict)
+    assert bounds["a"] == (1e-6, None)
+    assert weibull["extras"] is None
 
 
 def test_yaml_registration(tmp_path: Path) -> None:

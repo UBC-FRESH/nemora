@@ -178,3 +178,8 @@
 ## 2025-11-08 — Registry inspection planning
 
 - Updated the Phase 2 roadmap and modular reorg plan with the concrete registry inspection tasks: publish a Python helper to list per-distribution metadata, add a `nemora registry --describe/--show-metadata` CLI view, extend regression/CLI coverage, and refresh docs/README so contributors can audit plugin bounds/defaults without spelunking through code.
+
+## 2025-11-08 — Registry metadata helper
+
+- Added `nemora.distributions.list_registry_metadata()` so downstream modules and tests can programmatically inspect per-distribution parameters, merged bounds, notes, and extras without reaching into the registry internals.
+- Extended `tests/test_registry.py` to cover the helper (built-ins and plugin metadata) and updated the custom distribution how-to + README so contributors know how to call it before the richer CLI view lands.
