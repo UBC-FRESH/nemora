@@ -5,7 +5,7 @@ from __future__ import annotations
 import numbers
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
 from scipy import integrate
@@ -13,6 +13,9 @@ from scipy import integrate
 from ..core import FitResult, MixtureFitResult
 from ..distfit.mixture import sample_mixture as distfit_sample_mixture
 from ..distributions import Pdf, get_distribution
+
+if TYPE_CHECKING:  # pragma: no cover
+    import pandas as pd
 
 _CDF_CACHE: dict[
     tuple[str, tuple[tuple[str, float], ...], str, int, float], tuple[np.ndarray, np.ndarray]
@@ -59,6 +62,25 @@ class BootstrapResult:
         if not self.samples:
             return np.empty((0, 2), dtype=float)
         return np.concatenate(self.samples, axis=0)
+
+    def to_dataframe(self) -> pd.DataFrame:  # pragma: no cover - exercised in tests
+        """Return bootstrap samples as a DataFrame with resample identifiers."""
+
+        import pandas as pd
+
+        rows: list[dict[str, float | int]] = []
+        for idx, sample in enumerate(self.samples):
+            if sample.size == 0:
+                continue
+            rows.extend(
+                {
+                    "resample": idx,
+                    "bin": float(pair[0]),
+                    "draw": float(pair[1]),
+                }
+                for pair in sample
+            )
+        return pd.DataFrame(rows, columns=["resample", "bin", "draw"])
 
 
 def _grid_from_params(

@@ -18,10 +18,10 @@ Status: Working outline for Phase 2 sampling deliverables.
    - [ ] Decide whether to add logistic/fisk inverses or document their numeric fallback explicitly.
 2. **Numeric PDF→CDF integration**
    - [x] Extend `pdf_to_cdf` to accept trapezoid/Simpson grids and `scipy.integrate.quad`, exposing tolerances via `SamplingConfig`.
-   - [ ] Cache numeric grids for reuse when sampling repeatedly from the same fit.
+   - [x] Cache numeric grids for reuse when sampling repeatedly from the same fit (optional `cache_numeric_cdf=True`).
    - [x] Validate numeric integration against additional reference distributions and capture error bounds/benchmarks in docs/tests (gamma vs. SciPy coverage landed).
 3. **Bootstrap API surface**
-   - [x] Finalise `bootstrap_inventory` interface and introduce `BootstrapResult` with metadata + helper methods, documenting usage in `docs/howto/sampling.md`.
+   - [x] Finalise `bootstrap_inventory` interface and introduce `BootstrapResult` with metadata + helper methods (`stacked()`, `to_dataframe()`), documenting usage in `docs/howto/sampling.md`.
    - [ ] Provide helpers/examples for sampling DBH vectors vs stand tables and clarify grouped-fit metadata propagation.
    - [ ] Ensure compatibility with synthforest by planning how `BootstrapResult` feeds downstream workflows (documented adoption guidance now lives in `docs/howto/sampling.md`; next step is wiring synthforest consumers).
 4. **Mixture sampling enhancements**
@@ -50,7 +50,7 @@ Status: Working outline for Phase 2 sampling deliverables.
 
 - [x] Draft distribution-specific inverse CDF capability matrix and wire analytic helpers into the registry.
 - [x] Add configurable grid density/tolerance options to `pdf_to_cdf`; document the gamma benchmark results.
-- [ ] Cache/reuse numeric grids (or memoized integration results) for repeated sampling workloads.
+- [x] Cache/reuse numeric grids (or memoized integration results) for repeated sampling workloads.
 - [x] Add property-based / numeric accuracy tests covering trapezoid, Simpson, and quad integration modes.
-- [x] Introduce `BootstrapResult`, document its metadata contract, and expose helper methods (e.g., `stacked`).
+- [x] Introduce `BootstrapResult`, document its metadata contract, and expose helper methods (e.g., `stacked`, `to_dataframe`).
 - [ ] Align naming/structure with upcoming synthforest sampling needs, including DBH vector helpers and grouped-fit metadata propagation.

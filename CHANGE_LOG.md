@@ -198,3 +198,8 @@
 
 - Updated the roadmap and modular reorg plan to mark the registry CLI tasks complete and queue the next deliverables (sampling adoption + ingest benchmark telemetry automation).
 - Documented `ingest-benchmark --report-path` usage in the ingest how-to and captured the plan to persist JSONL metrics via the nightly workflow / CHANGE_LOG trend summaries.
+
+## 2025-11-08 — Sampling cache & bootstrap helpers
+
+- Added optional numeric CDF caching (`SamplingConfig.cache_numeric_cdf`) so repeated sampling calls can reuse previously integrated grids; docs highlight the flag and tests verify the cache path.
+- `BootstrapResult` now offers `to_dataframe()` in addition to `stacked()`, making it easier for upcoming synthforest/simulation consumers to ingest metadata-rich bootstrap outputs.

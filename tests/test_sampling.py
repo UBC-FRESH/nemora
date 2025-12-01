@@ -160,3 +160,27 @@ def test_bootstrap_inventory_result_wrapper() -> None:
     assert len(result.samples) == 2
     stacked = result.stacked()
     assert stacked.shape[1] == 2
+
+
+def test_bootstrap_result_to_dataframe() -> None:
+    rng = np.random.default_rng(999)
+    bins = np.array([5.0, 15.0, 25.0])
+    tallies = np.array([2.0, 4.0, 1.0])
+    fit = FitResult(
+        distribution="weibull",
+        parameters={"a": 2.5, "beta": 12.0, "s": 1.0},
+    )
+    result = bootstrap_inventory(
+        fit,
+        bins,
+        tallies,
+        resamples=2,
+        sample_size=5,
+        random_state=rng,
+        return_result=True,
+    )
+    assert isinstance(result, BootstrapResult)
+    frame = result.to_dataframe()
+    assert list(frame.columns) == ["resample", "bin", "draw"]
+    assert frame["resample"].nunique() == 2
+    assert len(frame) == 10

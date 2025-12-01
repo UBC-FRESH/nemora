@@ -39,6 +39,8 @@ cdf = pdf_to_cdf(
 The default uses a trapezoid grid; switching to `"quad"` delegates to
 `scipy.integrate.quad` with the tolerances above. You can also set
 `integration_method="simpson"` to integrate via Simpson's rule.
+Set `cache_numeric_cdf=True` if you plan to evaluate the same numeric CDF repeatedly—Nemora caches
+the computed grid/integral pair in-memory so sampling calls avoid rerunning the integrator.
 
 ## Sample from a distribution
 
@@ -108,7 +110,7 @@ containing:
 - `samples`: list of `(bin, draw)` arrays
 - `distribution` / `parameters`: metadata from the fit
 - `bins`, `tallies`, `resamples`, `sample_size`, `rng_seed`
-- Convenience helpers: `stacked()` to concatenate samples (future: `to_dataframe()`)
+- Convenience helpers: `stacked()` to concatenate samples and `to_dataframe()` to return a DataFrame with `resample`, `bin`, and `draw` columns.
 
 Use the metadata when passing bootstrap outputs into synthforest or simulations.
 
