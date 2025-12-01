@@ -35,6 +35,20 @@ jobs:
             tests/test_ingest_faib.py::test_build_faib_dataset_source_integration \
             tests/test_ingest_faib.py::test_download_faib_csvs_integration \
             tests/test_ingest_fia.py::test_download_fia_tables_integration
+      - name: Benchmark ingest pipeline and upload report
+        env:
+          NEMORA_RUN_FAIB_INTEGRATION: "1"
+        run: |
+          mkdir -p reports
+          nemora ingest-benchmark data/external/faib --iterations 3 --report-path reports/ingest_benchmark.jsonl
+        continue-on-error: true
+      - name: Upload ingest benchmark artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ingest-benchmark-report
+          path: reports/ingest_benchmark.jsonl
+          if-no-files-found: ignore
       - name: Create GitHub issue on failure
         if: failure()
         env:

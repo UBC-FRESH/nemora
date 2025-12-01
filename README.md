@@ -68,6 +68,10 @@ NEMORA_RUN_FAIB_INTEGRATION=1 NEMORA_RUN_FIA_INTEGRATION=1 \
          tests/test_ingest_fia.py::test_download_fia_tables_integration
 ```
 
+The nightly workflow also runs `nemora ingest-benchmark --report-path` and uploads the JSONL report
+as an artifact so we can track ingest runtime trends over time. Use the same flag locally when
+profiling changes to append metrics to your own log.
+
 ## Relationship to Other Toolkits
 
 - **ForestFit (R)** – Nemora borrows ideas from the ForestFit literature and logs planned imports in
