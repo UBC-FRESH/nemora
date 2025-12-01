@@ -57,8 +57,9 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 
 ## Detailed Next Steps Notes
 1. **Distribution registry hardening**
-   - [ ] Inventory bounds/defaults/extras scattered across distfit, sampling, and ingest helpers; relocate the metadata into `src/nemora/distributions` and surface it through helper APIs.
-   - [ ] Expand regression tests plus CLI helpers so contributors can list registry metadata and confirm plugin registrations at runtime.
+   - [x] Inventory bounds/defaults/extras scattered across distfit, sampling, and ingest helpers; relocate the metadata into `src/nemora/distributions` and surface it through helper APIs.
+   - [ ] Add a CLI/`nemora registry` subcommand (and Python helper) that prints the registered bounds/defaults/extras so contributors can inspect metadata without diving into code.
+   - [ ] Expand regression tests covering the new helper/CLI output (including plugin registration coverage) and ensure failure modes stay readable.
    - [ ] Publish an updated registry reference (docs + README) connecting the Python helpers, CLI inspection, YAML configs, and entry-point plugins.
 2. **Sampling module adoption**
    - [ ] Wire `BootstrapResult` into upcoming synthforest/simulation plans and document how downstream modules consume its metadata.

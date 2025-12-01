@@ -174,3 +174,7 @@
 - Centralised Nemora’s canonical parameter bounds via `default_parameter_bounds` inside `src/nemora/distributions`, hooked `default_fit_config` to consume the shared helper, and documented the API in the custom distributions how-to so CLI/fitting helpers all share one metadata source.
 - Added regression coverage for the new helper in `tests/test_registry.py` and ensured the roadmap/plan documents reflect the completed metadata consolidation plus the remaining ingestion/sampling follow-ups.
 - Hardened sampling accuracy tests: new SciPy-backed assertions cover trapezoid, Simpson, and quad integration modes, while the sampling how-to now calls out how downstream modules (synthforest, simulations, ingest benchmarking) should consume `BootstrapResult` metadata.
+
+## 2025-11-08 — Registry inspection planning
+
+- Updated the Phase 2 roadmap and modular reorg plan with the concrete registry inspection tasks: publish a Python helper to list per-distribution metadata, add a `nemora registry --describe/--show-metadata` CLI view, extend regression/CLI coverage, and refresh docs/README so contributors can audit plugin bounds/defaults without spelunking through code.
