@@ -128,7 +128,8 @@ src/nemora/
    - [x] Mirror the `UBC-FRESH/fhops` workflow (`.github/workflows/ci.yml`) so CI now installs doc deps, runs `sphinx-build -b html docs _build/html -W`, stages `_build/html` under `tmp/pages/.nojekyll`, and uploads it with `actions/upload-pages-artifact`.
    - [x] Add a `deploy-docs` job gated on `main`, configured with the `github-pages` environment plus `pages: write` / `id-token: write` permissions, so docs auto-deploy after CI succeeds (mirrors FHOPS `deploy-pages` job).
    - [x] Keep room for telemetry/benchmark artifacts alongside the HTML output by staging everything under `tmp/pages/` before publishing; extend later if ingest telemetry needs its own mini-site.
-8. [ ] Finish module rename rollout (fit/synthesis naming + compatibility shims).
-   - [ ] Update roadmap/docs/notes with the final names so contributors expect the change (forest/stand/tree synthesis flows consolidate under `nemora.synthesis`).
-   - [ ] Draft shim strategy (`nemora.distfit`/`nemora.synthforest` re-export with deprecation warnings) and update CLI command prefixes to avoid breaking existing tutorials.
-   - [ ] Execute the package/layout rename on this branch, run the full validation suite, and record the breaking change in CHANGE_LOG once ready to merge to `main`.
+8. [x] Finish module rename rollout (fit/synthesis naming + compatibility shims).
+   - [x] Update roadmap/docs/notes with the final names so contributors expect the change (forest/stand/tree synthesis flows now consolidate under `nemora.synthesis`).
+   - [x] Draft shim strategy (`nemora.distfit`/`nemora.synthforest` re-export with deprecation warnings) and update CLI command prefixes to avoid breaking existing tutorials.
+   - [x] Execute the package/layout rename on this branch, run the full validation suite, and record the breaking change in CHANGE_LOG once ready to merge to `main`.
+   - [x] Repo sweep (2025-12-04) confirmed no lingering `nemora.distfit`/`nemora.synthforest` references outside the shims, roadmap note, and CHANGE_LOG history.

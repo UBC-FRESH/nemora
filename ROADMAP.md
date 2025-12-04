@@ -71,9 +71,9 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
    - [x] Document the nightly FAIB/FIA workflow rerun + notification process in `CONTRIBUTING.md` (plus the new benchmark summary/threshold automation) so contributors can verify the job locally.
    - [x] Evaluate whether manifest Parquet adoption should become the default artifact once benchmarks confirm no downstream regressions (CLI now writes CSV + Parquet by default with `--no-parquet` opt-out).
 4. **Module naming alignment**
-   - [ ] Rename `nemora.fit` to `nemora.fit` while preserving a compatibility shim + CLI aliases so downstream docs/tests stay stable during the transition.
-   - [ ] Rename `nemora.synthforest` to `nemora.synthesis`, folding forest/stand/tree-level generators under the clearer namespace and updating planning docs/notes accordingly.
-   - [ ] Announce the breaking rename in README/CHANGE_LOG once the shims/tests/CLI wiring are proven on a feature branch.
+   - [x] Rename the distribution-fitting stack under `nemora.fit` while preserving compatibility shims/CLI aliases so downstream docs/tests stay stable during the transition.
+   - [x] Rename `nemora.synthforest` to `nemora.synthesis`, folding forest/stand/tree-level generators under the clearer namespace and updating planning docs/notes accordingly.
+   - [x] Announce the breaking rename in README/CHANGE_LOG once the shims/tests/CLI wiring are proven on the `rename-modules-plan` branch (ready to merge into `main`).
 
 ## Backlog & Ideas
 - [ ] Investigate GPU acceleration for large tally batches.
