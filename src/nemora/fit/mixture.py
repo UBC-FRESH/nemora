@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import numbers
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 
@@ -305,10 +306,15 @@ def sample_mixture(
     size: int,
     components: Sequence[MixtureComponentFit],
     *,
-    random_state: int | None = None,
+    random_state: np.random.Generator | numbers.Integral | None = None,
 ) -> np.ndarray:
     """Draw random samples from a fitted mixture."""
-    rng = np.random.default_rng(random_state)
+    if isinstance(random_state, np.random.Generator):
+        rng = random_state
+    elif isinstance(random_state, numbers.Integral):
+        rng = np.random.default_rng(int(random_state))
+    else:
+        rng = np.random.default_rng()
     weights = np.array([component.weight for component in components], dtype=float)
     if not np.isclose(np.sum(weights), 1.0):
         raise ValueError("Component weights must sum to one.")

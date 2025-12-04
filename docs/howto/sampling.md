@@ -72,8 +72,10 @@ mixture = MixtureFitResult(
     iterations=10,
     converged=True,
 )
-draws = sample_mixture_fit(mixture, size=1000)
+draws = sample_mixture_fit(mixture, size=1000, random_state=np.random.default_rng(42))
 ```
+
+Pass a `numpy.random.Generator` (or integer seed) via `random_state` to obtain reproducible mixture draws.
 
 ## Bootstrap a fitted inventory
 

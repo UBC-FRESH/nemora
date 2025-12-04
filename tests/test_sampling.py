@@ -120,6 +120,25 @@ def test_sample_mixture_fit_matches_component_weights() -> None:
     assert np.all(draws >= 0)
 
 
+def test_sample_mixture_fit_accepts_generator() -> None:
+    components = [
+        MixtureComponentFit(name="gamma", weight=0.5, parameters={"beta": 2.0, "p": 2.0}),
+        MixtureComponentFit(name="gamma", weight=0.5, parameters={"beta": 5.0, "p": 4.0}),
+    ]
+    mixture = MixtureFitResult(
+        distribution="mixture",
+        components=components,
+        log_likelihood=-10.0,
+        iterations=5,
+        converged=True,
+    )
+    rng1 = np.random.default_rng(999)
+    rng2 = np.random.default_rng(999)
+    draws_a = sample_mixture_fit(mixture, size=50, random_state=rng1)
+    draws_b = sample_mixture_fit(mixture, size=50, random_state=rng2)
+    np.testing.assert_allclose(draws_a, draws_b)
+
+
 def test_bootstrap_inventory_resamples() -> None:
     rng = np.random.default_rng(42)
     bins = np.array([10.0, 20.0, 30.0])

@@ -37,6 +37,7 @@ Status: Working outline for Phase 2 sampling deliverables.
   Ship a focused helper (and CLI stub) that accepts `BootstrapResult` plus stand metadata, emits DBH vectors grouped by stand, and showcases the flow in `docs/examples/faib_manifest_parquet.md`. Extend tests to cover grouped-fit metadata propagation.
 - [ ] **Mixture RNG plumbing**
   Thread `numpy.random.Generator` support through `sample_mixture`/`SamplingConfig`, add deterministic regression cases, and write short docs in `docs/howto/sampling.md`.
+- [x] Implemented via `sample_mixture_fit(..., random_state=Generator | int)` with regression coverage + doc updates (2025-12-05).
 - [ ] **Truncated / weighted mixtures**
   Decide on API for truncation bounds and mixture-of-experts weights, stub the interface, and log follow-up notes for synthesis/simulation consumers.
 

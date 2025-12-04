@@ -253,14 +253,14 @@ def sample_mixture_fit(
     random_state: np.random.Generator | int | None = None,
 ) -> np.ndarray:
     """Sample from a :class:`MixtureFitResult`."""
-    seed: int | None
+    rng: np.random.Generator | int | None
     if isinstance(random_state, np.random.Generator):
-        seed = int(random_state.integers(0, 2**32, dtype=np.uint64))
+        rng = random_state
     elif isinstance(random_state, numbers.Integral):
-        seed = int(random_state)
+        rng = int(random_state)
     else:
-        seed = None
-    return fit_sample_mixture(size, fit.components, random_state=seed)
+        rng = None
+    return fit_sample_mixture(size, fit.components, random_state=rng)
 
 
 def bootstrap_inventory(
