@@ -32,7 +32,7 @@ Status: In progress — stand-table aggregation, FTP fetch helper (with overwrit
    - Write per-plot CSVs under `examples/faib_psp_baf{N}/`.
    - [x] Emit a tidy stand-table parquet for fast analytics (CLI now writes Parquet by default, `--no-parquet` opts out).
    - [x] Export HPS tallies + manifest using shared helpers (`export_hps_outputs`).
-   - [ ] Track Parquet manifest adoption across docs/examples and decide when to make the format the default artifact.
+   - [x] Track Parquet manifest adoption across docs/examples and decide when to make the format the default artifact (decision landed; CLI/docs now default to CSV+Parquet with `--no-parquet` opt-out).
 
 ## Tests
 
