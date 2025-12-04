@@ -239,3 +239,8 @@
 - Updated `.github/workflows/ci.yml` to match the FHOPS pattern: CI now installs doc dependencies, runs `sphinx-build -b html docs _build/html -W`, stages `_build/html` into `tmp/pages/.nojekyll`, uploads it via `actions/upload-pages-artifact`, and hands off to a new `deploy-docs` job that uses `actions/deploy-pages@v4` on `main`.
 - Documented the automation in `notes/nemora_modular_reorg_plan.md` so the roadmap reflects that GitHub Pages hosting is live and aligned with the broader modular reorg plan.
 - Tests / validation: `ruff format src tests`, `ruff check src tests`, `mypy src` (fails on existing typing errors in `src/nemora/dataprep/hps.py` and `src/nemora/ingest/{fia,faib}.py`), `pytest`, `sphinx-build -b html docs _build/html -W`, `pre-commit run --all-files`.
+
+## 2025-11-09 — Parquet/XLSX runtime deps
+
+- Added `pyarrow>=14.0` and `openpyxl>=3.1` to the core project dependencies so `faib-manifest` (now emitting Parquet by default) and the FAIB dictionary helpers/tests can run without optional-install surprises locally or in CI.
+- Tests / validation: `ruff format src tests`, `ruff check src tests`, `mypy src` (fails on existing typing errors in `src/nemora/dataprep/hps.py` and `src/nemora/ingest/{fia,faib}.py`), `pytest`, `sphinx-build -b html docs _build/html -W`, `pre-commit run --all-files`.
