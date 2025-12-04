@@ -132,9 +132,10 @@ manually.
 
 ## Sampling directly from ingest-created manifests
 
-After generating Parquet manifests via `nemora faib-manifest --parquet`, select an
-entry, fit a distribution, and draw samples while tuning the numeric integration
-settings. `docs/examples/faib_manifest_parquet.md` contains a complete example that:
+After generating manifests (CSV + Parquet by default) via `nemora faib-manifest`,
+select an entry, fit a distribution, and draw samples while tuning the numeric
+integration settings. Use `--no-parquet` if you prefer CSV-only outputs.
+`docs/examples/faib_manifest_parquet.md` contains a complete example that:
 
 1. Loads the Parquet manifest and resolves the stand-table path.
 2. Wraps the DBH bins/tallies in an `InventorySpec`.

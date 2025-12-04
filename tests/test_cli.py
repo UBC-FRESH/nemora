@@ -362,7 +362,6 @@ def test_faib_manifest_command(tmp_path: Path) -> None:
             "12",
             "--max-rows",
             "10",
-            "--parquet",
         ],
     )
     assert result.exit_code == 0
@@ -372,6 +371,34 @@ def test_faib_manifest_command(tmp_path: Path) -> None:
     assert not df.empty
     parquet_manifest = destination / "faib_manifest.parquet"
     assert parquet_manifest.exists()
+
+
+def test_faib_manifest_command_no_parquet(tmp_path: Path) -> None:
+    fixtures = Path("tests/fixtures/faib")
+    destination = tmp_path / "manifest"
+
+    result = runner.invoke(
+        app,
+        [
+            "faib-manifest",
+            str(destination),
+            "--dataset",
+            "psp",
+            "--source",
+            str(fixtures),
+            "--no-fetch",
+            "--baf",
+            "12",
+            "--max-rows",
+            "10",
+            "--no-parquet",
+        ],
+    )
+    assert result.exit_code == 0
+    manifest = destination / "faib_manifest.csv"
+    assert manifest.exists()
+    parquet_manifest = destination / "faib_manifest.parquet"
+    assert not parquet_manifest.exists()
 
 
 def _write_hps_cli_fixtures(base: Path) -> None:

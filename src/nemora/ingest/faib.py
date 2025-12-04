@@ -477,7 +477,7 @@ def generate_faib_manifest(
     bafs: Sequence[float] | None = None,
     auto_count: int | None = None,
     max_rows: int | None = None,
-    write_parquet: bool = False,
+    write_parquet: bool = True,
 ) -> FAIBManifestResult:
     """Fetch FAIB extracts, build stand tables, and emit a manifest.
 
@@ -501,6 +501,8 @@ def generate_faib_manifest(
         instead of using ``bafs``.
     max_rows:
         Optional limit on the number of rows retained in each stand table.
+    write_parquet:
+        When true (default), persist a Parquet copy of the manifest alongside the CSV.
     """
 
     dest_path = Path(destination)

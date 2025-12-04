@@ -981,9 +981,9 @@ def faib_manifest(  # noqa: B008
     auto_count: int = FAIB_AUTO_COUNT_OPTION,
     max_rows: int | None = FAIB_MAX_ROWS_OPTION,
     parquet: bool = typer.Option(
-        False,
+        True,
         "--parquet/--no-parquet",
-        help="Write a Parquet copy of the manifest in addition to CSV.",
+        help="Write a Parquet copy (disable with --no-parquet to emit CSV only).",
         show_default=True,
     ),
 ) -> None:

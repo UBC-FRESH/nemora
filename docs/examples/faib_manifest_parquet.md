@@ -1,18 +1,22 @@
 # FAIB Manifest Parquet Workflow
 
-Nemora can emit FAIB manifest summaries as both CSV and Parquet. Parquet provides
-columnar storage and faster downstream analytics—recommended for notebook or
-Spark pipelines.
+Nemora emits FAIB manifest summaries as both CSV and Parquet by default. Parquet
+provides columnar storage and faster downstream analytics—recommended for
+notebook or Spark pipelines. Pass `--no-parquet` if you only need CSV outputs.
 
 ## CLI examples
 
 - Fetch PSP extracts, auto-select BAFs, and generate manifests/stats:
 
-  `nemora faib-manifest data/external/faib/manifest_psp --auto-bafs --auto-count 3 --parquet`
+  `nemora faib-manifest data/external/faib/manifest_psp --auto-bafs --auto-count 3`
 
-- Reuse cached downloads, limit rows, and emit Parquet alongside CSV:
+- Reuse cached downloads, limit rows, and emit Parquet alongside CSV (default):
 
-  `nemora faib-manifest examples/faib_manifest --source tests/fixtures/faib --no-fetch --baf 12 --max-rows 200 --parquet`
+  `nemora faib-manifest examples/faib_manifest --source tests/fixtures/faib --no-fetch --baf 12 --max-rows 200`
+
+- Produce CSV only when downstream tooling cannot read Parquet:
+
+  `nemora faib-manifest examples/faib_manifest --source tests/fixtures/faib --no-fetch --baf 12 --max-rows 200 --no-parquet`
 
 ## Loading the Parquet manifest
 
@@ -24,8 +28,8 @@ print(manifest.head())
 ```
 
 The Parquet file mirrors the CSV schema (`dataset`, `baf`, `rows`, `path`,
-`truncated`). Keep both formats until Parquet becomes the default so downstream
-tools can migrate at their own pace.
+`truncated`). Use `--no-parquet` if you need to skip the columnar output or keep
+storage requirements minimal.
 
 ## Feed manifest entries into sampling workflows
 

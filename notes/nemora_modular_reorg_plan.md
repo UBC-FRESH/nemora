@@ -111,6 +111,7 @@ src/nemora/
 2. [x] Extend the sampling roadmap: wire `BootstrapResult` outputs into synthforest/simulations and document CLI usage for the new integration controls (bootstrap payload helper + docs captured in `docs/howto/synthforest.md`).
    - [x] Document how ingest-generated Parquet manifests feed sampling flows, including numeric integration tuning (`docs/examples/faib_manifest_parquet.md`, `docs/howto/sampling.md`).
 3. [x] Capture ingest benchmarking metrics (from `nemora ingest-benchmark` and nightly runs), decide how to surface trends, and document the workflow in README/CONTRIBUTING for ongoing monitoring. *(Nightly workflow summaries + threshold enforcement now publish tables to the job summary and failure issues; README/CONTRIBUTING explain how to rerun locally and interpret the data.)*
+   - [x] Promote FAIB manifest Parquet adoption from optional to default so downstream notebooks/tests can rely on the columnar artifact (`nemora faib-manifest` writes CSV+Parquet unless `--no-parquet` is passed).
 4. [x] Build registry inspection tooling:
    - [x] Expose a Python helper (`list_registry_metadata`) that returns each distribution’s bounds/defaults/extras for downstream modules/tests.
    - [x] Add a `nemora registry --describe/--show-metadata/--json` CLI path that prints the helper output so contributors can audit plugin registrations.

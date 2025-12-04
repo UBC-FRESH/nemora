@@ -211,12 +211,13 @@ nemora ingest-faib data/external/faib --baf 12 --fetch --overwrite --output stan
 # Preview suggested BAF values and exit without generating a table
 nemora ingest-faib data/external/faib --auto-bafs --fetch --dataset psp
 
+# `faib-manifest` writes both CSV and Parquet by default; pass --no-parquet to emit CSV only.
 # Fetch extracts, auto-select BAFs, and generate manifests + stand tables (CSV+Parquet)
-nemora faib-manifest data/external/faib/manifest_psp --auto-bafs --auto-count 3 --parquet
-# Reuse an existing download, skip fetch, limit rows, and emit Parquet + CSV manifests
-nemora faib-manifest examples/faib_manifest --source tests/fixtures/faib --no-fetch --baf 12 --max-rows 200 --parquet
-# Parquet regeneration example (details in docs/examples/faib_manifest_parquet.md)
-nemora faib-manifest data/external/faib/manifest_psp --parquet --overwrite
+nemora faib-manifest data/external/faib/manifest_psp --auto-bafs --auto-count 3
+# Reuse an existing download, skip fetch, limit rows, and emit CSV + Parquet manifests
+nemora faib-manifest examples/faib_manifest --source tests/fixtures/faib --no-fetch --baf 12 --max-rows 200
+# CSV-only regeneration example (details in docs/examples/faib_manifest_parquet.md)
+nemora faib-manifest data/external/faib/manifest_psp --overwrite --no-parquet
 
 # Prepare HPS tallies and manifest (no download, reusing cached CSVs)
 nemora ingest-faib-hps data/external/faib --no-fetch --output data/examples/hps_baf12
