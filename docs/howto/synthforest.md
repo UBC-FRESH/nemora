@@ -42,6 +42,24 @@ metadata = payload.metadata    # dict: distribution, parameters, bins, tallies, 
 Upcoming synthforest APIs (`generate_stems_from_bootstrap`, `build_stand_attributes`) accept the
 `BootstrapPayload` so they can group by `resample` and persist provenance alongside generated stems.
 
+## CLI inspection
+
+Use the Typer CLI to run a quick bootstrap and inspect the metadata without writing custom scripts:
+
+```bash
+nemora sampling-describe-bootstrap tests/fixtures/hps_psp_stand_table.csv \
+    --distribution weibull \
+    --resamples 3 \
+    --sample-size 10 \
+    --seed 2025 \
+    --show-samples
+```
+
+The command auto-fits the requested distribution (unless you pass explicit `--param name=value`
+assignments), bootstraps the stand table, prints the metadata tables, and optionally shows a preview
+of sampled `(resample, bin, draw)` rows. Add `--json` when downstream tooling should ingest the
+output programmatically.
+
 ## Next steps
 
 - Flesh out synthforest stubs (`generate_stems_from_bootstrap` etc.) to consume the helper.

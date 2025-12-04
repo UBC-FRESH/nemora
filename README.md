@@ -36,7 +36,7 @@ still fluid—expect rapid iteration and watch the changelog.
 | `distfit`           | ✅ Alpha surface live (grouped EM, mixtures, CLI).                             |
 | `sampling`          | 🚧 Bootstrap + numeric inversion utilities landed; downstream adoption next.  |
 | `ingest`            | 🚧 FAIB/FIA/HPS pipelines + CLI shipped; benchmarking + telemetry ongoing.    |
-| `synthforest`       | 📝 Bootstrap payload helper published; stem/stand generators in planning.     |
+| `synthforest`       | 📝 Bootstrap payload helper + CLI inspection command; generators in planning. |
 | `simulations`       | 📝 Planned. Builds on synthforest; design sketches in roadmap.                 |
 
 See [`notes/nemora_modular_reorg_plan.md`](notes/nemora_modular_reorg_plan.md) for the detailed

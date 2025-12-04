@@ -206,6 +206,12 @@
 - Recorded the work in ROADMAP detailed notes, the modular reorg plan, and the sampling module plan so the planning artifacts mark the helper task complete and queue the upcoming CLI/consumer wiring.
 - Added regression coverage for the helper module to ensure DataFrame metadata/stacked payloads remain stable.
 
+## 2025-11-08 — Synthforest bootstrap CLI
+
+- Added `nemora sampling-describe-bootstrap`, a Typer command that loads a stand table, auto-fits (or accepts explicit parameters), runs `bootstrap_inventory`, and renders metadata/sample previews via the new helper; `--json` makes the output machine readable.
+- `docs/howto/synthforest.md` and `docs/howto/sampling.md` now document the CLI workflow so downstream teams can inspect bootstrap payloads without writing Python.
+- README module table reflects the CLI availability, and the new command ships with regression coverage (unit + CLI).
+
 ## 2025-11-08 — Sampling cache & bootstrap helpers
 
 - Added optional numeric CDF caching (`SamplingConfig.cache_numeric_cdf`) so repeated sampling calls can reuse previously integrated grids; docs highlight the flag and tests verify the cache path.

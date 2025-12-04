@@ -65,7 +65,7 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
    - [x] Wire `BootstrapResult` into upcoming synthforest/simulation plans and document how downstream modules consume its metadata (bootstrap payload helper + docs).
    - [x] Add numerical accuracy tests that exercise the trapezoid/Simpson/quad integration modes against SciPy references.
    - [ ] Extend docs/examples so sampling workflows demonstrate ingest-produced Parquet manifests and the configurable numeric integration settings.
-   - [ ] Prototype synthforest/simulation adapters that consume the new helper (CLI wiring + regression tests).
+   - [x] Prototype synthforest/simulation adapters that consume the new helper (CLI wiring + regression tests).
 3. **Ingest monitoring & benchmarking**
    - [x] Capture `nemora ingest-benchmark` runtime stats (CLI + nightly workflow) and surface the trend in docs or CHANGE_LOG for visibility.
    - [ ] Document the nightly FAIB/FIA workflow rerun + notification process in `CONTRIBUTING.md` so contributors can verify the job locally.

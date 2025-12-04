@@ -24,6 +24,7 @@ Status: Working outline for Phase 2 sampling deliverables.
    - [x] Finalise `bootstrap_inventory` interface and introduce `BootstrapResult` with metadata + helper methods (`stacked()`, `to_dataframe()`), documenting usage in `docs/howto/sampling.md`.
    - [ ] Provide helpers/examples for sampling DBH vectors vs stand tables and clarify grouped-fit metadata propagation.
    - [x] Ensure compatibility with synthforest by exposing helper utilities (`nemora.synthforest.helpers`) and documenting how `BootstrapResult` feeds downstream workflows (`docs/howto/synthforest.md`).
+   - [x] Ship a CLI inspection path (`nemora sampling-describe-bootstrap`) plus docs/tests so downstream modules can preview bootstrap metadata without scripting.
 4. **Mixture sampling enhancements**
    - [ ] Allow direct seeding via `numpy.random.Generator` for mixture helpers and integrate diagnostics.
    - [ ] Add support for truncated mixtures / mixture-of-experts weighting if synthforest requires them.
@@ -54,3 +55,4 @@ Status: Working outline for Phase 2 sampling deliverables.
 - [x] Add property-based / numeric accuracy tests covering trapezoid, Simpson, and quad integration modes.
 - [x] Introduce `BootstrapResult`, document its metadata contract, and expose helper methods (e.g., `stacked`, `to_dataframe`).
 - [ ] Align naming/structure with upcoming synthforest sampling needs, including DBH vector helpers and grouped-fit metadata propagation (follow-up: add CLI/tests that exercise the new helper).
+- [ ] Extend sampling docs/examples with an ingest-produced Parquet manifest walkthrough plus numeric integration tuning examples (ties into ROADMAP Phase 2 sampling adoption task).

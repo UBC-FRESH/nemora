@@ -118,4 +118,7 @@ src/nemora/
 5. [ ] Automate ingest benchmark telemetry collection:
    - [ ] Wire the `ingest-benchmark --report-path` JSONL output into the nightly workflow (persist as artifact + attach issue snippet on failure).
    - [ ] Summarise rolling metrics in docs/CHANGE_LOG so trend shifts are visible, and define alert thresholds for future automation.
-6. [ ] Expose synthforest bootstrap consumption through the CLI/tests once helpers stabilize (e.g., `nemora sampling describe-bootstrap`), then document the workflow in README + notes.
+6. [x] Expose synthforest bootstrap consumption through the CLI/tests once helpers stabilize (e.g., `nemora sampling describe-bootstrap`), then document the workflow in README + notes.
+   - [x] Prototype a Typer subcommand that loads a stand table (CSV/Parquet), auto-fits or parses parameters, and renders the metadata via `nemora.synthforest.helpers`.
+   - [x] Add pytest coverage for the CLI + helper plumbing (unit + CLI smoke test).
+   - [x] Update README + docs/howto/synthforest.md with CLI usage, JSON examples, and troubleshooting notes.

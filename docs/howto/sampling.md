@@ -120,6 +120,8 @@ Use the metadata when passing bootstrap outputs into synthforest or simulations.
   stand generators can report provenance. Use
   `nemora.synthforest.helpers.bootstrap_payload(result)` to obtain both the stacked array and a
   `pandas.DataFrame` with metadata attached in `frame.attrs["nemora_bootstrap"]`.
+  Prefer the CLI helper (`nemora sampling-describe-bootstrap <stand-table.csv>`) when you want to
+  preview metadata from an existing stand table or emit JSON for automation.
 - **Simulations** can persist the entire `BootstrapResult` (including RNG seed) to regenerate
   uncertainty studies or re-run Monte Carlo workflows deterministically.
 - **Ingest + benchmarking notebooks** should write the stacked output to Parquet so future steps can

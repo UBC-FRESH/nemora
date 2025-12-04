@@ -203,6 +203,53 @@ def test_fit_hps_parameter_preview_includes_columns() -> None:
                 assert _as_float(row[param]) == pytest.approx(value, rel=1e-4)
 
 
+def test_sampling_describe_bootstrap_cli_preview() -> None:
+    stand_table = Path("tests/fixtures/hps_psp_stand_table.csv")
+    result = runner.invoke(
+        app,
+        [
+            "sampling-describe-bootstrap",
+            str(stand_table),
+            "--distribution",
+            "weibull",
+            "--resamples",
+            "2",
+            "--sample-size",
+            "3",
+            "--seed",
+            "123",
+            "--show-samples",
+            "--preview-rows",
+            "2",
+        ],
+    )
+    assert result.exit_code == 0
+    assert "Bootstrap Metadata" in result.stdout
+    assert "Auto-fitted" in result.stdout
+
+
+def test_sampling_describe_bootstrap_cli_json() -> None:
+    stand_table = Path("tests/fixtures/hps_psp_stand_table.csv")
+    result = runner.invoke(
+        app,
+        [
+            "sampling-describe-bootstrap",
+            str(stand_table),
+            "--json",
+            "--resamples",
+            "1",
+            "--sample-size",
+            "2",
+            "--seed",
+            "5",
+        ],
+    )
+    assert result.exit_code == 0
+    payload = json.loads(result.stdout)
+    assert payload["metadata"]["distribution"] == "weibull"
+    assert isinstance(payload["preview"], list)
+
+
 def test_ingest_faib_command(tmp_path: Path) -> None:
     fixtures = Path("tests/fixtures/faib")
     output = tmp_path / "stand_table.csv"

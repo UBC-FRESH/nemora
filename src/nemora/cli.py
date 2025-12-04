@@ -15,12 +15,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, cast
 
+import numpy as np
 import typer
 from rich.console import Console
 from rich.table import Table
 
 from . import __version__
+from .core import FitResult, InventorySpec
 from .dataprep import PlotSelection
+from .distfit import fit_inventory
 from .distributions import get_distribution, list_distributions, list_registry_metadata
 from .ingest.faib import (
     FAIBManifestResult,
@@ -55,6 +58,8 @@ from .ingest.hps import (
 from .ingest.hps import (
     load_plot_selections as load_hps_plot_selections,
 )
+from .sampling import BootstrapResult, bootstrap_inventory
+from .synthforest.helpers import bootstrap_payload
 from .workflows.hps import fit_hps_inventory
 
 app = typer.Typer(help="Nemora distribution fitting CLI (distfit alpha).")
@@ -148,11 +153,121 @@ def _prepare_hps_inputs(
     return selections, tree_detail_path
 
 
+_STAND_TABLE_BIN_COLUMNS = ("bin", "bin_cm", "dbh_cm", "dbh", "diameter_cm")
+_STAND_TABLE_TALLY_COLUMNS = ("tally", "tallies", "count", "stand_table", "frequency")
+
+
+def _load_stand_table(path: Path) -> tuple[np.ndarray, np.ndarray]:
+    """Load a stand table CSV/Parquet file into numpy arrays."""
+
+    import pandas as pd
+
+    if path.suffix.lower() == ".parquet":
+        frame = pd.read_parquet(path)
+    else:
+        frame = pd.read_csv(path)
+    lower_columns = {column.lower(): column for column in frame.columns}
+    bin_column = next(
+        (lower_columns[name] for name in _STAND_TABLE_BIN_COLUMNS if name in lower_columns),
+        None,
+    )
+    tally_column = next(
+        (lower_columns[name] for name in _STAND_TABLE_TALLY_COLUMNS if name in lower_columns),
+        None,
+    )
+    if bin_column is None or tally_column is None:
+        message = (
+            "Stand table must include columns for bins and tallies; "
+            "accepted bin labels: "
+            f"{', '.join(_STAND_TABLE_BIN_COLUMNS)}, tally labels: "
+            f"{', '.join(_STAND_TABLE_TALLY_COLUMNS)}"
+        )
+        console.print(f"[red]{message}[/red]")
+        raise typer.Exit(code=1)
+    subset = frame[[bin_column, tally_column]].dropna()
+    bins = subset[bin_column].to_numpy(dtype=float)
+    tallies = subset[tally_column].to_numpy(dtype=float)
+    if bins.size == 0 or tallies.size == 0:
+        console.print("[red]Stand table contains no usable rows.[/red]")
+        raise typer.Exit(code=1)
+    return bins, tallies
+
+
+def _parse_parameter_assignments(assignments: Iterable[str]) -> dict[str, float]:
+    parameters: dict[str, float] = {}
+    for assignment in assignments:
+        if "=" not in assignment:
+            raise typer.BadParameter(f"Parameter assignment '{assignment}' must be NAME=VALUE.")
+        key, value = assignment.split("=", 1)
+        key = key.strip()
+        if not key:
+            raise typer.BadParameter(f"Invalid parameter assignment '{assignment}'.")
+        try:
+            parameters[key] = float(value)
+        except ValueError as exc:  # noqa: TRY003
+            raise typer.BadParameter(f"Parameter '{key}' requires a numeric value.") from exc
+    return parameters
+
+
+def _render_bootstrap_metadata(metadata: dict[str, object]) -> None:
+    table = Table(title="Bootstrap Metadata")
+    table.add_column("Field", style="cyan")
+    table.add_column("Value", style="magenta")
+    for field in ("distribution", "resamples", "sample_size", "rng_seed"):
+        value = metadata.get(field)
+        if value is None:
+            continue
+        table.add_row(field, str(value))
+    bins_value = metadata.get("bins")
+    bins = (
+        np.asarray(bins_value, dtype=float) if bins_value is not None else np.array([], dtype=float)
+    )
+    tallies_value = metadata.get("tallies")
+    tallies = (
+        np.asarray(tallies_value, dtype=float)
+        if tallies_value is not None
+        else np.array([], dtype=float)
+    )
+    if bins.size:
+        table.add_row("bin_count", str(bins.size))
+    if tallies.size:
+        table.add_row("tally_total", f"{float(tallies.sum()):.2f}")
+    console.print(table)
+
+    params = metadata.get("parameters")
+    if isinstance(params, dict) and params:
+        param_table = Table(title="Fitted Parameters")
+        param_table.add_column("Name", style="cyan")
+        param_table.add_column("Value", style="green")
+        for key, value in params.items():
+            param_table.add_row(key, f"{float(cast(Any, value)):.6f}")
+        console.print(param_table)
+
+
+def _json_ready_metadata(metadata: dict[str, object]) -> dict[str, object]:
+    serialisable: dict[str, object] = {}
+    for key, value in metadata.items():
+        if isinstance(value, np.ndarray):
+            serialisable[key] = value.tolist()
+        elif isinstance(value, np.generic):
+            serialisable[key] = value.item()
+        else:
+            serialisable[key] = value
+    return serialisable
+
+
 DBH_FILE_ARGUMENT = typer.Argument(
     ...,
     exists=True,
     readable=True,
     help="CSV with `dbh_cm` and `tally` columns.",
+)
+
+STAND_TABLE_ARGUMENT = typer.Argument(
+    ...,
+    exists=True,
+    readable=True,
+    help="CSV/Parquet stand table with bin/tally columns.",
 )
 BAF_OPTION = typer.Option(..., "--baf", help="Basal area factor used for the HPS tally.")
 
@@ -660,6 +775,138 @@ def fit_hps(  # noqa: B008
         console.print(param_table)
 
 
+PARAMETER_ASSIGNMENTS_OPTION = typer.Option(
+    None,
+    "--param",
+    "-p",
+    help="Explicit parameter assignment (NAME=VALUE). Repeat for multiple parameters.",
+    show_default=False,
+)
+
+
+@app.command("sampling-describe-bootstrap")
+def sampling_describe_bootstrap(  # noqa: B008
+    stand_table: Path = STAND_TABLE_ARGUMENT,
+    distribution: str = typer.Option(
+        "weibull",
+        "--distribution",
+        "-d",
+        help="Distribution to bootstrap (auto-fitted when no parameters provided).",
+        show_default=True,
+    ),
+    params: list[str] | None = PARAMETER_ASSIGNMENTS_OPTION,
+    resamples: int = typer.Option(5, "--resamples", "-r", min=1, help="Bootstrap resample count."),
+    sample_size: int = typer.Option(
+        25,
+        "--sample-size",
+        "-s",
+        min=1,
+        help="Samples per resample.",
+        show_default=True,
+    ),
+    seed: int | None = typer.Option(
+        None,
+        "--seed",
+        help="Optional RNG seed for reproducible sampling.",
+        show_default=False,
+    ),
+    show_samples: bool = typer.Option(
+        False,
+        "--show-samples/--hide-samples",
+        help="Print a preview of sampled (resample, bin, draw) rows.",
+        show_default=False,
+    ),
+    preview_rows: int = typer.Option(
+        5,
+        "--preview-rows",
+        help="Number of rows to preview when --show-samples is enabled.",
+        min=1,
+        show_default=True,
+    ),
+    json_output: bool = typer.Option(
+        False,
+        "--json",
+        help="Emit metadata + preview in JSON format.",
+        show_default=False,
+    ),
+) -> None:
+    """Inspect bootstrap metadata for synthforest consumers."""
+
+    bins, tallies = _load_stand_table(stand_table)
+    parameter_map = _parse_parameter_assignments(params) if params else {}
+    if parameter_map:
+        fit = FitResult(distribution=distribution, parameters=parameter_map)
+    else:
+        inventory = InventorySpec(
+            name=stand_table.stem,
+            sampling="stand-table",
+            bins=bins,
+            tallies=tallies,
+            metadata={"grouped": True},
+        )
+        try:
+            fit = fit_inventory(inventory, [distribution], configs={})[0]
+        except Exception as exc:  # noqa: BLE001
+            console.print(f"[red]Failed to fit {distribution}:[/red] {exc}")
+            raise typer.Exit(code=1) from exc
+
+    rng_seed = cast(numbers.Integral | None, seed)
+    try:
+        bootstrap_result = cast(
+            BootstrapResult,
+            bootstrap_inventory(
+                fit,
+                bins,
+                tallies,
+                resamples=resamples,
+                sample_size=sample_size,
+                random_state=rng_seed,
+                return_result=True,
+            ),
+        )
+    except Exception as exc:  # noqa: BLE001
+        console.print(f"[red]Bootstrap failed:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+
+    payload = bootstrap_payload(bootstrap_result)
+    metadata = payload.metadata
+    if json_output:
+        preview_records = payload.frame.head(preview_rows).to_dict(orient="records")
+        console.print(
+            json.dumps(
+                {"metadata": _json_ready_metadata(metadata), "preview": preview_records},
+                default=str,
+                indent=2,
+            )
+        )
+        return
+
+    if not parameter_map:
+        console.print(
+            f"[green]Auto-fitted[/green] {fit.distribution} parameters before bootstrapping."
+        )
+    _render_bootstrap_metadata(metadata)
+    if show_samples:
+        preview_frame = payload.frame.head(preview_rows)
+        if preview_frame.empty:
+            console.print("[yellow]No samples generated.[/yellow]")
+        else:
+            sample_table = Table(title=f"Sample Preview (first {len(preview_frame)} rows)")
+            sample_table.add_column("Resample", justify="right")
+            sample_table.add_column("Bin (cm)", justify="right")
+            sample_table.add_column("Draw (cm)", justify="right")
+            for row in preview_frame.itertuples(index=False):
+                resample_value = float(cast(Any, row.resample))
+                bin_value = float(cast(Any, row.bin))
+                draw_value = float(cast(Any, row.draw))
+                sample_table.add_row(
+                    str(int(resample_value)),
+                    f"{bin_value:.3f}",
+                    f"{draw_value:.3f}",
+                )
+            console.print(sample_table)
+
+
 @app.command("ingest-faib")
 def ingest_faib(  # noqa: B008
     root: Path = FAIB_ROOT_ARGUMENT,
@@ -859,7 +1106,7 @@ def ingest_faib_hps(  # noqa: B008
 
     if dry_run:
         console.print(
-            f"[cyan][dry-run][/cyan] {plot_count} plots would be written " f"(trees={total_trees})."
+            f"[cyan][dry-run][/cyan] {plot_count} plots would be written (trees={total_trees})."
         )
         raise typer.Exit()
 

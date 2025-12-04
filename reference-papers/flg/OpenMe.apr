@@ -1,0 +1,4132 @@
+/3.2
+(ODB.1
+	Dependencies:	"$AVEXT/spatial.avx\n$AVEXT/dialog.avx\n$AVEXT/geoproc.avx\n"
+	FirstRootClassName:	"Project"
+	Roots:	2
+	Version:	32
+)
+
+(Project.2
+	Name:	"OpenMe.apr"
+	CreationDate:	"October 15, 2000 03:40:05"
+	GUIName:	"Project"
+	Win:	3
+	CSMgr:	4
+	DocExts:	5
+	VisGUIWidth:	70
+	Doc:	6
+	Doc:	18
+	Doc:	30
+	Doc:	34
+	Doc:	38
+	Doc:	53
+	ActiveDoc:	53
+	Buttons:	69
+	Buttons:	70
+	Buttons:	71
+	Dependencies:	72
+	Dependencies:	73
+	Dependencies:	74
+	Scripts:	75
+	Prefs:	76
+	GUI:	98
+	GUI:	803
+	WorkDir:	1095
+	WinX:	-4
+	WinY:	-3
+	WinW:	1032
+	WinH:	747
+	SerialNumber:	"825911102369"
+	SelColor:	1096
+	GUINames:	1097
+	GUINames:	1098
+	GUINames:	1099
+	GUINames:	1100
+	GUINames:	1101
+	GUINames:	1102
+	GUINames:	1103
+	GUINames:	1104
+	TocWidthScale:	1.00000000000000
+)
+
+(DocWin.3
+	Owner:	2
+	Open:	1
+	X:	-4
+	Y:	-4
+	W:	1034
+	H:	643
+)
+
+(CSMgr.4
+)
+
+(DocAct.5
+	Doc:	2
+)
+
+(Table.6
+	Name:	"AC_NSF"
+	CreationDate:	"Tuesday, October 17, 2000 10:45:54"
+	GUIName:	"Table"
+	Win:	7
+	CSMgr:	8
+	DocExts:	9
+	VTab:	10
+)
+
+(DocWin.7
+	Owner:	6
+	Open:	1
+	X:	423
+	Y:	379
+	W:	413
+	H:	168
+)
+
+(CSMgr.8
+)
+
+(DocAct.9
+	Doc:	6
+)
+
+(VTab.10
+	Name:	"acs.dbf"
+	BTab:	11
+	Fields:	12
+	Fields:	13
+	Fields:	14
+	Fields:	15
+	SelBits:	17
+)
+
+(dBASE.11
+	Name:	"acs.dbf"
+	Fields:	12
+	Fields:	13
+	Fields:	14
+	Fields:	15
+	FileName:	16
+)
+
+(Field.12
+	Name:	"Prob"
+	Btab:	11
+	Alias:	"Prob"
+	Visible:	1
+	Type:	9
+	Order:	-1
+	Pixels:	47
+)
+
+(Field.13
+	Name:	"Cumdist"
+	Btab:	11
+	Alias:	"Cumdist"
+	Visible:	1
+	Type:	9
+	Order:	-1
+	Pixels:	69
+)
+
+(Field.14
+	Name:	"ACName"
+	Btab:	11
+	Alias:	"ACName"
+	Visible:	1
+	Type:	4
+	Order:	-1
+	Pixels:	67
+)
+
+(Field.15
+	Name:	"AgeClass"
+	Btab:	11
+	Alias:	"AgeClass"
+	Visible:	1
+	Type:	9
+	Order:	-1
+	Pixels:	42
+)
+
+(FN.16
+	Path:	"c:/distributeflg/ac_nsf.dbf"
+)
+
+(Bitmap.17
+	NumBits:	4
+	NumBitsSet:	1
+	Bits:	00000008
+)
+
+(Table.18
+	Name:	"AC_SF"
+	CreationDate:	"Tuesday, October 17, 2000 05:10:57"
+	GUIName:	"Table"
+	Win:	19
+	CSMgr:	20
+	DocExts:	21
+	VTab:	22
+)
+
+(DocWin.19
+	Owner:	18
+	Open:	1
+	X:	735
+	Y:	453
+	W:	254
+	H:	129
+)
+
+(CSMgr.20
+)
+
+(DocAct.21
+	Doc:	18
+)
+
+(VTab.22
+	Name:	"acs.dbf"
+	BTab:	23
+	Fields:	24
+	Fields:	25
+	Fields:	26
+	Fields:	27
+	SelBits:	29
+)
+
+(dBASE.23
+	Name:	"acs.dbf"
+	Fields:	24
+	Fields:	25
+	Fields:	26
+	Fields:	27
+	FileName:	28
+)
+
+(Field.24
+	Name:	"Prob"
+	Btab:	23
+	Alias:	"Prob"
+	Visible:	1
+	Type:	9
+	Order:	-1
+	Pixels:	47
+)
+
+(Field.25
+	Name:	"Cumdist"
+	Btab:	23
+	Alias:	"Cumdist"
+	Visible:	1
+	Type:	9
+	Order:	-1
+	Pixels:	70
+)
+
+(Field.26
+	Name:	"ACString"
+	Btab:	23
+	Alias:	"ACString"
+	Visible:	1
+	Type:	4
+	Order:	-1
+	Pixels:	66
+)
+
+(Field.27
+	Name:	"AgeClass"
+	Btab:	23
+	Alias:	"AgeClass"
+	Visible:	1
+	Type:	9
+	Order:	-1
+	Pixels:	43
+)
+
+(FN.28
+	Path:	"c:/distributeflg/ac_sf.dbf"
+)
+
+(Bitmap.29
+	NumBits:	4
+	Bits:	00000000
+)
+
+(SEd.30
+	Name:	"FLG.GetNeighbours"
+	CreationDate:	"Friday, January 18, 2002 07:00:11"
+	GUIName:	"Script"
+	Win:	31
+	CSMgr:	32
+	DocExts:	33
+	Source:	"'CELL NUMBERING PATTERN\n'8  1  2\n'7  0  3\n'6  5  4\n\nthe0CellID = SELF.Get(0)\ntheBitMap = SELF.Get(1)\n\nthe1CellID = the0CellID - _numX\nthe2CellID = the0CellID - _numX + 1\nthe3CellID = the0CellID + 1\nthe4CellID = the0CellID + _numX + 1\nthe5CellID = the0CellID + _numX\nthe6CellID = the0CellID + _numX - 1\nthe7CellID = the0CellID - 1\nthe8CellID = the0CellID - _numX - 1\n\ntheNeighbourList = List.Make\n \n'deduce the relative location on the cell in the matrix\nif (the0CellID = 0) then\n  ' northwest corner\n  'case = 1\n
+  theNeighbourList = {the3CellID, the4CellID, the5CellID }\n  \nelseif(the0CellID = (_numX - 1)) then\n  ' northeast corner\n  'case = 2\n'  system.echo(\"\")\n  theNeighbourList = {the5CellID, the6CellID, the7CellID }\n  \nelseif (the0CellID < _numX) then\n  'north edge\n  'case = 3\n  theNeighbourList = {the3CellID, the4CellID, the5CellID, the6CellID, the7CellID }\n  \nelseif (the0CellID = (_cellCount - 1)) then\n  ' southeast corner\n  'case = 4\n  theNeighbourList = {the1CellID, the7CellID, the8CellID }\n    \nelseif ( the
+0CellID = (_cellCount - _numX) ) then\n  ' southwest corner\n  'case = 5\n  theNeighbourList = {the1CellID, the2CellID, the3CellID }\nelse\n  ' need to calculate col, row\n  row = ((the0CellID + 1) / _numX).Ceiling\n  col = (the0CellID  - ((row - 1) * _numX) + 1)\n'  system.echo(\"row/col\" ++ row.asstring ++ col.asstring ++ \"x/y\" ++ _numX.asstring ++ _numY.asstring)\n  \n  if ( col = 1 ) then\n    ' west edge\n    'case = 6\n    theNeighbourList = {the1CellID, the2CellID, the3CellID, the4CellID, the5CellID }\n    \n  elsei
+f ( col = _numX) then\n    ' east edge\n    'case = 7\n    theNeighbourList = {the1CellID, the5CellID, the6CellID, the7CellID, the8CellID }\n    \n  elseif ( row = _numY ) then\n    ' south edge\n    'case = 8\n    theNeighbourList = {the1CellID, the2CellID, the3CellID, the7CellID, the8CellID }\n    \n  else\n    ' somewhere in the middle\n    theNeighbourList = {the1CellID, the2CellID, the3CellID, the4CellID, the5CellID, the6CellID, the7CellID, the8CellID }\n    \n  end\n  \nend\n\n\nthePassedNeighbourList = List.Make\nfor ea
+ch n in theNeighbourList\n  if ( theBitMap.Get(n) ) then\n    thePassedNeighbourList.Add( n )\n  end\nend\n  \nreturn thePassedNeighbourList\n"
+	SearchStr:	"west edge"
+	FontSize:	1
+)
+
+(DocWin.31
+	Owner:	30
+	Open:	1
+	X:	216
+	Y:	54
+	W:	749
+	H:	296
+)
+
+(CSMgr.32
+)
+
+(DocAct.33
+	Doc:	30
+)
+
+(SEd.34
+	Name:	"FLG.Main"
+	Creator:	"Greg Paradis"
+	CreationDate:	"Friday, May 04, 2001 12:38:19"
+	Comments:	"New forest generation algorithm, featuring square cells. Uses GRID raster file format for increased efficiency."
+	GUIName:	"Script"
+	Win:	35
+	CSMgr:	36
+	DocExts:	37
+	Source:	"'///////////////////////////////////////////////////////////////////////\n'// FLG.Main\n'///////////////////////////////////////////////////////////////////////\n' CONSTANTS\n'set random number resolution divisor  \nrandResDiv = 100000\n\n'set PATCH TYPES table name\npatchTypeTableName = \"PatchTypeDist\"\n\n'set PATCH TYPES field name\npatchTypeFldName = \"PatchType\"\n\n'set AGE CLASS TABLE NAME field name\nacTabFldName = \"ACTab\"\n\n'set AGE CLASS CUMULATIVE DIST field name\ncumDistFldName = \"CumDist\"\n\n'set AGE CLASS field na
+me\nacFldName = \"AgeClass\"\n\n'set Weibull A-parmeter field name\nwAFldName = \"W_a\"\n\n'set Weibull B-parmeter field name\nwBFldName = \"W_b\"\n\n'set Weibull C-parmeter field name\nwCFldName = \"W_c\"\n\n'set default filename prefix\ntheDefaultFileNamePrefix = \"flg\"\n\npatchListExtensionFactor = 1.2\n'///////////////////////////////////////////////////////////////////////\n\n'system.echo(\"Start forest generation\")\n\nstartTime = Date.Now.AsSeconds\n\ntheView = av.GetActiveDoc\n'set view's map units to meters\ntheView.SetUnits(#UNITS_
+LINEAR_METERS)\n\nav.GetProject.GetWorkDir.SetCWD\n\ntheGetNeighboursScript = av.FindScript( \"FLG.GetNeighbours\" )  \n\n' INITIALIZE AND DISPLAY USER INPUT DIALOG\n'///////////////////////////////////////////////////////////////////////\n' restore defaults from file\npdList = List.Make\nlf = LineFile.Make( \"patch.dat\".AsFileName, #FILE_PERM_READ )\nif (lf = nil) then\n  pdList = {}\nelse\n  lf.Read(pdList, lf.GetSize )\n  lf.Close\nend\n\ndefList = List.Make\nfor each i in pdList\n  defList.Add(i.AsString)\nend \n\nlabelList = {\"
+Max daughters\",\"cellSize (ha)\",\"cols\",\"rows\",\"originX\",\"originY\"}\npdList = MsgBox.MultiInput(\"Patch Data\", \"Enter patch data or click OK to accept defaults\", labelList, defList)\n' kick out if user cancels msgbox\nif (pdlist.Count = 0) then\n  exit\nend\n\n' write new defaults to file\nlf = LineFile.Make( \"patch.dat\".AsFileName, #FILE_PERM_WRITE )\nfor each i in pdList\n  lf.WriteElt(i)\nend\nlf.Close\n\n' READ IN MODEL PARAMETERS FROM DIALOG INPUTS\n'//////////////////////////////////////////////////////////////////////
+/\nmaxDaughters = pdList.Get(0).AsNumber\ncellSizeHa = pdList.Get(1).AsNumber\ncellSizeMeters = cellSizeHa.Sqrt * 100\n\n_numX = pdList.Get(2).AsNumber\n_numY = pdList.Get(3).AsNumber\nxllCorner = pdList.Get(4)\nyllCorner = pdList.Get(5)\n\n_cellCount = _numX * _numY\n\n\n' CREATE A VTAB TO STORE PATCH ATTRIBUTES\n'///////////////////////////////////////////////////////////////////////\n' create new fields\ntheVTab = VTab.MakeNew( FileName.GetCWD.MakeTmp(\"patch\", \"dbf\"), dBASE )\npatchIDField = Field.Make(\"PatchID\", #FIELD_
+DECIMAL, 8, 0)\npatchTypeField = Field.Make(\"PatchType\", #FIELD_CHAR , 10, 0)\nageClassField = Field.Make(\"AgeClass\", #FIELD_DECIMAL, 8, 0)\nstratumCodeField = Field.Make(\"StratumCode\", #FIELD_CHAR, 16, 0)\n\ntheVTabAddedFieldList = {patchIDField, patchTypeField, ageClassField, stratumCodeField}\ntheVTab.AddFields( theVTabAddedFieldList )\n\n\n' GENERATE AND SORT ATTRIBUTE SAMPLES LIST\n'///////////////////////////////////////////////////////////////////////\n_thePatchList = List.Make\n\nalloCellCount = 0\n_patchTypeVTab
+ = av.FindDoc(patchTypeTableName).GetVTab\ndone = false\n\n' clear status bar and message area\nav.ClearStatus\nav.ClearMsg\nav.ShowStopButton\n\nwhile (done.Not)\n\n  av.ShowMsg(\"Generating patch attribute list...\")\n  ''system.echo(\"Generating patch #\"++(_thePatchList.Count + 1).AsString)\n\n  'GET A PATCH TYPE\n  r1 = Number.MakeRandom(0, randResDiv) / randResDiv\n  found = false\n  i = 0\n\n  while (found.Not)\n    tempDist = _patchTypeVTab.ReturnValue(_patchTypeVTab.FindField(cumDistFldName), i)\n    \n    if (tempDist >=
+r1) then\n      patchTypeString = _patchTypeVTab.ReturnValue(_patchTypeVTab.FindField(patchTypeFldName), i)\n      found = true\n    end\n    \n    if (found) then\n      \n      'read age class table name for this patch type\n      acTabName = _patchTypeVTab.ReturnValue(_patchTypeVTab.FindField(acTabFldName), i)\n      acTab = av.FindDoc(acTabName).GetVTab\n\n      \n      ' read Weibull function parameters\n      wA = _patchTypeVTab.ReturnValue(_patchTypeVTab.FindField(wAFldName), i) / cellSizeHa\n      wB = _patchType
+VTab.ReturnValue(_patchTypeVTab.FindField(wBFldName), i) / cellSizeHa\n      wC = _patchTypeVTab.ReturnValue(_patchTypeVTab.FindField(wCFldName), i)\n      \n      ' calculate bound from maxDaughters\n      bound = Number.GetEuler^((((maxDaughters - wA)/wB)^wC).Negate)\n      d = ((((bound).Ln).Negate^(1/wC)) * wB) + wA\n      bound = (1 - bound) * randResDiv\n\n    end\n    \n    i = i + 1\n  end\n  \n  'GET AN AGE CLASS\n  r2 = Number.MakeRandom(0, randResDiv) / randResDiv\n  i = 0\n  found = false\n  while (found.Not)\n
+  tempDist = acTab.ReturnValue(acTab.FindField(cumDistFldName), i)\n    if (tempDist >= r2) then\n      ageClass = acTab.ReturnValue(acTab.FindField(acFldName), i)\n      found = true\n    end\n    i = i + 1\n  end\n  \n  ' GENERATE PATCH SIZE FROM WEIBULL DISTRIBUTION \n  r3 = Number.MakeRandom(0, bound) / randResDiv\n  daughters = ((((-1 * (1-r3).Ln)^(1/wC)) * wB) + wA).Round\n \n  alloCellCount = alloCellCount + daughters\n  \n  \n  if (alloCellCount > (_cellCount * patchListExtensionFactor)) then\n    done = true\n    '
+'system.echo(alloCellCount.AsString++\"of\"++_cellCount.AsString++\"cells allocated (\"++( (alloCellCount /  _cellCount) * 100).AsString++\"%)\")\n  end\n  \n  tmpList = List.Make\n  tmpList = { patchTypeString, ageClass, daughters }\n  _thePatchList.Add (tmpList)\n  \n  doMore = av.SetStatus( (alloCellCount / (_cellCount * patchListExtensionFactor) ) * 100 )  \n  if (not doMore) then\n    if (MsgBox.YesNo (\"Quit landscape generation?\", \"FLG\", FALSE)) then\n      av.ClearMsg\n      av.ClearStatus\n      exit\n    end\n  end\n
+\nend ' while (done.Not)\n\nav.ClearStatus\n\n' DECLARE DLL AND DLL PROCEDURES\nav.ShowMsg(\"Loading flg.dll...\")\n\nflgDLL = DLL.Make(\"c:\\program files\\flg\\flg21.dll\".AsFileName)\n_passList = DLLProc.Make(flgDLL, \"LoadData\", #DLLPROC_TYPE_VOID,{ #DLLPROC_TYPE_INT32, #DLLPROC_TYPE_INT32, #DLLPROC_TYPE_INT32 }) \n_getType = DLLProc.Make(flgDLL, \"GetPatchType\", #DLLPROC_TYPE_STR,{ #DLLPROC_TYPE_INT32}) \n_getAge = DLLProc.Make(flgDLL, \"GetPatchAge\", #DLLPROC_TYPE_INT32,{ #DLLPROC_TYPE_INT32}) \n_getSize = DLLProc.Make(flg
+DLL, \"GetPatchSize\", #DLLPROC_TYPE_INT32,{ #DLLPROC_TYPE_INT32}) \n\n' SORT LIST BY PATCH SIZE (Ascending)\nav.ShowMsg(\"Sorting patch attribute list...\")\n_passList.Call({_thePatchList.Count, _numX, _numY})\n\nav.ShowMsg(\"Preparing to generate landscape...\")\n\n' initialize bitmap by setting all bits...\n' allocation is done when all bits have been flipped off\n'( i.e. theBitMap.Count > 0 )\ntheBitMap = Bitmap.Make( _cellCount )\ntheBitMap.SetAll\ntheRasterCellList = List.Make\nfor each i in 1.._cellCount\n  ' fill theRas
+terCellList will -99's\n  theRasterCellList.Add( -99 )\nend\n\ncurrentPatchID = 1\nthePatchCellIDList = List.Make\ntheGrowthCellIDList = List.Make\npatchArrIndex = _thePatchList.Count\n\nwhile ( theBitMap.Count > 1 )\n  \n  av.ShowMsg(\"Growing patch \" ++ currentPatchID.AsString + \" ...  (\" + ((1 - (theBitMap.Count / _cellCount)) * 100).Floor.AsString ++ \"% of landscape allocated)\" )\n  av.ClearStatus\n  av.ShowStopButton\n'///////////////////////////////////////////////////////////////////////\n' DEBUG CODE\n  'system.echo
+(\"Generating patch \" + currentPatchID.AsString + \" of \" + _thePatchList.Count.AsString)\n  'system.echo(\"theBitMap.Count: \" + theBitMap.Count.AsString)\n'///////////////////////////////////////////////////////////////////////\n\n  patchArrIndex = patchArrIndex - 1\n  \n  theMotherBitOffset = -1\n\n  while (theMotherBitOffset = -1)\n  motherRank = Number.MakeRandom(1, theBitMap.Count - 1)\n  \n  theMotherBitOffset = theBitMap.GetNextSet(-1)\n  for each i in 1..motherRank By 1\n    theMotherBitOffSet = theBitMap.GetNextSe
+t(theMotherBitOffset)\n  end\n  end\n\n  ' check for end of _thePatchList\n  if ( patchArrIndex >= 0 ) then\n    ' get next item in the patch array (LARGEST -> SMALLEST)\n    arrIndex = patchArrIndex\n    backup = false\n  else\n    ' get a random item from the patch array\n    arrIndex = Number.MakeRandom(0, _thePatchList.Count - 1)\n    backup = true\n  end\n\n  ' get patch attributes\n  patchTypeString = _getType.Call({arrIndex})\n  ageClass = _getAge.Call({arrIndex})\n  daughters = _getSize.Call({arrIndex})\n  \n  ' grow p
+atch\n  growing = true\n  \n  ' empty cell lists\n  thePatchCellIDList.Empty\n  theGrowthCellIDList.Empty\n  \n  ' initialize theGrowthCellIDList with theMotherBitOffset\n  theGrowthCellIDList.Add( theMotherBitOffset )\n  thePatchCellIDList.Add( theMotherBitOffset )\n  theBitMap.Clear( theMotherBitOffset )\n  \n  while (growing)\n    ' select unallocated cells adjacent to current patch\n    for each cellID in theGrowthCellIDList\n      theNeighbourList = theGetNeighboursScript.DoIt( {cellID, theBitMap} )\n      for each nI
+D in theNeighbourList\n        theBitMap.Clear( nID )\n        theGrowthCellIDList.Merge( theNeighbourList )\n        theGrowthCellIDList.RemoveDuplicates\n        theGrowthCellIDList = theGrowthCellIDList - thePatchCellIDList  \n      end  \n    end\n\n    theGrowthCellIDList.RemoveDuplicates\n    thePatchCellIDList.Merge( theGrowthCellIDList )\n\n\n    ' RANDOMIZE PATCH SHAPE\n    '///////////////////////////////////////////////////////////////////////\n    ' the following parameters can be modified to adjust randomiza
+tion:\n    p1 = 0.1  'change in randomization throughout patch growth\n    p2 = 0.5  'change in randomization throughout landscape generation\n\n    ' remove a random subset of theGrowthList\n    cellsToRemove = (theGrowthCellIDList.Count * ((1 - (thePatchCellIDList.Count / daughters))^p1 ) * ((theBitMap.Count / theBitMap.GetSize)^p2 )).Floor\n\n    for each i in 1 .. cellsToRemove By 1\n      removeCellID = Number.MakeRandom(0, theGrowthCellIDList.Count - 1)\n      theGrowthCellIDList.Remove( removeCellID )\n      t
+heBitMap.Set( removeCellID )\n    end\n\n    thePatchCellIDList.Merge( theGrowthCellIDList )\n    \n    if ( theGrowthCellIDList.Count = 0 ) then\n      growing = false\n    else\n      if ( thePatchCellIDList.Count >= daughters ) then\n        growing = false\n      end\n    end\n    \n    p = ((thePatchCellIDList.Count / daughters) * 100).Floor\n    doMore = av.SetStatus( p )\n    if (not doMore) then\n      if (MsgBox.YesNo (\"Quit landscape generation?\", \"FLG\", FALSE)) then\n        av.ClearMsg\n        av.ClearStatus\n
+     exit\n      end\n    end\n         \n  end 'while (growing)\n   \n  ' SET VTAB ATTRIBUTES FOR NEW PATCH\n  rec = theVTab.AddRecord\n  theVTab.SetValue(patchIDField, rec, currentPatchID)\n  theVTab.SetValue(patchTypeField, rec, patchTypeString)\n  theVTab.SetValue(ageClassField, rec, ageClass)\n  theVTab.SetValue(stratumCodeField, rec, patchTypeString + ageClass.AsString)\n\n  for each cellID in thePatchCellIDList\n    theRasterCellList.Set( cellID, currentPatchID )\n  end\n  \n  ' increment patch counter\n  currentPatch
+ID  = currentPatchID + 1\n  \n  ''system.echo(((1 - (theBitMap.Count / _cellCount)) * 100 ).asstring)\n  \n  \nend ' while ( theBitMap.Count > 1 )\n\n'system.echo(\"create ASCII file\")\n\n' OUTPUT PATCH ID'S TO ASCII RASTER FILE\n' create LineFile to store the raster cell matrix\ntheASCIIFileName = FileName.GetCWD.MakeTmp(theDefaultFileNamePrefix, \"asc\" )\ntheLineFile = LineFile.Make( theASCIIFileName, #FILE_PERM_WRITE )\n\n' write header data to theLineFile\ntheLineFile.WriteElt( \"ncols\" ++ _numX.AsString )\ntheLineFile.Wr
+iteElt( \"nrows\" ++ _numY.AsString )\ntheLineFile.WriteElt( \"xllcorner\" ++ xllCorner )\ntheLineFile.WriteElt( \"yllcorner\" ++ yllCorner )\ntheLineFile.WriteElt( \"cellSize\" ++ cellSizeMeters.AsString )\ntheLineFile.WriteElt( \"nodata_value -99\" )\n\n' convert theRasterCellList into theLineList\nlistIndex = 0\n\ntheLineList = List.Make\nfor each i in 1 .. _numY\n  theLineString = \"\"\n  for each j in 1 .. _numX\n    theLineString = theLineString ++ theRasterCellList.Get(listIndex).AsString\n    listIndex = listIndex + 1\n  end\n
+  theLineList.Add(theLineString)\nend\n\ntheLineFile.Write(theLineList, _numY)\ntheLineFile.Close\n\n'system.echo(\"create GRID file\")\n\n' strip the extension from the ACSCII file basename\ntheTmpPrefix = theASCIIFileName.GetBaseName.Left(theASCIIFileName.GetBaseName.Count - 4) \ndef = FileName.Merge(FileName.GetCWD.AsString, theTmpPrefix)\ntheGridFileName = SourceManager.PutDataSet(GRID,\"Import Grid from ASCII file -\" ++ theASCIIFileName.GetBaseName, def,TRUE)\n\n' READ ASCII RASTER FILE INTO ESRI GRID FORMAT\ntheGrid =
+ Grid.MakeFromASCII (theASCIIFileName, FALSE)\n\n' SAVE GRID\nstatus = Grid.GetVerify\nGrid.SetVerify(#GRID_VERIFY_OFF)\ntheGrid.SaveDataSet(theGridFileName)\nGrid.SetVerify(status)\n\n' was there a problem?\nif (theGrid.HasError) then\n  MsgBox.Error(\"File\" ++ theASCIIFileName.GetBaseName ++ \"cannot be imported as a Grid\", \"Import Error\")\n  exit\nend\n\n'system.echo(\"export to polygon FTAB\")\n' EXPORT GRID TO POLYGON FTAB\n\ntheTmpPolyFileName = FileName.GetCWD.MakeTmp(\"flg\", \"shp\")\ntheTmpFTab = theGrid.AsPolygonFTab( the
+TmpPolyFileName, TRUE, Prj.MakeNull )\n\nif (theTmpFTab.HasError) then\n  MsgBox.Error(\"File\" ++ theGridFileName.GetBaseName ++ \"cannot be converted to a Shapefile\", \"Conversion Error\")\n  ' try to delete the bad file\n  if (File.CanDelete( theTmpPolyFileName ) )then\n    File.Delete( theTmpPolyFileName )\n  end\nend\n\n' copy filename used for the grid file and change the extension to shp\ndef = theGridFileName.Clone\ndef.SetExtension(\"shp\")\n' get a filename for the shapefile\nthePolyFileName = SourceManager.PutDataSet
+(FTab,\"Save Shapefile -\" ++ theGridFileName.GetBaseName, def,TRUE)\n\ntheTmpFTabShapeField = theTmpFTab.FindField( \"Shape\" )\ntheTmpFTabGridCodeField = theTmpFTab.FindField( \"GridCode\" )\n\ntheFTab = theTmpFTab.Summarize(thePolyFileName, Shape, theTmpFTabGridCodeField, {theTmpFTabShapeField}, {#VTAB_SUMMARY_AVG})\ntheFTab.CreateIndex( theFTab.FindField( \"Shape\") )\n\n' create new Area field, and add to theVTab\ntheAreaField = Field.Make(\"Area\", #FIELD_DECIMAL, 16, 2)\ntheVTab.AddFields({theAreaField})\n' get a fresh c
+opy of field list (with area field)\ntheVTabAddedFieldList = theVTab.GetFields\ntheFTabAddedFieldList = theVTabAddedFieldList.DeepClone\n\ntheGridVTab = theGrid.GetVTab\ntheGridVTabCountField = theGridVTab.FindField( \"Count\" )\n' calculate patch areas from cell counts and cell size\nfor each rec in theGridVTab\n  patchArea = theGridVTab.ReturnValue( theGridVTabCountField, rec ) * cellSizeHa\n  theVTab.SetValue(theAreaField, rec, patchArea)  \nend\n\nfor each rec in theVTab\n'    'system.echo( theVTab.ReturnValue(theArea
+Field, rec).asstring)\nend\n\ntheFTabCountField = theFTab.FindField( \"Count\" )\ntheFTabGridCodeField = theFTab.FindField( \"GridCode\" )\ntheFTab.SetEditable( TRUE )\nif ( theFTab.IsEditable ) then\n  \n  ' add the same fields used in theVTab earlier\n  theFTab.AddFields( theFTabAddedFieldList )\n\n  ' loop through theFTab and copy values from the theVTab\n  for each rec in theFTab\n    theFTab.SetValue(theFTabAddedFieldList.Get(0), rec, theFTab.ReturnValue(theFTabGridCodeField, rec))\n    ' loop through the addedfieldlist
+s to copy from vtab to ftab\n    for each i in 0 .. (theVTabAddedFieldList.Count - 1)\n      theFTab.SetValue( theFTabAddedFieldList.Get(i), rec, theVTab.ReturnValue(theVTabAddedFieldList.Get(i), rec))\n    end\n  end\n\n  ' remove unnecessary Count and GridCode fields\n  theFTab.RemoveFields( {theFTabCountField, theFTabGridCodeField} )\n\nend\ntheFTab.SetEditable( FALSE )\n\ntheGTheme = GTheme.Make( theGrid )\ntheFTheme = FTheme.Make( theFTab )\ntheView.AddTheme( theGTheme )\ntheView.AddTheme( theFTheme )\n\nav.GetProject.
+SetModified( true )\n\n'///////////////////////////////////////////////////////////////////////\n' DEBUG CODE\n''system.echo(\"Elapsed time: \" + ((Date.Now.AsSeconds - startTime) / 60).AsString + \" minutes\")\n'///////////////////////////////////////////////////////////////////////\n"
+	SearchStr:	"flgdll"
+	FontSize:	1
+)
+
+(DocWin.35
+	Owner:	34
+	Open:	1
+	X:	-4
+	Y:	-4
+	W:	1034
+	H:	643
+)
+
+(CSMgr.36
+)
+
+(DocAct.37
+	Doc:	34
+)
+
+(Table.38
+	Name:	"PatchTypeDist"
+	CreationDate:	"Friday, May 18, 2001 09:13:17"
+	GUIName:	"Table"
+	Win:	39
+	CSMgr:	40
+	DocExts:	41
+	VTab:	42
+)
+
+(DocWin.39
+	Owner:	38
+	Open:	1
+	X:	68
+	Y:	519
+	W:	381
+	H:	102
+)
+
+(CSMgr.40
+)
+
+(DocAct.41
+	Doc:	38
+)
+
+(VTab.42
+	Name:	"gppatchtypedist.dbf"
+	BTab:	43
+	Fields:	44
+	Fields:	45
+	Fields:	46
+	Fields:	47
+	Fields:	48
+	Fields:	49
+	Fields:	50
+	SelBits:	52
+)
+
+(dBASE.43
+	Name:	"gppatchtypedist.dbf"
+	Fields:	44
+	Fields:	45
+	Fields:	46
+	Fields:	47
+	Fields:	48
+	Fields:	49
+	Fields:	50
+	FileName:	51
+)
+
+(Field.44
+	Name:	"Prob"
+	Btab:	43
+	Alias:	"Prob"
+	Visible:	1
+	Type:	9
+	Order:	-1
+	Pixels:	44
+)
+
+(Field.45
+	Name:	"Cumdist"
+	Btab:	43
+	Alias:	"Cumdist"
+	Visible:	1
+	Type:	9
+	Order:	-1
+	Pixels:	53
+)
+
+(Field.46
+	Name:	"Patchtype"
+	Btab:	43
+	Alias:	"Patchtype"
+	Visible:	1
+	Type:	4
+	Order:	-1
+	Pixels:	57
+)
+
+(Field.47
+	Name:	"Actab"
+	Btab:	43
+	Alias:	"Actab"
+	Visible:	1
+	Type:	4
+	Order:	-1
+	Pixels:	53
+)
+
+(Field.48
+	Name:	"W_a"
+	Btab:	43
+	Alias:	"W_a"
+	Visible:	1
+	Type:	9
+	Order:	-1
+	Pixels:	43
+)
+
+(Field.49
+	Name:	"W_b"
+	Btab:	43
+	Alias:	"W_b"
+	Visible:	1
+	Type:	9
+	Order:	-1
+	Pixels:	43
+)
+
+(Field.50
+	Name:	"W_c"
+	Btab:	43
+	Alias:	"W_c"
+	Visible:	1
+	Type:	9
+	Order:	-1
+	Pixels:	47
+)
+
+(FN.51
+	Path:	"c:/distributeflg/patchtypedist.dbf"
+)
+
+(Bitmap.52
+	NumBits:	2
+	NumBitsSet:	1
+	Bits:	00000001
+)
+
+(View.53
+	Name:	"View1"
+	CreationDate:	"February 24, 2002 11:50:24 AM"
+	GUIName:	"View"
+	Win:	54
+	CSMgr:	55
+	DocExts:	57
+	DocExts:	58
+	DocExts:	59
+	Graphics:	62
+	LastScale:	69639.39698492462000
+	Dpy:	63
+	TOCWidth:	150
+	CoordPrecision:	2
+)
+
+(DocWin.54
+	Owner:	53
+	Open:	1
+	X:	-4
+	Y:	-4
+	W:	1034
+	H:	635
+)
+
+(CSMgr.55
+	Client:	56
+)
+
+(CSClient.56
+	Client:	57
+	ReqName:	"ClientNfy"
+)
+
+(PanMgr.57
+	Doc:	53
+)
+
+(DocAct.58
+	Doc:	53
+)
+
+(SpAnEnv.59
+	CellEnum:	60
+	CellSize:	61
+	ExtEnum:	60
+	Extent:	61
+)
+
+(AVEnum.60
+	Name:	"ANALYSISENV_MAXOF"
+)
+
+(Nil.61
+)
+
+(GList.62
+	Dpy:	63
+	FormatNumb:	68
+)
+
+(MapDpy.63
+	Left:	-500.00000000000045
+	Bottom:	-500.00000000000045
+	Top:	10500.00000000000000
+	Right:	10500.00000000000000
+	Units:	7
+	Scale:	64
+	FrameTop:	6.21875000000000
+	FrameRight:	9.05208333333333
+	PageDpy:	65
+	FitToPage:	1
+	MouseLoc:	67
+)
+
+(Numb.64
+	N:	0.00056534090909
+)
+
+(PageDpy.65
+	Top:	6.21875000000000
+	Right:	9.05208333333333
+	ReportUnits:	1
+	Units:	1
+	Scale:	66
+	ZoomRight:	9.05208333333333
+	ZoomTop:	6.21875000000000
+	GridSpacingX:	0.25000000000000
+	GridSpacingY:	0.25000000000000
+)
+
+(Numb.66
+	N:	96.00000000000000
+)
+
+(PointD.67
+	x:	-2821.60804020100570
+	y:	9357.62144053601330
+)
+
+(Numb.68
+)
+
+(LButn.69
+	HelpTopic:	"New_button"
+	Update:	"Doc.NewUpdate"
+	Label:	"&New"
+	Click:	"View.New"
+)
+
+(LButn.70
+	HelpTopic:	"Open_button"
+	Update:	"Doc.OpenUpdate"
+	Label:	"&Open"
+	Click:	"Doc.Open"
+)
+
+(LButn.71
+	HelpTopic:	"Print_button"
+	Update:	"Doc.ActionUpdate"
+	Label:	"P&rint"
+	Click:	"Doc.Action"
+)
+
+(FN.72
+	Path:	"$AVEXT/spatial.avx"
+)
+
+(FN.73
+	Path:	"$AVEXT/dialog.avx"
+)
+
+(FN.74
+	Path:	"$AVEXT/geoproc.avx"
+)
+
+(NameDict.75
+)
+
+(NameDict.76
+	Obj:	77
+	Obj:	82
+	Obj:	83
+	Obj:	86
+	Obj:	89
+	Obj:	93
+)
+
+(AVDict.77
+	InternalName:	"Surface Support"
+	Key:	78
+	Key:	79
+	Value:	80
+	Value:	81
+)
+
+(AVStr.78
+	S:	"Loaded"
+)
+
+(AVStr.79
+	S:	"Version"
+)
+
+(Bool.80
+	Truth:	1
+)
+
+(Numb.81
+	N:	1000.00000000000000
+)
+
+(AVDict.82
+	InternalName:	"Table of Contents Defaults Dialog"
+)
+
+(AVDict.83
+	InternalName:	"Dialog Designer"
+	Key:	84
+	Value:	85
+)
+
+(AVStr.84
+	S:	"IsVisible"
+)
+
+(Bool.85
+	Truth:	1
+)
+
+(AVDict.86
+	InternalName:	"_Thor_"
+	Key:	87
+	Value:	88
+)
+
+(AVStr.87
+	S:	"DLOGS"
+)
+
+(NameDict.88
+)
+
+(AVDict.89
+	InternalName:	"Spatial Analyst"
+	Key:	90
+	Key:	91
+	Value:	80
+	Value:	92
+)
+
+(AVStr.90
+	S:	"Loaded"
+)
+
+(AVStr.91
+	S:	"Version"
+)
+
+(Numb.92
+	N:	1100.00000000000000
+)
+
+(AVDict.93
+	InternalName:	"Geoprocessing"
+	Key:	94
+	Key:	95
+	Value:	96
+	Value:	97
+)
+
+(AVStr.94
+	S:	"Loaded"
+)
+
+(AVStr.95
+	S:	"Version"
+)
+
+(Bool.96
+	Truth:	1
+)
+
+(Numb.97
+	N:	3.10000000000000
+)
+
+(DocGUI.98
+	Name:	"View"
+	Type:	"View"
+	Modified:	1
+	Visible:	1
+	MenuBar:	99
+	ButnBar:	256
+	Popups:	304
+	ToolBar:	326
+	NewScript:	"View.New"
+	OpenScript:	"Doc.Open"
+	ActionScript:	"Doc.Action"
+	NewUpdateScript:	"Doc.NewUpdate"
+	OpenUpdateScript:	"Doc.OpenUpdate"
+	ActionUpdateScript:	"Doc.ActionUpdate"
+	Title:	"Views"
+	Icon:	405
+)
+
+(MenuBar.99
+	Child:	100
+	Child:	119
+	Child:	140
+	Child:	164
+	Child:	191
+	Child:	209
+	Child:	217
+	Child:	235
+	Child:	251
+)
+
+(PMenu.100
+	InternalName:	"File"
+	Disabled:	1
+	Child:	101
+	Child:	102
+	Child:	103
+	Child:	104
+	Child:	105
+	Child:	106
+	Child:	107
+	Child:	108
+	Child:	109
+	Child:	110
+	Child:	111
+	Child:	112
+	Child:	113
+	Child:	114
+	Child:	115
+	Child:	116
+	Child:	117
+	Child:	118
+	Label:	"&File"
+)
+
+(Choice.101
+	Help:	"Closes the active component"
+	HelpTopic:	"Close"
+	Label:	"&Close"
+	Click:	"Project.CloseDoc"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.102
+	Help:	"Closes all components"
+	HelpTopic:	"Close_All"
+	Label:	"Close &All"
+	Click:	"Project.CloseAll"
+	Shortcut:	"Keys.None"
+)
+
+(Space.103
+)
+
+(Choice.104
+	Help:	"Allows you to specify the current working directory"
+	HelpTopic:	"Set_Working_Directory"
+	Label:	"Set &Working Directory..."
+	Click:	"Project.SetProjectWorkDir"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.105
+	Help:	"Saves the current project"
+	HelpTopic:	"Save_Project"
+	Label:	"&Save Project"
+	Click:	"Project.Save"
+	Shortcut:	"Keys.Ctrl+S"
+)
+
+(Choice.106
+	Help:	"Saves the current project with a new name"
+	HelpTopic:	"Save_Project_As"
+	Label:	"Save Project As..."
+	Click:	"Project.SaveAs"
+	Shortcut:	"Keys.None"
+)
+
+(Space.107
+)
+
+(Choice.108
+	Help:	"Displays the Extensions dialog"
+	HelpTopic:	"Extensions"
+	Label:	"Extensions..."
+	Click:	"Appl.GetExtensionWin"
+	Shortcut:	"Keys.None"
+)
+
+(Space.109
+)
+
+(Choice.110
+	Help:	"Prints the view"
+	HelpTopic:	"Print"
+	Label:	"&Print..."
+	Click:	"View.Print"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.111
+	Help:	"Edits the printer and the printing options"
+	HelpTopic:	"Print_Setup"
+	Label:	"P&rint Setup..."
+	Click:	"Project.PrintSetup"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.112
+	Disabled:	1
+	Help:	"Exports the view"
+	HelpTopic:	"Export"
+	Update:	"View.HasThemesUpdate"
+	Label:	"&Export..."
+	Click:	"View.ExportDisp"
+	Shortcut:	"Keys.None"
+)
+
+(Space.113
+)
+
+(Choice.114
+	Help:	"Displays the dialog box to delete, edit, and copy data sources"
+	HelpTopic:	"Manage_Sources"
+	Label:	"&Manage Data Sources..."
+	Click:	"View.ManageSources"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.115
+	InternalName:	"Surface"
+	Help:	"Imports files to data sources that can be used with ArcView"
+	HelpTopic:	"Import_Grids@surface.hlp"
+	Label:	"&Import Data Source..."
+	Click:	"Spatial.Import"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.116
+	InternalName:	"Surface"
+	Help:	"Exports data sources to files that can be used outside of ArcView"
+	HelpTopic:	"Export_Grids@surface.hlp"
+	Label:	"Export &Data Source..."
+	Click:	"Spatial.Export"
+	Shortcut:	"Keys.None"
+)
+
+(Space.117
+)
+
+(Choice.118
+	Help:	"Exits ArcView"
+	HelpTopic:	"Exit"
+	Label:	"E&xit"
+	Click:	"Project.Exit"
+	Shortcut:	"Keys.None"
+)
+
+(PMenu.119
+	InternalName:	"Edit"
+	Child:	120
+	Child:	121
+	Child:	122
+	Child:	123
+	Child:	124
+	Child:	125
+	Child:	126
+	Child:	127
+	Child:	128
+	Child:	129
+	Child:	130
+	Child:	131
+	Child:	132
+	Child:	133
+	Child:	134
+	Child:	135
+	Child:	136
+	Child:	137
+	Child:	138
+	Child:	139
+	Label:	"&Edit"
+)
+
+(Choice.120
+	Disabled:	1
+	Help:	"Cuts the active themes to the clipboard"
+	HelpTopic:	"Cut_Themes"
+	Update:	"View.ActiveDeletableThemesUpdate"
+	Label:	"Cut T&hemes"
+	Click:	"View.CutThemes"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.121
+	Disabled:	1
+	Help:	"Copies the active themes to the clipboard"
+	HelpTopic:	"Copy_Themes"
+	Update:	"View.ActiveThemesUpdate"
+	Label:	"Cop&y Themes"
+	Click:	"View.CopyThemes"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.122
+	Disabled:	1
+	Help:	"Removes the active themes from the view"
+	HelpTopic:	"Delete_Themes"
+	Update:	"View.ActiveDeletableThemesUpdate"
+	Label:	"De&lete Themes"
+	Click:	"View.DeleteThemes"
+	Shortcut:	"Keys.None"
+)
+
+(Space.123
+)
+
+(Choice.124
+	Disabled:	1
+	Help:	"Undo the last edit to graphics on a view"
+	HelpTopic:	"Undo_Graphic_Edit_on_a_view"
+	Update:	"View.UndoEditUpdate"
+	Label:	"&Undo Graphic Edit"
+	Click:	"View.UndoEdit"
+	Shortcut:	"Keys.Ctrl+Z"
+)
+
+(Choice.125
+	Disabled:	1
+	Invisible:	1
+	Help:	"Redo the last edit operation on a theme that was undone"
+	HelpTopic:	"Redo_Feature_Edit_on_a_view"
+	Update:	"View.RedoEditUpdate"
+	Label:	"&Redo Feature Edit"
+	Click:	"View.RedoEdit"
+	Shortcut:	"Keys.Ctrl+Y"
+)
+
+(Space.126
+)
+
+(Choice.127
+	Disabled:	1
+	Help:	"Cuts the selected graphics to the clipboard"
+	HelpTopic:	"Cut_Graphics"
+	Update:	"View.CutUpdate"
+	Label:	"Cu&t Graphics"
+	Click:	"View.CutGraphics"
+	Shortcut:	"Keys.Ctrl+X"
+)
+
+(Choice.128
+	Disabled:	1
+	Help:	"Copies the selected graphics to the clipboard"
+	HelpTopic:	"Copy_Graphics"
+	Update:	"View.CopyUpdate"
+	Label:	"&Copy Graphics"
+	Click:	"View.CopyGraphics"
+	Shortcut:	"Keys.Ctrl+C"
+)
+
+(Choice.129
+	Disabled:	1
+	Help:	"Removes the selected graphics from the view"
+	HelpTopic:	"Delete_Graphics"
+	Update:	"View.DeleteUpdate"
+	Label:	"&Delete Graphics"
+	Click:	"View.DeleteGraphics"
+	Shortcut:	"Keys.Del"
+)
+
+(Space.130
+)
+
+(Choice.131
+	Disabled:	1
+	Help:	"Combines the selected polygons"
+	HelpTopic:	"Combine_Graphics"
+	Update:	"View.CombineUpdate"
+	Label:	"Com&bine Graphics"
+	Click:	"View.CombineGraphics"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.132
+	Disabled:	1
+	Help:	"Unions the selected graphics to create a new graphic"
+	HelpTopic:	"Union_Graphics"
+	Update:	"View.UnionUpdate"
+	Label:	"U&nion Graphics"
+	Click:	"View.UnionGraphics"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.133
+	Disabled:	1
+	Help:	"Subtracts one selected polygon from the other selected polygon"
+	HelpTopic:	"Subtract_Graphics"
+	Update:	"View.SubtractUpdate"
+	Label:	"&Subtract Graphics"
+	Click:	"View.SubtractGraphics"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.134
+	Disabled:	1
+	Help:	"Creates a new polygon from the area  of overlap between the selected polygons"
+	HelpTopic:	"Intersect_Graphics"
+	Update:	"View.IntersectUpdate"
+	Label:	"&Intersect Graphics"
+	Click:	"View.IntersectGraphics"
+	Shortcut:	"Keys.None"
+)
+
+(Space.135
+)
+
+(Choice.136
+	Disabled:	1
+	Help:	"Inserts the contents of the clipboard"
+	HelpTopic:	"Paste"
+	Update:	"View.PasteUpdate"
+	Label:	"&Paste"
+	Click:	"View.Paste"
+	Shortcut:	"Keys.Ctrl+V"
+)
+
+(Space.137
+)
+
+(Choice.138
+	Disabled:	1
+	Help:	"Selects all graphics in the view"
+	HelpTopic:	"Select_All_Graphics"
+	Update:	"View.HasGraphicsUpdate"
+	Label:	"Select &All Graphics"
+	Click:	"Graphic.SelectAll"
+	Shortcut:	"Keys.None"
+)
+
+(Space.139
+)
+
+(PMenu.140
+	InternalName:	"View"
+	Child:	141
+	Child:	142
+	Child:	143
+	Child:	144
+	Child:	145
+	Child:	146
+	Child:	147
+	Child:	148
+	Child:	149
+	Child:	150
+	Child:	151
+	Child:	152
+	Child:	153
+	Child:	154
+	Child:	155
+	Child:	156
+	Child:	157
+	Child:	158
+	Child:	159
+	Child:	160
+	Child:	161
+	Child:	162
+	Child:	163
+	Label:	"&View"
+)
+
+(Choice.141
+	Help:	"Displays the dialog box to edit properties of the view"
+	HelpTopic:	"View_Properties"
+	Label:	"&Properties..."
+	Click:	"View.Properties"
+	Shortcut:	"Keys.None"
+)
+
+(Space.142
+)
+
+(Choice.143
+	Help:	"Inserts themes into the view"
+	HelpTopic:	"Add_Theme"
+	Label:	"&Add Theme..."
+	Click:	"View.Add"
+	Shortcut:	"Keys.Ctrl+T"
+)
+
+(Choice.144
+	Disabled:	1
+	Help:	"Displays a dialog box to create a geocoded theme"
+	HelpTopic:	"Geocode_Addresses"
+	Update:	"View.GeocodeUpdate"
+	Label:	"&Geocode Addresses..."
+	Click:	"View.Geocode"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.145
+	Help:	"Displays a dialog box to create an XY or dynamic segmentation event-based theme "
+	HelpTopic:	"Add_Event_Theme"
+	Update:	"View.AddEventUpdate"
+	Label:	"Add &Event Theme..."
+	Click:	"View.AddEvent"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.146
+	Help:	"Creates a new theme"
+	HelpTopic:	"New_Theme"
+	Label:	"&New Theme..."
+	Click:	"View.NewTheme"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.147
+	Disabled:	1
+	Help:	"Makes all themes visible"
+	HelpTopic:	"Themes_On_Themes_Off"
+	Update:	"View.HasThemesUpdate"
+	Label:	"&Themes On"
+	Click:	"View.ThemesOn"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.148
+	Disabled:	1
+	Help:	"Makes all themes invisible"
+	HelpTopic:	"Themes_On_Themes_Off"
+	Update:	"View.HasThemesUpdate"
+	Label:	"T&hemes Off"
+	Click:	"View.ThemesOff"
+	Shortcut:	"Keys.None"
+)
+
+(Space.149
+)
+
+(Choice.150
+	Disabled:	1
+	Help:	"Create a Layout from the View"
+	HelpTopic:	"Layout_menu_choice"
+	Update:	"View.HasThemesUpdate"
+	Label:	"La&yout..."
+	Click:	"View.Layout"
+	Shortcut:	"Keys.None"
+)
+
+(Space.151
+)
+
+(Choice.152
+	Help:	"Shows a dialog where you can change the style of the TOC"
+	HelpTopic:	"TOC_Defaults"
+	Update:	"TocDefs.ShowUpdate"
+	Label:	"TOC Style..."
+	Click:	"TocDefs.Show"
+	Shortcut:	"Keys.None"
+)
+
+(Space.153
+)
+
+(Choice.154
+	Disabled:	1
+	Help:	"Zooms to the extent of all themes"
+	HelpTopic:	"Zoom_to_Full_Extent"
+	Update:	"View.HasDataUpdate"
+	Label:	"Full E&xtent"
+	Click:	"View.ZoomFullExtent"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.155
+	Disabled:	1
+	Help:	"Zooms in on the center of the display"
+	HelpTopic:	"Zoom_In"
+	Update:	"View.HasDataUpdate"
+	Label:	"Zoom &In"
+	Click:	"View.ZoomIn"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.156
+	Disabled:	1
+	Help:	"Zooms out from the center of the display"
+	HelpTopic:	"Zoom_Out"
+	Update:	"View.HasDataUpdate"
+	Label:	"Zoom &Out"
+	Click:	"View.ZoomOut"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.157
+	Disabled:	1
+	Help:	"Zooms to the extent of active themes"
+	HelpTopic:	"Zoom_to_Active_Theme"
+	Update:	"View.ActiveThemesUpdate"
+	Label:	"&Zoom To Themes"
+	Click:	"View.ZoomToThemes"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.158
+	Disabled:	1
+	Help:	"Zooms to the extent of the selected features"
+	HelpTopic:	"Zoom_to_Selected"
+	Update:	"View.SelectableThemesUpdate"
+	Label:	"Zoom To &Selected"
+	Click:	"View.ZoomToSelected"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.159
+	Help:	"Goes back to the previous extent you were viewing"
+	HelpTopic:	"Zoom_Previous"
+	Update:	"View.UndoZoomUpdate"
+	Label:	"Zoom Pre&vious"
+	Click:	"View.UndoZoom"
+	Shortcut:	"Keys.None"
+)
+
+(Space.160
+)
+
+(Choice.161
+	Disabled:	1
+	Help:	"Finds features in the active themes using the text you enter"
+	HelpTopic:	"Find"
+	Update:	"View.FindUpdate"
+	Label:	"&Find..."
+	Click:	"View.Find"
+	Shortcut:	"Keys.Ctrl+F"
+)
+
+(Choice.162
+	Disabled:	1
+	Help:	"Locates an address in the active, matchable theme"
+	HelpTopic:	"Locate_Address"
+	Update:	"View.LocateUpdate"
+	Label:	"&Locate Address..."
+	Click:	"View.Locate"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.163
+	InternalName:	"GeoProc"
+	Disabled:	1
+	Help:	"Opens the GeoProcessing Wizard"
+	HelpTopic:	"geoproc_choice"
+	Tag:	"GeoProcessing"
+	Update:	"GeoProc.Main.Show Update"
+	Label:	"GeoProcessing Wizard..."
+	Click:	"GeoProc.Show"
+	Shortcut:	"Keys.None"
+)
+
+(PMenu.164
+	InternalName:	"Theme"
+	Child:	165
+	Child:	166
+	Child:	167
+	Child:	168
+	Child:	169
+	Child:	170
+	Child:	171
+	Child:	172
+	Child:	173
+	Child:	174
+	Child:	175
+	Child:	176
+	Child:	177
+	Child:	178
+	Child:	179
+	Child:	180
+	Child:	181
+	Child:	182
+	Child:	183
+	Child:	184
+	Child:	185
+	Child:	186
+	Child:	187
+	Child:	188
+	Child:	189
+	Child:	190
+	Label:	"&Theme"
+)
+
+(Choice.165
+	Disabled:	1
+	Help:	"Displays the dialog box to edit properties of the active theme"
+	HelpTopic:	"Theme_Properties"
+	Update:	"View.ActiveThemesUpdate"
+	Label:	"&Properties..."
+	Click:	"View.ThemeProperties"
+	Shortcut:	"Keys.None"
+)
+
+(Space.166
+)
+
+(Choice.167
+	Disabled:	1
+	Help:	"Starts or stops editing of shapefile"
+	HelpTopic:	"Start_Stop_Editing_in_a_view"
+	Update:	"View.ToggleEditingUpdate"
+	Label:	"Start &Editing"
+	Click:	"View.ToggleEditing"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.168
+	Disabled:	1
+	Help:	"Save edits to the source shapefile"
+	HelpTopic:	"Save_edits_theme"
+	Update:	"View.SaveEditsUpdate"
+	Label:	"Save Ed&its"
+	Click:	"View.SaveEdits"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.169
+	Disabled:	1
+	Help:	"Saves edits to a new shapefile"
+	HelpTopic:	"Save_edits_as_theme"
+	Update:	"View.SaveEditsUpdate"
+	Label:	"Save E&dits As..."
+	Click:	"View.SaveEditsAs"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.170
+	Disabled:	1
+	Help:	"Converts a theme to a shapefile"
+	HelpTopic:	"Convert_to_Shapefile"
+	Update:	"View.ExportUpdate"
+	Label:	"Convert to &Shapefile..."
+	Click:	"View.Export"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.171
+	InternalName:	"Surface"
+	Disabled:	1
+	Help:	"Converts themes to grid themes"
+	HelpTopic:	"Convert_to_Grid@surface.hlp"
+	Update:	"Spatial.ConvertToGridUpdate"
+	Label:	"Convert to &Grid..."
+	Click:	"Spatial.ConvertToGrid"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.172
+	InternalName:	"Surface"
+	Disabled:	1
+	Help:	"Saves the data source associated with a grid theme as a permanent data source"
+	HelpTopic:	"Save_Data_Set@surface.hlp"
+	Update:	"Spatial.SaveDataSetUpdate"
+	Label:	"Sa&ve Data Set..."
+	Click:	"Spatial.SaveDataSet"
+	Shortcut:	"Keys.None"
+)
+
+(Space.173
+)
+
+(Choice.174
+	Disabled:	1
+	Help:	"Displays the legends of the active themes"
+	HelpTopic:	"Edit_Legend"
+	Update:	"View.ActiveThemesUpdate"
+	Label:	"Edit &Legend..."
+	Click:	"View.EditLegendClick"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.175
+	Disabled:	1
+	Help:	"Shows or hides the active themes' legends"
+	HelpTopic:	"Hide_show_Legend"
+	Update:	"View.ActiveThemesUpdate"
+	Label:	"&Hide/Show Legend"
+	Click:	"View.ToggleLegend"
+	Shortcut:	"Keys.None"
+)
+
+(Space.176
+)
+
+(Choice.177
+	Disabled:	1
+	Help:	"Displays the Re-match dialog for re-matching addresses"
+	HelpTopic:	"Re_match_Addresses"
+	Update:	"View.EditMatchUpdate"
+	Label:	"&Re-match Addresses..."
+	Click:	"View.EditMatch"
+	Shortcut:	"Keys.None"
+)
+
+(Space.178
+)
+
+(Choice.179
+	Disabled:	1
+	Help:	"Labels features in active, visible themes"
+	HelpTopic:	"Auto_label"
+	Update:	"View.LabelThemesUpdate"
+	Label:	"&Auto-label..."
+	Click:	"View.LabelThemes"
+	Shortcut:	"Keys.Ctrl+L"
+)
+
+(Choice.180
+	Disabled:	1
+	Help:	"Removes any labels from active themes"
+	HelpTopic:	"Remove_Labels"
+	Update:	"View.RemoveThemeLabelsUpdate"
+	Label:	"Rem&ove Labels"
+	Click:	"View.RemoveThemeLabels"
+	Shortcut:	"Keys.Ctrl+R"
+)
+
+(Choice.181
+	Disabled:	1
+	Help:	"Removes the overlapping labels from active themes, if they are still green."
+	HelpTopic:	"Remove_Overlapping_Labels"
+	Update:	"View.RemoveOverlapThemeLabelsUpdate"
+	Label:	"Remove Overlappi&ng Labels"
+	Click:	"View.RemoveOverlapThemeLabels"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.182
+	Disabled:	1
+	Help:	"Converts selected overlapping labels to symbol of selected good label"
+	HelpTopic:	"Convert_Overlapping_Labels"
+	Update:	"View.ConvertOverlapLabelsUpdate"
+	Label:	"&Convert Overlapping Labels"
+	Click:	"View.ConvertOverlapLabels"
+	Shortcut:	"Keys.Ctrl+O"
+)
+
+(Space.183
+)
+
+(Choice.184
+	Disabled:	1
+	Help:	"Opens the tables of the active themes"
+	HelpTopic:	"Open_Theme_Table"
+	Update:	"View.TabularThemesUpdate"
+	Label:	"&Table..."
+	Click:	"View.ShowTable"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.185
+	Disabled:	1
+	Help:	"Displays the Query Builder to select features with a logical expression"
+	HelpTopic:	"Query_Builder"
+	Update:	"View.AttributeThemesUpdate"
+	Label:	"&Query..."
+	Click:	"View.Query"
+	Shortcut:	"Keys.Ctrl+Q"
+)
+
+(Choice.186
+	Disabled:	1
+	Help:	"Selects features in the active themes using another theme's features"
+	HelpTopic:	"Select_By_Theme"
+	Update:	"View.SelectableThemesUpdate"
+	Label:	"Select &By Theme..."
+	Click:	"View.SelectByTheme"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.187
+	Disabled:	1
+	Help:	"Creates buffers around features"
+	HelpTopic:	"Create_Buffer_Choice"
+	Update:	"WizardBuffer.OpenDialogUpdate"
+	Label:	"Create Buffers..."
+	Click:	"WizardBuffer.OpenDialog"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.188
+	Disabled:	1
+	Help:	"Unselects the selected features of all active themes"
+	HelpTopic:	"Clear_Selected_Features"
+	Update:	"View.AttributeThemesUpdate"
+	Label:	"Clear Selected &Features"
+	Click:	"View.ClearSelect"
+	Shortcut:	"Keys.None"
+)
+
+(Space.189
+	InternalName:	"Spatial"
+)
+
+(Choice.190
+	InternalName:	"Spatial"
+	Disabled:	1
+	Help:	"Brings up the map query builder or map calculator associated with a grid theme"
+	HelpTopic:	"Edit_Theme_Expression@spatial.hlp"
+	Update:	"Spatial.EditExpressionUpdate"
+	Label:	"Edit The&me Expression..."
+	Click:	"Spatial.EditExpression"
+	Shortcut:	"Keys.None"
+)
+
+(PMenu.191
+	InternalName:	"Analysis"
+	Child:	192
+	Child:	193
+	Child:	194
+	Child:	195
+	Child:	196
+	Child:	197
+	Child:	198
+	Child:	199
+	Child:	200
+	Child:	201
+	Child:	202
+	Child:	203
+	Child:	204
+	Child:	205
+	Child:	206
+	Child:	207
+	Child:	208
+	Label:	"&Analysis"
+)
+
+(Choice.192
+	InternalName:	"Spatial"
+	Disabled:	1
+	Help:	"Displays the dialog box to edit the analysis properties"
+	HelpTopic:	"Analysis_Properties@spatial.hlp"
+	Update:	"View.HasThemesUpdate"
+	Label:	"&Properties..."
+	Click:	"Spatial.AnalysisProperties"
+	Shortcut:	"Keys.None"
+)
+
+(Space.193
+	InternalName:	"Spatial"
+)
+
+(Choice.194
+	InternalName:	"Spatial"
+	Disabled:	1
+	Help:	"Finds continuous distances from features in a theme"
+	HelpTopic:	"Find_Distance@spatial.hlp"
+	Update:	"Spatial.HasActiveIntegerGridOrFeatureThemeUpdate"
+	Label:	"Find &Distance"
+	Click:	"Spatial.Distance"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.195
+	InternalName:	"Spatial"
+	Disabled:	1
+	Help:	"Creates zones of proximity for features in a theme"
+	HelpTopic:	"Assign_Proximity@spatial.hlp"
+	Update:	"Spatial.HasActiveIntegerGridOrFeatureThemeUpdate"
+	Label:	"Assign Pro&ximity"
+	Click:	"Spatial.Proximity"
+	Shortcut:	"Keys.None"
+)
+
+(Space.196
+	InternalName:	"Spatial"
+)
+
+(Choice.197
+	InternalName:	"Spatial"
+	Disabled:	1
+	Help:	"Creates a density surface from a point theme"
+	HelpTopic:	"Calculate_Density@spatial.hlp"
+	Update:	"Spatial.DensityUpdate"
+	Label:	"Calculate D&ensity..."
+	Click:	"Spatial.Density"
+	Shortcut:	"Keys.None"
+)
+
+(Space.198
+	InternalName:	"Spatial"
+)
+
+(Choice.199
+	InternalName:	"Spatial"
+	Disabled:	1
+	Help:	"Calculates a statistic for multiple grid themes"
+	HelpTopic:	"Cell_Statistics@spatial.hlp"
+	Update:	"Spatial.CellStatisticsUpdate"
+	Label:	"&Cell Statistics..."
+	Click:	"Spatial.CellStatistics"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.200
+	InternalName:	"Spatial"
+	Disabled:	1
+	Help:	"Summarizes values in a grid theme within the zones of another theme"
+	HelpTopic:	"Summarize_Zones@spatial.hlp"
+	Update:	"Spatial.ZoneOperationUpdate"
+	Label:	"Summarize &Zones..."
+	Click:	"Spatial.SummarizeZones"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.201
+	InternalName:	"Spatial"
+	Disabled:	1
+	Help:	"Creates a histogram distribution of a grid theme for each zone in another theme"
+	HelpTopic:	"Histogram_By_Zone@spatial.hlp"
+	Update:	"Spatial.ZoneOperationUpdate"
+	Label:	"&Histogram By Zone..."
+	Click:	"Spatial.ZoneHistogram"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.202
+	InternalName:	"Spatial"
+	Disabled:	1
+	Help:	"Tabulates the area of one theme within the zones of another theme"
+	HelpTopic:	"Tabulate_Areas@spatial.hlp"
+	Update:	"Spatial.TabulateAreasUpdate"
+	Label:	"&Tabulate Areas..."
+	Click:	"Spatial.TabulateAreas"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.203
+	InternalName:	"Spatial"
+	Disabled:	1
+	Help:	"Performs spatial selection on multiple grid themes"
+	HelpTopic:	"Map_Query@spatial.hlp"
+	Update:	"Spatial.HasGridThemeUpdate"
+	Label:	"Map &Query..."
+	Click:	"Spatial.Query"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.204
+	InternalName:	"Spatial"
+	Disabled:	1
+	Help:	"Displays the dialog box to create a grid theme with an algebraic statement"
+	HelpTopic:	"Map_Calculator@spatial.hlp"
+	Update:	"Spatial.HasGridThemeUpdate"
+	Label:	"&Map Calculator..."
+	Click:	"Spatial.Calculator"
+	Shortcut:	"Keys.None"
+)
+
+(Space.205
+	InternalName:	"Spatial"
+)
+
+(Choice.206
+	InternalName:	"Spatial"
+	Disabled:	1
+	Help:	"Calculates a statistic on a grid or point theme over a specified neighborhood"
+	HelpTopic:	"Neighborhood_Statistics@spatial.hlp"
+	Update:	"Spatial.HasActiveGridOrNumericPointThemeUpdate"
+	Label:	"&Neighborhood Statistics..."
+	Click:	"Spatial.NbrStatistics"
+	Shortcut:	"Keys.None"
+)
+
+(Space.207
+	InternalName:	"Spatial"
+)
+
+(Choice.208
+	InternalName:	"Spatial"
+	Disabled:	1
+	Help:	"Reclassifies the values in a grid theme"
+	HelpTopic:	"Reclassify@spatial.hlp"
+	Update:	"Spatial.HasActiveGridThemeUpdate"
+	Label:	"&Reclassify..."
+	Click:	"Spatial.Reclassify"
+	Shortcut:	"Keys.None"
+)
+
+(PMenu.209
+	InternalName:	"Surface"
+	Child:	210
+	Child:	211
+	Child:	212
+	Child:	213
+	Child:	214
+	Child:	215
+	Child:	216
+	Label:	"&Surface"
+)
+
+(Choice.210
+	InternalName:	"Surface"
+	Disabled:	1
+	Help:	"Creates a continuous raster surface from a point theme"
+	HelpTopic:	"Interpolate_Surface@surface.hlp"
+	Update:	"Spatial.SurfaceUpdate"
+	Label:	"&Interpolate Grid..."
+	Click:	"Spatial.Surface"
+	Shortcut:	"Keys.None"
+)
+
+(Space.211
+	InternalName:	"Surface"
+)
+
+(Choice.212
+	InternalName:	"Surface"
+	Disabled:	1
+	Help:	"Creates contours from a surface or point theme"
+	HelpTopic:	"Create_Contours@surface.hlp"
+	Update:	"Surface.ContourUpdate"
+	Label:	"Create &Contours..."
+	Click:	"Spatial.Contour"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.213
+	InternalName:	"Surface"
+	Disabled:	1
+	Help:	"Derives slope from a surface"
+	HelpTopic:	"Derive_Slope@surface.hlp"
+	Update:	"Surface.HasActiveGridOrTinThemeUpdate"
+	Label:	"Derive &Slope"
+	Click:	"Spatial.Slope"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.214
+	InternalName:	"Surface"
+	Disabled:	1
+	Help:	"Derives aspect from a surface"
+	HelpTopic:	"Derive_Aspect@surface.hlp"
+	Update:	"Surface.HasActiveGridOrTinThemeUpdate"
+	Label:	"Derive &Aspect"
+	Click:	"Spatial.Aspect"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.215
+	InternalName:	"Surface"
+	Disabled:	1
+	Help:	"Computes hillshade values for a surface"
+	HelpTopic:	"Compute_Hillshade@surface.hlp"
+	Update:	"Surface.HasActiveGridOrTinThemeUpdate"
+	Label:	"Compute &Hillshade..."
+	Click:	"Spatial.Hillshade"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.216
+	InternalName:	"Surface"
+	Disabled:	1
+	Help:	"Calculate the viewshed of selected points on a surface"
+	HelpTopic:	"Viewshed@surface.hlp"
+	Update:	"Surface.ViewshedUpdate"
+	Label:	"Calculate &Viewshed..."
+	Click:	"Surface.Viewshed"
+	Shortcut:	"Keys.None"
+)
+
+(PMenu.217
+	InternalName:	"Graphics"
+	Child:	218
+	Child:	219
+	Child:	220
+	Child:	221
+	Child:	222
+	Child:	223
+	Child:	224
+	Child:	225
+	Child:	226
+	Child:	229
+	Child:	230
+	Child:	231
+	Child:	232
+	Child:	233
+	Child:	234
+	Label:	"&Graphics"
+)
+
+(Choice.218
+	Disabled:	1
+	Help:	"Displays the property editor for the selected graphic"
+	HelpTopic:	"Graphic_Properties"
+	Update:	"Graphic.HasSelectionUpdate"
+	Label:	"&Properties..."
+	Click:	"Graphic.Edit"
+	Shortcut:	"Keys.None"
+)
+
+(Space.219
+)
+
+(Choice.220
+	Help:	"Shows a dialog where you can set the default values for the label and text tools"
+	HelpTopic:	"Default_settings_for_text_and_label_tools"
+	Label:	"&Text and Label Defaults..."
+	Click:	"Graphic.Label Defaults Show"
+	Shortcut:	"Keys.None"
+)
+
+(Space.221
+)
+
+(Choice.222
+	Disabled:	1
+	Help:	"Displays a dialog box to adjust size and position of selected graphic"
+	HelpTopic:	"Size_and_Position"
+	Update:	"Graphic.SingleSelectionUpdate"
+	Label:	"&Size and Position..."
+	Click:	"Graphic.SizePos"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.223
+	Disabled:	1
+	Help:	"Aligns the selected graphics"
+	HelpTopic:	"Align"
+	Update:	"Graphic.HasSelectionUpdate"
+	Label:	"&Align..."
+	Click:	"Graphic.Align"
+	Shortcut:	"Keys.Ctrl+A"
+)
+
+(Space.224
+)
+
+(Choice.225
+	Disabled:	1
+	Help:	"Moves selected graphics in front of other graphics"
+	HelpTopic:	"Bring_to_Front_on_a_view"
+	Update:	"Graphic.HasSelectionUpdate"
+	Label:	"Bring to &Front"
+	Click:	"Graphic.ToFront"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.226
+	Disabled:	1
+	Help:	"Moves selected graphics behind other graphics"
+	HelpTopic:	"Send_to_Back_on_a_view"
+	Update:	"Graphic.HasSelectionUpdate"
+	Label:	"Send to &Back "
+	Click:	"Graphic.ToBack"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.229
+	Disabled:	1
+	Help:	"Groups selected graphics"
+	HelpTopic:	"Group_on_a_view"
+	Update:	"Graphic.GroupUpdate"
+	Label:	"&Group"
+	Click:	"Graphic.Group"
+	Shortcut:	"Keys.Ctrl+G"
+)
+
+(Choice.230
+	Disabled:	1
+	Help:	"Ungroups selected graphics"
+	HelpTopic:	"Ungroup_on_a_view"
+	Update:	"Graphic.UngroupUpdate"
+	Label:	"&Ungroup"
+	Click:	"Graphic.Ungroup"
+	Shortcut:	"Keys.Ctrl+U"
+)
+
+(Space.231
+)
+
+(Choice.232
+	Disabled:	1
+	Help:	"Associates selected graphics with active themes"
+	HelpTopic:	"Attach_Graphics"
+	Update:	"View.AddGraphicsUpdate"
+	Label:	"A&ttach Graphics"
+	Click:	"View.AddGraphics"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.233
+	Disabled:	1
+	Help:	"Removes association between graphics and active themes"
+	HelpTopic:	"Detach_Graphics"
+	Update:	"View.ClearGraphicsUpdate"
+	Label:	"&Detach Graphics"
+	Click:	"View.ClearGraphics"
+	Shortcut:	"Keys.None"
+)
+
+(Space.234
+)
+
+(PMenu.235
+	InternalName:	"Window"
+	Child:	236
+	Child:	237
+	Child:	238
+	Child:	239
+	Child:	240
+	Child:	242
+	Child:	244
+	Child:	245
+	Child:	246
+	Child:	247
+	Child:	248
+	Child:	249
+	Child:	250
+	Label:	"&Window"
+)
+
+(Choice.236
+	Help:	"Arranges windows as non-overlapping tiles"
+	HelpTopic:	"Tile"
+	Label:	"&Tile"
+	Click:	"Project.Tile"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.237
+	Help:	"Arranges windows"
+	HelpTopic:	"Cascade"
+	Label:	"&Cascade"
+	Click:	"Project.Cascade"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.238
+	Help:	"Arranges iconified windows"
+	HelpTopic:	"Arrange_Icons"
+	Label:	"&Arrange Icons"
+	Click:	"Project.ArrangeIcons"
+	Shortcut:	"Keys.None"
+)
+
+(Space.239
+)
+
+(Choice.240
+	Help:	"Shows the symbol window"
+	HelpTopic:	"Show_Symbol_Window"
+	Label:	"Show Symbol Window..."
+	Click:	"Project.ShowHideSymWin"
+	Shortcut:	"Keys.Ctrl+P"
+)
+
+(Space.242
+	ObjectTag:	243
+	Update:	"WindowMenuUpdate"
+)
+
+(AVStr.243
+	S:	"OpenMe.apr AC_NSF AC_SF FLG.GetNeighbours FLG.Main PatchTypeDist View1"
+)
+
+(Choice.244
+	Help:	"Activates OpenMe.apr"
+	Label:	"&1 OpenMe.apr"
+	Click:	"WindowActivate"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.245
+	Help:	"Activates AC_NSF"
+	Label:	"&2 AC_NSF"
+	Click:	"WindowActivate"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.246
+	Help:	"Activates AC_SF"
+	Label:	"&3 AC_SF"
+	Click:	"WindowActivate"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.247
+	Help:	"Activates FLG.GetNeighbours"
+	Label:	"&4 FLG.GetNeighbours"
+	Click:	"WindowActivate"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.248
+	Help:	"Activates FLG.Main"
+	Label:	"&5 FLG.Main"
+	Click:	"WindowActivate"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.249
+	Help:	"Activates PatchTypeDist"
+	Label:	"&6 PatchTypeDist"
+	Click:	"WindowActivate"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.250
+	Help:	"Activates View1"
+	Label:	"&7 View1"
+	Click:	"WindowActivate"
+	Shortcut:	"Keys.None"
+)
+
+(PMenu.251
+	InternalName:	"Help"
+	Child:	252
+	Child:	253
+	Child:	254
+	Child:	255
+	Label:	"&Help"
+)
+
+(Choice.252
+	Help:	"Displays the dialog for browsing and searching ArcView's help system"
+	HelpTopic:	"Help_on_Help_Topics"
+	Label:	"Help &Topics..."
+	Click:	"Project.HelpTopics"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.253
+	Help:	"Provides instructions for how to obtain help from ArcView"
+	HelpTopic:	"Help_on_How_to_Get_Help"
+	Label:	"&How to Get Help..."
+	Click:	"Project.HelpHelp"
+	Shortcut:	"Keys.None"
+)
+
+(Space.254
+)
+
+(Choice.255
+	Help:	"Provides information about ArcView"
+	HelpTopic:	"About"
+	Label:	"&About ArcView..."
+	Click:	"Project.About"
+	Shortcut:	"Keys.None"
+)
+
+(ButnBar.256
+	Child:	257
+	Child:	259
+	Child:	260
+	Child:	262
+	Child:	263
+	Child:	265
+	Child:	267
+	Child:	269
+	Child:	270
+	Child:	272
+	Child:	274
+	Child:	276
+	Child:	277
+	Child:	279
+	Child:	281
+	Child:	283
+	Child:	285
+	Child:	287
+	Child:	289
+	Child:	290
+	Child:	292
+	Child:	294
+	Child:	295
+	Child:	296
+	Child:	298
+	Child:	299
+	Child:	301
+	Child:	302
+)
+
+(Butn.257
+	Help:	"Save Project//Saves the current project"
+	HelpTopic:	"Save_Project"
+	Icon:	258
+	Click:	"Project.Save"
+)
+
+(AVIcon.258
+	Name:	"Save"
+	Res:	"Icons.Save"
+
+)
+
+(Space.259
+)
+
+(Butn.260
+	Help:	"Add Theme//Inserts themes into the view"
+	HelpTopic:	"Add_Theme"
+	Icon:	261
+	Click:	"View.Add"
+)
+
+(AVIcon.261
+	Name:	"AddTheme"
+	Res:	"Icons.AddTheme"
+
+)
+
+(Space.262
+)
+
+(Butn.263
+	Disabled:	1
+	Help:	"Theme Properties//Displays the dialog box to edit properties of the active theme"
+	HelpTopic:	"Theme_Properties"
+	Update:	"View.ActiveThemesUpdate"
+	Icon:	264
+	Click:	"View.ThemeProperties"
+)
+
+(AVIcon.264
+	Name:	"Props"
+	Res:	"Icons.Props"
+
+)
+
+(Butn.265
+	Disabled:	1
+	Help:	"Edit Legend//Displays the legends of the active themes"
+	HelpTopic:	"Edit_Legend"
+	Update:	"View.ActiveThemesUpdate"
+	Icon:	266
+	Click:	"View.EditLegendClick"
+)
+
+(AVIcon.266
+	Name:	"Legend"
+	Res:	"Icons.Legend"
+
+)
+
+(Butn.267
+	Disabled:	1
+	Help:	"Open Theme Table//Opens the tables of the active themes"
+	HelpTopic:	"Open_Theme_Table"
+	Update:	"View.TabularThemesUpdate"
+	Icon:	268
+	Click:	"View.ShowTable"
+)
+
+(AVIcon.268
+	Name:	"Table"
+	Res:	"Icons.Table"
+
+)
+
+(Space.269
+)
+
+(Butn.270
+	Disabled:	1
+	Help:	"Find//Finds features in the active themes using the text you enter"
+	HelpTopic:	"Find"
+	Update:	"View.FindUpdate"
+	Icon:	271
+	Click:	"View.Find"
+)
+
+(AVIcon.271
+	Name:	"Find"
+	Res:	"Icons.Find"
+
+)
+
+(Butn.272
+	Disabled:	1
+	Help:	"Locate Address//Locates an address in the active, matchable theme"
+	HelpTopic:	"Locate_Address"
+	Update:	"View.LocateUpdate"
+	Icon:	273
+	Click:	"View.Locate"
+)
+
+(AVIcon.273
+	Name:	"AddMatch"
+	Res:	"Icons.AddMatch"
+
+)
+
+(Butn.274
+	Disabled:	1
+	Help:	"Query Builder//Displays the Query Builder to select features with a logical expression"
+	HelpTopic:	"Query_Builder"
+	Update:	"View.AttributeThemesUpdate"
+	Icon:	275
+	Click:	"View.Query"
+)
+
+(AVIcon.275
+	Name:	"QueryBuilder"
+	Res:	"Icons.QueryBuilder"
+
+)
+
+(Space.276
+)
+
+(Butn.277
+	Disabled:	1
+	Help:	"Zoom to Full Extent//Zooms to the extent of all themes"
+	HelpTopic:	"Zoom_to_Full_Extent"
+	Update:	"View.HasDataUpdate"
+	Icon:	278
+	Click:	"View.ZoomFullExtent"
+)
+
+(AVIcon.278
+	Name:	"ZoomView"
+	Res:	"Icons.ZoomView"
+
+)
+
+(Butn.279
+	Disabled:	1
+	Help:	"Zoom to Active Theme(s)//Zooms to the extent of active themes"
+	HelpTopic:	"Zoom_to_Active_Theme"
+	Update:	"View.ActiveThemesUpdate"
+	Icon:	280
+	Click:	"View.ZoomToThemes"
+)
+
+(AVIcon.280
+	Name:	"ZoomTheme"
+	Res:	"Icons.ZoomTheme"
+
+)
+
+(Butn.281
+	Disabled:	1
+	Help:	"Zoom to Selected//Zooms to the extent of the selected features"
+	HelpTopic:	"Zoom_to_Selected"
+	Update:	"View.SelectableThemesUpdate"
+	Icon:	282
+	Click:	"View.ZoomToSelected"
+)
+
+(AVIcon.282
+	Name:	"ZoomToSelected"
+	Res:	"Icons.ZoomToSelected"
+
+)
+
+(Butn.283
+	Disabled:	1
+	Help:	"Zoom In//Zooms in on the center of the display"
+	HelpTopic:	"Zoom_In"
+	Update:	"View.HasDataUpdate"
+	Icon:	284
+	Click:	"View.ZoomIn"
+)
+
+(AVIcon.284
+	Name:	"ZoomIn"
+	Res:	"Icons.ZoomIn"
+
+)
+
+(Butn.285
+	Disabled:	1
+	Help:	"Zoom Out//Zooms out from the center of the display"
+	HelpTopic:	"Zoom_Out"
+	Update:	"View.HasDataUpdate"
+	Icon:	286
+	Click:	"View.ZoomOut"
+)
+
+(AVIcon.286
+	Name:	"ZoomOut"
+	Res:	"Icons.ZoomOut"
+
+)
+
+(Butn.287
+	Help:	"Zoom to Previous Extent//Goes back to the previous extent you were viewing"
+	HelpTopic:	"Zoom_Previous"
+	Update:	"View.UndoZoomUpdate"
+	Icon:	288
+	Click:	"View.UndoZoom"
+)
+
+(AVIcon.288
+	Name:	"ZoomPrevious"
+	Res:	"Icons.ZoomPrevious"
+
+)
+
+(Space.289
+)
+
+(Butn.290
+	Disabled:	1
+	Help:	"Select Features Using Graphic//Selects features in active themes using selected graphics"
+	HelpTopic:	"Select_Features_Using_Graphic"
+	Update:	"View.SpatialSelectUpdate"
+	Icon:	291
+	Click:	"View.SpatialSelect"
+)
+
+(AVIcon.291
+	Name:	"SpatialSelect"
+	Res:	"Icons.SpatialSelect"
+
+)
+
+(Butn.292
+	Disabled:	1
+	Help:	"Clear Selected Features//Unselects the selected features of all active themes"
+	HelpTopic:	"Clear_Selected_Features"
+	Update:	"View.AttributeThemesUpdate"
+	Icon:	293
+	Click:	"View.ClearSelect"
+)
+
+(AVIcon.293
+	Name:	"SelectNone"
+	Res:	"Icons.SelectNone"
+
+)
+
+(Space.294
+)
+
+(Space.295
+)
+
+(Butn.296
+	Help:	"Generate Forest//Launch forest generator"
+	Icon:	297
+	Click:	"FLG.Main"
+)
+
+(AVIcon.297
+	Name:	"Execute"
+	Res:	"Icons.Execute"
+
+)
+
+(Space.298
+)
+
+(Butn.299
+	InternalName:	"Spatial"
+	Disabled:	1
+	Help:	"Histogram//Displays the histogram distribution of the values in a grid theme"
+	HelpTopic:	"Histogram@spatial.hlp"
+	Update:	"Spatial.HistogramUpdate"
+	Icon:	300
+	Click:	"Spatial.Histogram"
+)
+
+(AVIcon.300
+	Name:	"Histogram"
+	Res:	"Icons.Histogram"
+
+)
+
+(Space.301
+	InternalName:	"Spatial"
+)
+
+(Butn.302
+	Help:	"Help//Gets help about the next button, tool, or menu choice you click"
+	HelpTopic:	"Help_button"
+	Icon:	303
+	Click:	"Help.Tool"
+)
+
+(AVIcon.303
+	Name:	"HelpTool"
+	Res:	"Icons.HelpTool"
+
+)
+
+(PopupSet.304
+	Child:	305
+)
+
+(Popup.305
+	Child:	306
+	Child:	307
+	Child:	308
+	Child:	309
+	Child:	310
+	Child:	311
+	Child:	312
+	Child:	313
+	Child:	314
+	Child:	315
+	Child:	316
+	Child:	317
+	Child:	318
+	Child:	319
+	Child:	320
+	Child:	321
+	Child:	322
+	Child:	323
+	Child:	324
+	Child:	325
+	Label:	"Menu"
+)
+
+(Choice.306
+	Disabled:	1
+	Invisible:	1
+	Help:	"Deletes the last entered point on the line or polygon being drawn"
+	Update:	"View.DelLastPointUpdate"
+	Label:	"Delete Last Point"
+	Click:	"View.DeleteLastPoint"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.307
+	Disabled:	1
+	Help:	"Undo the last edit to graphics on a view"
+	HelpTopic:	"Undo_Graphic_Edit_on_a_view"
+	Update:	"View.UndoEditUpdate"
+	Label:	"Undo Graphic Edit"
+	Click:	"View.UndoEdit"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.308
+	Disabled:	1
+	Invisible:	1
+	Help:	"Redo the last edit operation on a theme that was undone"
+	Update:	"View.RedoEditUpdate"
+	Label:	"Redo Feature Edit"
+	Click:	"View.RedoEdit"
+	Shortcut:	"Keys.None"
+)
+
+(Space.309
+)
+
+(Choice.310
+	Disabled:	1
+	Invisible:	1
+	Help:	"Turns general snapping on"
+	Update:	"View.ToggleGeneralSnapUpdate"
+	Label:	"Enable General Snapping"
+	Click:	"View.ToggleGeneralSnap"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.311
+	Disabled:	1
+	Invisible:	1
+	Help:	"Turns interactive snapping on"
+	Update:	"View.ToggleInteractiveSnapUpdate"
+	Label:	"Enable Interactive Snapping"
+	Click:	"View.ToggleInteractiveSnap"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.312
+	Disabled:	1
+	Invisible:	1
+	Help:	"Turns snap tolerance cursor on"
+	Update:	"View.ToggleTolCursorUpdate"
+	Label:	"Show Snap Tolerance Cursor"
+	Click:	"View.ToggleTolCursor"
+	Shortcut:	"Keys.None"
+)
+
+(Space.313
+)
+
+(Choice.314
+	Disabled:	1
+	Invisible:	1
+	Help:	"Snaps the next entered point to the nearest vertex within the user tolerance"
+	Update:	"View.InteractiveSnapUpdate"
+	Label:	"Snap to Vertex"
+	Click:	"View.SnapToVertex"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.315
+	Disabled:	1
+	Invisible:	1
+	Help:	"Snaps the next entered point to the nearest line segment"
+	Update:	"View.InteractiveSnapUpdate"
+	Label:	"Snap to Boundary"
+	Click:	"View.SnapToBoundary"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.316
+	Disabled:	1
+	Invisible:	1
+	Help:	"Snaps the next entered point to the nearest node common to two or more features"
+	Update:	"View.InteractiveSnapUpdate"
+	Label:	"Snap to Intersection"
+	Click:	"View.SnapToIntersection"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.317
+	Disabled:	1
+	Invisible:	1
+	Help:	"Snaps the next entered point to the nearest endpoint of an existing line"
+	Update:	"View.SnapToEndPointUpdate"
+	Label:	"Snap to Endpoint"
+	Click:	"View.SnapToEndPoint"
+	Shortcut:	"Keys.None"
+)
+
+(Space.318
+)
+
+(Choice.319
+	Help:	"Unselects the selected features in all active themes"
+	Update:	"View.AttributeThemesUpdate"
+	Label:	"Clear Selection"
+	Click:	"View.ClearSelect"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.320
+	Help:	"Zooms in at point where you click to bring up popup menu"
+	Update:	"View.HasDataUpdate"
+	Label:	"Zoom In"
+	Click:	"View.PopupZoomIn"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.321
+	Help:	"Zooms out from point where you click to bring up popup menu"
+	Update:	"View.HasDataUpdate"
+	Label:	"Zoom Out"
+	Click:	"View.PopupZoomOut"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.322
+	Help:	"Zooms to the extent of the selected features"
+	Update:	"View.SelectableThemesUpdate"
+	Label:	"Zoom to Selected"
+	Click:	"View.ZoomToSelected"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.323
+	Help:	"Centers display on point where you click to bring up popup"
+	Update:	"View.HasDataUpdate"
+	Label:	"Pan"
+	Click:	"View.PopupPan"
+	Shortcut:	"Keys.None"
+)
+
+(Space.324
+)
+
+(Choice.325
+	Disabled:	1
+	Help:	"Opens the shape properties window for editing vertex locations"
+	Update:	"ShapeWin.PopUp Update"
+	Label:	"Shape Properties"
+	Click:	"ShapeWin.PopUp Open"
+	Shortcut:	"Keys.None"
+)
+
+(ToolBar.326
+	Child:	327
+	Child:	329
+	Child:	331
+	Child:	333
+	Child:	335
+	Child:	337
+	Child:	339
+	Child:	341
+	Child:	343
+	Child:	345
+	Child:	347
+	Child:	366
+	Child:	379
+	Child:	398
+	Child:	403
+)
+
+(Tool.327
+	Disabled:	1
+	Help:	"Identify//Provides information about a feature"
+	HelpTopic:	"Identify_tool"
+	Update:	"View.IdentifyUpdate"
+	Icon:	328
+	Cursor:	"Cursors.ID"
+	Apply:	"View.Identify"
+)
+
+(AVIcon.328
+	Name:	"ID"
+	Res:	"Icons.ID"
+
+)
+
+(Tool.329
+	Disabled:	1
+	Help:	"Pointer//Selects, moves, and resizes graphics"
+	HelpTopic:	"Pointer_tool"
+	Update:	"View.HasDataUpdate"
+	Icon:	330
+	Cursor:	"Cursors.Select"
+	Apply:	"View.Select"
+	Click:	"View.SelectTool"
+)
+
+(AVIcon.330
+	Name:	"Select"
+	Res:	"Icons.Select"
+
+)
+
+(Tool.331
+	Disabled:	1
+	Help:	"Vertex Edit//Adds, moves, and deletes vertices of features and graphics"
+	HelpTopic:	"Vertex_Edit_tool"
+	Update:	"View.SelectToEditUpdate"
+	Icon:	332
+	Cursor:	"Cursors.SelectEdit"
+	Apply:	"View.SelectToEdit"
+	Click:	"View.SelectToEditTool"
+)
+
+(AVIcon.332
+	Name:	"SelectEdit"
+	Res:	"Icons.SelectEdit"
+
+)
+
+(Tool.333
+	Disabled:	1
+	Help:	"Select Feature//Selects features in the active themes by pointing or dragging"
+	HelpTopic:	"Select_Feature_tool"
+	Update:	"View.SelectableThemesUpdate"
+	Icon:	334
+	Cursor:	"Cursors.Default"
+	Apply:	"View.SelectPoint"
+)
+
+(AVIcon.334
+	Name:	"FeatureSelect"
+	Res:	"Icons.FeatureSelect"
+
+)
+
+(Tool.335
+	Disabled:	1
+	Help:	"Zoom In//Zooms in at a point you click or zooms in on a rectangle you drag"
+	HelpTopic:	"Zoom_In_tool"
+	Update:	"View.HasDataUpdate"
+	Icon:	336
+	Cursor:	"Cursors.ZoomIn"
+	Apply:	"View.ZoomInTool"
+)
+
+(AVIcon.336
+	Name:	"ZoomInTool"
+	Res:	"Icons.ZoomInTool"
+
+)
+
+(Tool.337
+	Disabled:	1
+	Help:	"Zoom Out//Zooms out from a point you click or zooms out to include a rectangle you drag"
+	HelpTopic:	"Zoom_Out_tool"
+	Update:	"View.HasDataUpdate"
+	Icon:	338
+	Cursor:	"Cursors.ZoomOut"
+	Apply:	"View.ZoomOutTool"
+)
+
+(AVIcon.338
+	Name:	"ZoomOutTool"
+	Res:	"Icons.ZoomOutTool"
+
+)
+
+(Tool.339
+	Disabled:	1
+	Help:	"Pan//Drags the display in the direction you move the cursor"
+	HelpTopic:	"Pan_tool"
+	Update:	"View.HasDataUpdate"
+	Icon:	340
+	Cursor:	"Cursors.Pan"
+	Apply:	"View.Pan"
+)
+
+(AVIcon.340
+	Name:	"Pan"
+	Res:	"Icons.Pan"
+
+)
+
+(Tool.341
+	Disabled:	1
+	Help:	"Measure//Measures distance"
+	HelpTopic:	"Measure_tool"
+	Update:	"View.HasDataUpdate"
+	Icon:	342
+	Cursor:	"Cursors.Measure"
+	Apply:	"View.Measure"
+)
+
+(AVIcon.342
+	Name:	"Measure"
+	Res:	"Icons.Measure"
+
+)
+
+(Tool.343
+	Disabled:	1
+	Help:	"Hot Link//Follows a hot link in the active themes"
+	HelpTopic:	"Hot_Link_tool"
+	Update:	"View.HotLinkUpdate"
+	Icon:	344
+	Cursor:	"Cursors.Media"
+	Apply:	"View.HotLink"
+)
+
+(AVIcon.344
+	Name:	"Media"
+	Res:	"Icons.Media"
+
+)
+
+(Tool.345
+	Disabled:	1
+	Help:	"Area of Interest//Sets the view's Area Of Interest for library-based themes"
+	HelpTopic:	"Area_Of_Interest_tool"
+	Update:	"View.AOIToolUpdate"
+	Icon:	346
+	Cursor:	"Cursors.Default"
+	Apply:	"View.AOITool"
+)
+
+(AVIcon.346
+	Name:	"AOI"
+	Res:	"Icons.AOI"
+
+)
+
+(ToolMenu.347
+	Disabled:	1
+	Help:	"Label//Labels a feature in the active theme with data from its table"
+	HelpTopic:	"Label_Tool"
+	Update:	"View.LabelToolUpdate"
+	Icon:	348
+	Cursor:	"Cursors.Tag"
+	Apply:	"View.LabelTool"
+	Child:	349
+	Child:	350
+	Child:	352
+	Child:	354
+	Child:	356
+	Child:	358
+	Child:	360
+	Child:	362
+	Child:	364
+)
+
+(AVIcon.348
+	Name:	"Tag"
+	Res:	"Icons.Tag"
+
+)
+
+(Tool.349
+	Disabled:	1
+	Help:	"Label//Labels a feature in the active theme with data from its table"
+	HelpTopic:	"Label_Tool"
+	Update:	"View.LabelToolUpdate"
+	Icon:	348
+	Cursor:	"Cursors.Tag"
+	Apply:	"View.LabelTool"
+)
+
+(Tool.350
+	Disabled:	1
+	Help:	"Callout Label//Click on a feature and drag in the direction you want the label to appear"
+	HelpTopic:	"Label_Tool"
+	Update:	"View.CalloutUpdate"
+	Icon:	351
+	Cursor:	"Cursors.Tag"
+	Apply:	"View.CalloutLabelTool"
+)
+
+(AVIcon.351
+	Name:	"CallOutLabel1"
+	Res:	"Icons.CallOutLabel1"
+
+)
+
+(Tool.352
+	Disabled:	1
+	Help:	"Bullet Leader Label//Click on a feature and drag in the direction you want the label to appear"
+	HelpTopic:	"Label_Tool"
+	Update:	"View.CalloutUpdate"
+	Icon:	353
+	Cursor:	"Cursors.Tag"
+	Apply:	"View.BulletLeaderLabelTool"
+)
+
+(AVIcon.353
+	Name:	"CallOutLabel2"
+	Res:	"Icons.CallOutLabel2"
+
+)
+
+(Tool.354
+	Disabled:	1
+	Help:	"Banner Label//Click on a feature you want to label"
+	HelpTopic:	"Label_Tool"
+	Update:	"View.CalloutUpdate"
+	Icon:	355
+	Cursor:	"Cursors.Tag"
+	Apply:	"View.ShadowBoxLabelTool"
+)
+
+(AVIcon.355
+	Name:	"CallOutLabel3"
+	Res:	"Icons.CallOutLabel3"
+
+)
+
+(Tool.356
+	Disabled:	1
+	Help:	"U.S. Interstate//Click where you want to place a highway shield"
+	HelpTopic:	"Label_Tool"
+	Update:	"View.CalloutUpdate"
+	Icon:	357
+	Cursor:	"Cursors.Tag"
+	Apply:	"View.Highway1 Apply"
+)
+
+(AVIcon.357
+	Name:	"BW US Interstate"
+	Res:	"Icons.BW US Interstate"
+
+)
+
+(Tool.358
+	Disabled:	1
+	Help:	"U.S. Route//Click where you want to place a highway shield"
+	HelpTopic:	"Label_Tool"
+	Update:	"View.CalloutUpdate"
+	Icon:	359
+	Cursor:	"Cursors.Tag"
+	Apply:	"View.Highway2 Apply"
+)
+
+(AVIcon.359
+	Name:	"USRoute"
+	Res:	"Icons.USRoute"
+
+)
+
+(Tool.360
+	Disabled:	1
+	Help:	"Generic State Hwy//Click where you want to place a highway shield"
+	HelpTopic:	"Label_Tool"
+	Update:	"View.CalloutUpdate"
+	Icon:	361
+	Cursor:	"Cursors.Tag"
+	Apply:	"View.Highway3 Apply"
+)
+
+(AVIcon.361
+	Name:	"GenericStateHighway"
+	Res:	"Icons.GenericStateHighway"
+
+)
+
+(Tool.362
+	Disabled:	1
+	Help:	"Generic Square Hwy//Click where you want to place a highway shield"
+	HelpTopic:	"Label_Tool"
+	Update:	"View.CalloutUpdate"
+	Icon:	363
+	Cursor:	"Cursors.Tag"
+	Apply:	"View.Highway4 Apply"
+)
+
+(AVIcon.363
+	Name:	"GenericHighway1"
+	Res:	"Icons.GenericHighway1"
+
+)
+
+(Tool.364
+	Disabled:	1
+	Help:	"Generic Oval Hwy//Click where you want to place a highway shield"
+	Update:	"View.CalloutUpdate"
+	Icon:	365
+	Cursor:	"Cursors.Tag"
+	Apply:	"View.Highway5 Apply"
+)
+
+(AVIcon.365
+	Name:	"GenericHighway2"
+	Res:	"Icons.GenericHighway2"
+
+)
+
+(ToolMenu.366
+	Help:	"Text//Creates text on the display"
+	HelpTopic:	"Text_tool"
+	Update:	"View.TextToolUpdate"
+	Icon:	367
+	Cursor:	"Cursors.Text"
+	Apply:	"View.TextTool"
+	Click:	"SymWin.DisplayFontPanel"
+	Child:	368
+	Child:	369
+	Child:	371
+	Child:	373
+	Child:	375
+	Child:	377
+)
+
+(AVIcon.367
+	Name:	"Text"
+	Res:	"Icons.Text"
+
+)
+
+(Tool.368
+	Help:	"Text//Creates text on the display"
+	HelpTopic:	"Text_tool"
+	Update:	"View.TextToolUpdate"
+	Icon:	367
+	Cursor:	"Cursors.Text"
+	Apply:	"View.TextTool"
+	Click:	"SymWin.DisplayFontPanel"
+)
+
+(Tool.369
+	Help:	"Callout Text//Click and drag to where you want your text to appear, then enter the text"
+	HelpTopic:	"Text_tool"
+	Update:	"View.TextToolUpdate"
+	Icon:	370
+	Cursor:	"Cursors.Bullseye"
+	Apply:	"View.CalloutTextTool"
+)
+
+(AVIcon.370
+	Name:	"CallOutText1"
+	Res:	"Icons.CallOutText1"
+
+)
+
+(Tool.371
+	Help:	"Bullet Leader Text//Click and drag to where you want your text to appear, then enter the text"
+	HelpTopic:	"Text_tool"
+	Update:	"View.TextToolUpdate"
+	Icon:	372
+	Cursor:	"Cursors.Bullseye"
+	Apply:	"View.BulletLeaderTextTool"
+)
+
+(AVIcon.372
+	Name:	"CallOutText2"
+	Res:	"Icons.CallOutText2"
+
+)
+
+(Tool.373
+	Help:	"Banner Text//Click where you want your label to appear and enter your text"
+	HelpTopic:	"Text_tool"
+	Update:	"View.TextToolUpdate"
+	Icon:	374
+	Cursor:	"Cursors.Bullseye"
+	Apply:	"View.ShadowBoxTextTool"
+)
+
+(AVIcon.374
+	Name:	"CallOutText3"
+	Res:	"Icons.CallOutText3"
+
+)
+
+(Tool.375
+	Help:	"Drop-Shadow Text//Click where you want your text to appear and enter your text"
+	HelpTopic:	"Text_tool"
+	Update:	"View.TextToolUpdate"
+	Icon:	376
+	Cursor:	"Cursors.Target"
+	Apply:	"View.CreateDropShadowText"
+)
+
+(AVIcon.376
+	Name:	"DropShadowText"
+	Res:	"Icons.DropShadowText"
+
+)
+
+(Tool.377
+	Help:	"Spline Text//Adds text that is aligned to a splined baseline"
+	HelpTopic:	"Text_tool"
+	Update:	"View.TextToolUpdate"
+	Icon:	378
+	Cursor:	"Cursors.Bullseye"
+	Apply:	"View.SplineText"
+)
+
+(AVIcon.378
+	Name:	"TextAligned"
+	Res:	"Icons.TextAligned"
+
+)
+
+(ToolMenu.379
+	Help:	"Draw Point//Creates a point on the display"
+	HelpTopic:	"Draw_tool"
+	Update:	"View.PointToolUpdate"
+	Icon:	380
+	Cursor:	"Cursors.CrossHair"
+	Apply:	"View.PointTool"
+	Click:	"SymWin.DisplayMarkerPanel"
+	Child:	381
+	Child:	382
+	Child:	384
+	Child:	386
+	Child:	388
+	Child:	390
+	Child:	392
+	Child:	394
+	Child:	396
+)
+
+(AVIcon.380
+	Name:	"Point"
+	Res:	"Icons.Point"
+
+)
+
+(Tool.381
+	Help:	"Draw Point//Creates a point on the display"
+	HelpTopic:	"Draw_tool"
+	Update:	"View.PointToolUpdate"
+	Icon:	380
+	Cursor:	"Cursors.CrossHair"
+	Apply:	"View.PointTool"
+	Click:	"SymWin.DisplayMarkerPanel"
+)
+
+(Tool.382
+	Help:	"Draw Straight Line//Creates a line on the display"
+	HelpTopic:	"Draw_tool"
+	Update:	"View.GraphicToolUpdate"
+	Icon:	383
+	Cursor:	"Cursors.CrossHair"
+	Apply:	"View.LineTool"
+	Click:	"SymWin.DisplayPenPanel"
+)
+
+(AVIcon.383
+	Name:	"SelectLine"
+	Res:	"Icons.SelectLine"
+
+)
+
+(Tool.384
+	Help:	"Draw Line//Creates a line with two or more points on the display"
+	HelpTopic:	"Draw_tool"
+	Update:	"View.PolyLineToolUpdate"
+	Icon:	385
+	Cursor:	"Cursors.CrossHair"
+	Apply:	"View.PolyLineTool"
+	Click:	"SymWin.DisplayPenPanel"
+)
+
+(AVIcon.385
+	Name:	"Lines"
+	Res:	"Icons.Lines"
+
+)
+
+(Tool.386
+	Help:	"Draw Rectangle//Creates a rectangle on the display"
+	HelpTopic:	"Draw_tool"
+	Update:	"View.PolyToolUpdate"
+	Icon:	387
+	Cursor:	"Cursors.CrossHair"
+	Apply:	"View.RectTool"
+	Click:	"SymWin.DisplayFillPanel"
+)
+
+(AVIcon.387
+	Name:	"Rect"
+	Res:	"Icons.Rect"
+
+)
+
+(Tool.388
+	Help:	"Draw Circle//Creates a circle on the display"
+	HelpTopic:	"Draw_tool"
+	Update:	"View.PolyToolUpdate"
+	Icon:	389
+	Cursor:	"Cursors.CrossHair"
+	Apply:	"View.CircleTool"
+	Click:	"SymWin.DisplayFillPanel"
+)
+
+(AVIcon.389
+	Name:	"Disk"
+	Res:	"Icons.Disk"
+
+)
+
+(Tool.390
+	Help:	"Draw Polygon//Creates a polygon on the display"
+	HelpTopic:	"Draw_tool"
+	Update:	"View.PolyToolUpdate"
+	Icon:	391
+	Cursor:	"Cursors.CrossHair"
+	Apply:	"View.PolyTool"
+	Click:	"SymWin.DisplayFillPanel"
+)
+
+(AVIcon.391
+	Name:	"Poly"
+	Res:	"Icons.Poly"
+
+)
+
+(Tool.392
+	Disabled:	1
+	Help:	"Draw Line to Split Feature//Creates a line to split line features"
+	HelpTopic:	"Draw_tool"
+	Update:	"View.SplitLineToolUpdate"
+	Icon:	393
+	Cursor:	"Cursors.CrossHair"
+	Apply:	"View.SplitTool"
+)
+
+(AVIcon.393
+	Name:	"SplitLine"
+	Res:	"Icons.SplitLine"
+
+)
+
+(Tool.394
+	Disabled:	1
+	Help:	"Draw Line to Split Polygon//Creates a line to split polygon features"
+	HelpTopic:	"Draw_tool"
+	Update:	"View.SplitPolyToolUpdate"
+	Icon:	395
+	Cursor:	"Cursors.CrossHair"
+	Apply:	"View.SplitTool"
+)
+
+(AVIcon.395
+	Name:	"SplitPoly"
+	Res:	"Icons.SplitPoly"
+
+)
+
+(Tool.396
+	Disabled:	1
+	Help:	"Draw Line to Append Polygon//Appends a new polygon adjacent to other polygons"
+	HelpTopic:	"Draw_tool"
+	Update:	"View.AutoCompleteUpdate"
+	Icon:	397
+	Cursor:	"Cursors.CrossHair"
+	Apply:	"View.AutoCompleteTool"
+)
+
+(AVIcon.397
+	Name:	"AutoComplete"
+	Res:	"Icons.AutoComplete"
+
+)
+
+(ToolMenu.398
+	Disabled:	1
+	Invisible:	1
+	Help:	"Snap//Sets the general snapping tolerance for the editable theme"
+	HelpTopic:	"Snap_tools"
+	Update:	"View.SnapToolUpdate"
+	Icon:	399
+	Cursor:	"Cursors.Default"
+	Apply:	"View.SnapTool"
+	Child:	400
+	Child:	401
+)
+
+(AVIcon.399
+	Name:	"SnapTool"
+	Res:	"Icons.SnapTool"
+
+)
+
+(Tool.400
+	Disabled:	1
+	Invisible:	1
+	Help:	"Snap//Sets the general snapping tolerance for the editable theme"
+	HelpTopic:	"Snap_tools"
+	Update:	"View.SnapToolUpdate"
+	Icon:	399
+	Cursor:	"Cursors.Default"
+	Apply:	"View.SnapTool"
+)
+
+(Tool.401
+	Disabled:	1
+	Invisible:	1
+	Help:	"Snap//Sets the interactive snapping tolerance for the editable theme"
+	HelpTopic:	"Snap_tools"
+	Update:	"View.InteractiveSnapToolUpdate"
+	Icon:	402
+	Cursor:	"Cursors.Default"
+	Apply:	"View.InteractiveSnapTool"
+)
+
+(AVIcon.402
+	Name:	"SnapFeatureTool"
+	Res:	"Icons.SnapFeatureTool"
+
+)
+
+(Tool.403
+	InternalName:	"Surface"
+	Disabled:	1
+	Help:	"Contour//Creates a contour based on a point you define in a view"
+	HelpTopic:	"Contour_Tool@surface.hlp"
+	Update:	"Spatial.ContourToolUpdate"
+	Icon:	404
+	Cursor:	"Cursors.Bullseye"
+	Apply:	"Spatial.ContourTool"
+)
+
+(AVIcon.404
+	Name:	"Contour"
+	Res:	"Icons.Contour"
+
+)
+
+(AVIcon.405
+	Name:	"Icon"
+	Res:	"View.Icon"
+
+)
+
+(DocGUI.803
+	Name:	"Script"
+	Type:	"SEd"
+	Modified:	1
+	Visible:	1
+	MenuBar:	804
+	ButnBar:	868
+	Popups:	909
+	ToolBar:	910
+	NewScript:	"Script.New"
+	OpenScript:	"Doc.Open"
+	ActionScript:	"Script.Action"
+	NewUpdateScript:	"Doc.NewUpdate"
+	OpenUpdateScript:	"Doc.OpenUpdate"
+	ActionUpdateScript:	"Script.ActionUpdate"
+	Title:	"Scripts"
+	Icon:	911
+)
+
+(MenuBar.804
+	Child:	805
+	Child:	818
+	Child:	834
+	Child:	851
+	Child:	863
+)
+
+(PMenu.805
+	InternalName:	"File"
+	Child:	806
+	Child:	807
+	Child:	808
+	Child:	809
+	Child:	810
+	Child:	811
+	Child:	812
+	Child:	813
+	Child:	814
+	Child:	815
+	Child:	816
+	Child:	817
+	Label:	"&File"
+)
+
+(Choice.806
+	Help:	"Closes the active component"
+	HelpTopic:	"Close"
+	Label:	"&Close"
+	Click:	"Project.CloseDoc"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.807
+	Help:	"Closes all components"
+	HelpTopic:	"Close_All"
+	Label:	"Close &All"
+	Click:	"Project.CloseAll"
+	Shortcut:	"Keys.None"
+)
+
+(Space.808
+)
+
+(Choice.809
+	Help:	"Saves the current project"
+	HelpTopic:	"Save_Project"
+	Label:	"&Save Project"
+	Click:	"Project.Save"
+	Shortcut:	"Keys.Ctrl+S"
+)
+
+(Choice.810
+	Help:	"Saves the current project with a new name"
+	HelpTopic:	"Save_Project_As"
+	Label:	"Save Project As..."
+	Click:	"Project.SaveAs"
+	Shortcut:	"Keys.None"
+)
+
+(Space.811
+)
+
+(Choice.812
+	Help:	"Displays the Extensions Dialog"
+	HelpTopic:	"Extensions"
+	Label:	"Extensions..."
+	Click:	"Appl.GetExtensionWin"
+	Shortcut:	"Keys.None"
+)
+
+(Space.813
+)
+
+(Choice.814
+	Help:	"Prints the script"
+	HelpTopic:	"Print"
+	Label:	"&Print..."
+	Click:	"Doc.Print"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.815
+	Help:	"Edits the printer and the printing options"
+	HelpTopic:	"Print_Setup"
+	Update:	"PrintSetupUpdate"
+	Label:	"P&rint Setup..."
+	Click:	"Project.PrintSetup"
+	Shortcut:	"Keys.None"
+)
+
+(Space.816
+)
+
+(Choice.817
+	Help:	"Exits ArcView"
+	HelpTopic:	"Exit"
+	Label:	"E&xit"
+	Click:	"Project.Exit"
+	Shortcut:	"Keys.None"
+)
+
+(PMenu.818
+	InternalName:	"Edit"
+	Child:	819
+	Child:	820
+	Child:	821
+	Child:	822
+	Child:	823
+	Child:	824
+	Child:	825
+	Child:	826
+	Child:	827
+	Child:	828
+	Child:	829
+	Child:	830
+	Child:	831
+	Child:	832
+	Child:	833
+	Label:	"&Edit"
+)
+
+(Choice.819
+	Help:	"Undoes the last change"
+	HelpTopic:	"Undo__Script_"
+	Label:	"&Undo"
+	Click:	"Script.Undo"
+	Shortcut:	"Keys.Ctrl+Z"
+)
+
+(Space.820
+)
+
+(Choice.821
+	Help:	"Finds the selected or specified string"
+	HelpTopic:	"Script_Find"
+	Label:	"&Find..."
+	Click:	"Script.Find"
+	Shortcut:	"Keys.F2"
+)
+
+(Choice.822
+	Help:	"Finds the next occurrence of the string"
+	HelpTopic:	"Script_FindNext"
+	Update:	"Script.FindNextUpdate"
+	Label:	"Find &Next"
+	Click:	"Script.FindNext"
+	Shortcut:	"Keys.F3"
+)
+
+(Choice.823
+	Help:	"Replaces the selected or specifed string"
+	HelpTopic:	"Script_Replace"
+	Label:	"Rep&lace..."
+	Click:	"Script.Replace"
+	Shortcut:	"Keys.F4"
+)
+
+(Space.824
+)
+
+(Choice.825
+	Help:	"Cuts the selection and puts it into the clipboard"
+	HelpTopic:	"Cut"
+	Update:	"Script.HasSelUpdate"
+	Label:	"Cu&t"
+	Click:	"Script.Cut"
+	Shortcut:	"Keys.Ctrl+X"
+)
+
+(Choice.826
+	Help:	"Copies the selection and puts it into the clipboard"
+	HelpTopic:	"Copy"
+	Update:	"Script.HasSelUpdate"
+	Label:	"&Copy"
+	Click:	"Script.Copy"
+	Shortcut:	"Keys.Ctrl+C"
+)
+
+(Choice.827
+	Help:	"Inserts the contents of the clipboard"
+	HelpTopic:	"Paste"
+	Label:	"&Paste"
+	Click:	"Script.Paste"
+	Shortcut:	"Keys.Ctrl+V"
+)
+
+(Space.828
+)
+
+(Choice.829
+	Help:	"Selects all text in the script editor"
+	HelpTopic:	"Select_All_in_a_script"
+	Label:	"Select &All"
+	Click:	"Script.SelectAll"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.830
+	Help:	"Deletes text from the cursor to the left margin"
+	HelpTopic:	"Delete_Left"
+	Label:	"&Delete Left"
+	Click:	"Script.KillLine"
+	Shortcut:	"Keys.Ctrl+U"
+)
+
+(Space.831
+)
+
+(Choice.832
+	Help:	"Comments selected text"
+	HelpTopic:	"Comment"
+	Update:	"Script.HasSelUpdate"
+	Label:	"C&omment"
+	Click:	"Script.Comment"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.833
+	Help:	"Uncomments selected text"
+	HelpTopic:	"Remove_Comment"
+	Update:	"Script.HasSelUpdate"
+	Label:	"&Remove Comment"
+	Click:	"Script.Uncomment"
+	Shortcut:	"Keys.None"
+)
+
+(PMenu.834
+	InternalName:	"Script"
+	Child:	835
+	Child:	836
+	Child:	837
+	Child:	838
+	Child:	839
+	Child:	840
+	Child:	841
+	Child:	842
+	Child:	843
+	Child:	844
+	Child:	845
+	Child:	846
+	Child:	847
+	Child:	848
+	Child:	849
+	Child:	850
+	Label:	"&Script"
+)
+
+(Choice.835
+	Help:	"Displays the dialog box to edit properties of the script"
+	HelpTopic:	"Script_Properties"
+	Label:	"&Properties..."
+	Click:	"Script.Properties"
+	Shortcut:	"Keys.None"
+)
+
+(Space.836
+)
+
+(Choice.837
+	Disabled:	1
+	Help:	"Compiles the script"
+	HelpTopic:	"Compile"
+	Update:	"Script.CompileUpdate"
+	Label:	"&Compile"
+	Click:	"Script.Compile"
+	Shortcut:	"Keys.F7"
+)
+
+(Choice.838
+	Help:	"Executes one request or object reference in the compiled script"
+	HelpTopic:	"Step"
+	Update:	"Script.RunUpdate"
+	Label:	"&Step"
+	Click:	"Script.Step"
+	Shortcut:	"Keys.F8"
+)
+
+(Choice.839
+	Help:	"Runs the compiled script"
+	HelpTopic:	"Run"
+	Update:	"Script.RunUpdate"
+	Label:	"&Run"
+	Click:	"Script.Run"
+	Shortcut:	"Keys.F5"
+)
+
+(Space.840
+)
+
+(Choice.841
+	Help:	"Toggles a breakpoint on or off at the current cursor position"
+	HelpTopic:	"Toggle_Breakpoint"
+	Update:	"Script.RunUpdate"
+	Label:	"Toggle &Breakpoint"
+	Click:	"Script.ToggleBreak"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.842
+	Help:	"Clears all breakpoints"
+	HelpTopic:	"Clear_All_Breakpoints"
+	Update:	"Script.RunUpdate"
+	Label:	"Clear &All Breakpoints"
+	Click:	"Script.ClearAllBreaks"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.843
+	Help:	"Displays the current value of local and global variables"
+	HelpTopic:	"Examine_Variables"
+	Update:	"Script.RunUpdate"
+	Label:	"E&xamine Variables..."
+	Click:	"Script.ShowVariables"
+	Shortcut:	"Keys.Ctrl+E"
+)
+
+(Space.844
+)
+
+(Choice.845
+	Help:	"Inserts the source code of a system script"
+	HelpTopic:	"Load_System_Script"
+	Label:	"&Load System Script..."
+	Click:	"Script.SystemLoad"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.846
+	Help:	"Inserts the contents of a text file"
+	HelpTopic:	"Load_Text_File"
+	Label:	"Load &Text File..."
+	Click:	"Script.FileLoad"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.847
+	Help:	"Writes the entire script or the selected text to a text file"
+	HelpTopic:	"Write_Text_File"
+	Label:	"&Write Text File..."
+	Click:	"Script.FileWrite"
+	Shortcut:	"Keys.None"
+)
+
+(Space.848
+)
+
+(Choice.849
+	Help:	"Embeds the script in the project and deletes its window"
+	HelpTopic:	"Embed_Script"
+	Update:	"Script.RunUpdate"
+	Label:	"&Embed Script"
+	Click:	"Script.Embed"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.850
+	Disabled:	1
+	Help:	"Removes specified script from embedded scripts and puts it in a SEd"
+	HelpTopic:	"Script_Unembed"
+	Update:	"Script.UnembedUpdate"
+	Label:	"&Unembed Script..."
+	Click:	"Script.Unembed"
+	Shortcut:	"Keys.None"
+)
+
+(PMenu.851
+	InternalName:	"Window"
+	Child:	852
+	Child:	853
+	Child:	854
+	Child:	855
+	Child:	856
+	Child:	857
+	Child:	859
+	Child:	860
+	Child:	861
+	Child:	862
+	Label:	"&Window"
+)
+
+(Choice.852
+	Help:	"Arranges windows as non-overlapping tiles"
+	HelpTopic:	"Tile"
+	Label:	"&Tile"
+	Click:	"Project.Tile"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.853
+	Help:	"Arranges windows"
+	HelpTopic:	"Cascade"
+	Label:	"&Cascade"
+	Click:	"Project.Cascade"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.854
+	Help:	"Arranges iconified windows"
+	HelpTopic:	"Arrange_Icons"
+	Label:	"&Arrange Icons"
+	Click:	"Project.ArrangeIcons"
+	Shortcut:	"Keys.None"
+)
+
+(Space.855
+)
+
+(Choice.856
+	Help:	"Shows the symbol window"
+	HelpTopic:	"Show_Symbol_Window"
+	Label:	"Show Symbol Window..."
+	Click:	"Project.ShowHideSymWin"
+	Shortcut:	"Keys.Ctrl+P"
+)
+
+(Space.857
+	ObjectTag:	858
+	Update:	"WindowMenuUpdate"
+)
+
+(AVStr.858
+	S:	"flg_22dm.apr FLG.GetNeighbours FLG.Main View1"
+)
+
+(Choice.859
+	Help:	"Activates flg_22dm.apr"
+	Label:	"&1 flg_22dm.apr"
+	Click:	"WindowActivate"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.860
+	Help:	"Activates FLG.GetNeighbours"
+	Label:	"&2 FLG.GetNeighbours"
+	Click:	"WindowActivate"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.861
+	Help:	"Activates FLG.Main"
+	Label:	"&3 FLG.Main"
+	Click:	"WindowActivate"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.862
+	Help:	"Activates View1"
+	Label:	"&4 View1"
+	Click:	"WindowActivate"
+	Shortcut:	"Keys.None"
+)
+
+(PMenu.863
+	InternalName:	"Help"
+	Child:	864
+	Child:	865
+	Child:	866
+	Child:	867
+	Label:	"&Help"
+)
+
+(Choice.864
+	Help:	"Displays the dialog for browsing and searching ArcView's help system"
+	HelpTopic:	"Help_on_Help_Topics"
+	Label:	"Help &Topics..."
+	Click:	"Project.HelpTopics"
+	Shortcut:	"Keys.None"
+)
+
+(Choice.865
+	Help:	"Provides instructions for how to obtain help from ArcView"
+	HelpTopic:	"Help_on_How_to_Get_Help"
+	Label:	"&How to Get Help"
+	Click:	"Project.HelpHelp"
+	Shortcut:	"Keys.None"
+)
+
+(Space.866
+)
+
+(Choice.867
+	Help:	"Provides information about ArcView"
+	HelpTopic:	"About"
+	Label:	"&About ArcView..."
+	Click:	"Project.About"
+	Shortcut:	"Keys.None"
+)
+
+(ButnBar.868
+	Child:	869
+	Child:	871
+	Child:	872
+	Child:	874
+	Child:	876
+	Child:	878
+	Child:	879
+	Child:	881
+	Child:	882
+	Child:	884
+	Child:	886
+	Child:	887
+	Child:	889
+	Child:	891
+	Child:	893
+	Child:	895
+	Child:	897
+	Child:	898
+	Child:	900
+	Child:	902
+	Child:	904
+	Child:	905
+	Child:	907
+)
+
+(Butn.869
+	Help:	"Save Project//Saves the current project"
+	HelpTopic:	"Save_Project"
+	Icon:	870
+	Click:	"Project.Save"
+)
+
+(AVIcon.870
+	Name:	"Save"
+	Res:	"Icons.Save"
+
+)
+
+(Space.871
+)
+
+(Butn.872
+	Help:	"Cut//Cuts the selection and puts it into the clipboard"
+	HelpTopic:	"Cut"
+	Update:	"Script.HasSelUpdate"
+	Icon:	873
+	Click:	"Script.Cut"
+)
+
+(AVIcon.873
+	Name:	"Cut"
+	Res:	"Icons.Cut"
+
+)
+
+(Butn.874
+	Help:	"Copy//Copies the selection and puts it into the clipboard"
+	HelpTopic:	"Copy"
+	Update:	"Script.HasSelUpdate"
+	Icon:	875
+	Click:	"Script.Copy"
+)
+
+(AVIcon.875
+	Name:	"Copy"
+	Res:	"Icons.Copy"
+
+)
+
+(Butn.876
+	Help:	"Paste//Inserts the contents of the clipboard"
+	HelpTopic:	"Paste"
+	Icon:	877
+	Click:	"Script.Paste"
+)
+
+(AVIcon.877
+	Name:	"Paste"
+	Res:	"Icons.Paste"
+
+)
+
+(Space.878
+)
+
+(Butn.879
+	Help:	"Undo//Undoes the last modification to the script editor text"
+	HelpTopic:	"Undo__Script_"
+	Icon:	880
+	Click:	"Script.Undo"
+)
+
+(AVIcon.880
+	Name:	"Undo"
+	Res:	"Icons.Undo"
+
+)
+
+(Space.881
+)
+
+(Butn.882
+	Help:	"Shift Lines Left//Shifts selected lines or current line two spaces to the left"
+	HelpTopic:	"Shift_lines_left_or_right"
+	Icon:	883
+	Click:	"Script.ShiftLeft"
+)
+
+(AVIcon.883
+	Name:	"ShiftLeft"
+	Res:	"Icons.ShiftLeft"
+
+)
+
+(Butn.884
+	Help:	"Shift Lines Right//Shifts selected lines or current line two spaces to the right"
+	HelpTopic:	"Shift_lines_left_or_right"
+	Icon:	885
+	Click:	"Script.ShiftRight"
+)
+
+(AVIcon.885
+	Name:	"ShiftRight"
+	Res:	"Icons.ShiftRight"
+
+)
+
+(Space.886
+)
+
+(Butn.887
+	Disabled:	1
+	Help:	"Compile//Compiles the script"
+	HelpTopic:	"Compile"
+	Update:	"Script.CompileUpdate"
+	Icon:	888
+	Click:	"Script.Compile"
+)
+
+(AVIcon.888
+	Name:	"Check"
+	Res:	"Icons.Check"
+
+)
+
+(Butn.889
+	Help:	"Run//Runs the compiled script"
+	HelpTopic:	"Run"
+	Update:	"Script.RunUpdate"
+	Icon:	890
+	Click:	"Script.Run"
+)
+
+(AVIcon.890
+	Name:	"Run"
+	Res:	"Icons.Run"
+
+)
+
+(Butn.891
+	Help:	"Step//Executes one request or object reference in the compiled script"
+	HelpTopic:	"Step"
+	Update:	"Script.RunUpdate"
+	Icon:	892
+	Click:	"Script.Step"
+)
+
+(AVIcon.892
+	Name:	"Footprints"
+	Res:	"Icons.Footprints"
+
+)
+
+(Butn.893
+	Help:	"Toggle Breakpoint//Toggles a breakpoint on or off at the current cursor position"
+	HelpTopic:	"Toggle_Breakpoint"
+	Update:	"Script.RunUpdate"
+	Icon:	894
+	Click:	"Script.ToggleBreak"
+)
+
+(AVIcon.894
+	Name:	"Hand"
+	Res:	"Icons.Hand"
+
+)
+
+(Butn.895
+	Help:	"Examine Variables//Displays the current value of local and global variables"
+	HelpTopic:	"Examine_Variables"
+	Update:	"Script.RunUpdate"
+	Icon:	896
+	Click:	"Script.ShowVariables"
+)
+
+(AVIcon.896
+	Name:	"Examine"
+	Res:	"Icons.Examine"
+
+)
+
+(Space.897
+)
+
+(Butn.898
+	Help:	"Load System Script//Inserts the source code of a system script"
+	HelpTopic:	"Load_System_Script"
+	Icon:	899
+	Click:	"Script.SystemLoad"
+)
+
+(AVIcon.899
+	Name:	"LoadScript"
+	Res:	"Icons.LoadScript"
+
+)
+
+(Butn.900
+	Help:	"Load Text File//Inserts the contents of a text file"
+	HelpTopic:	"Load_Text_File"
+	Icon:	901
+	Click:	"Script.FileLoad"
+)
+
+(AVIcon.901
+	Name:	"Open"
+	Res:	"Icons.Open"
+
+)
+
+(Butn.902
+	Help:	"Write Text File//Writes the entire script or the selected text to a text file"
+	HelpTopic:	"Write_Text_File"
+	Icon:	903
+	Click:	"Script.FileWrite"
+)
+
+(AVIcon.903
+	Name:	"Write"
+	Res:	"Icons.Write"
+
+)
+
+(Space.904
+)
+
+(Butn.905
+	Help:	"Script Help//Searches for help using the current selection"
+	HelpTopic:	"Getting_help_about_script_components"
+	Icon:	906
+	Click:	"Script.Help"
+)
+
+(AVIcon.906
+	Name:	"Help"
+	Res:	"Icons.Help"
+
+)
+
+(Butn.907
+	Help:	"Help//Gets help about the next button, tool, or menu choice you click"
+	HelpTopic:	"Help_button"
+	Icon:	908
+	Click:	"Help.Tool"
+)
+
+(AVIcon.908
+	Name:	"HelpTool"
+	Res:	"Icons.HelpTool"
+
+)
+
+(PopupSet.909
+)
+
+(ToolBar.910
+)
+
+(AVIcon.911
+	Name:	"Icon"
+	Res:	"SEd.Icon"
+
+)
+
+(FN.1095
+	Path:	"c:/distributeFLG"
+)
+
+(TClr.1096
+	Red:	0xffff
+	Green:	0xffff
+)
+
+(AVStr.1097
+	S:	"View"
+)
+
+(AVStr.1098
+	S:	"Table"
+)
+
+(AVStr.1099
+	S:	"Chart"
+)
+
+(AVStr.1100
+	S:	"Layout"
+)
+
+(AVStr.1101
+	S:	"Script"
+)
+
+(AVStr.1102
+	S:	"Project"
+)
+
+(AVStr.1103
+	S:	"Appl"
+)
+
+(AVStr.1104
+	S:	"DialogEditor"
+)
