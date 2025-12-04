@@ -124,3 +124,7 @@ src/nemora/
    - [x] Prototype a Typer subcommand that loads a stand table (CSV/Parquet), auto-fits or parses parameters, and renders the metadata via `nemora.synthforest.helpers`.
    - [x] Add pytest coverage for the CLI + helper plumbing (unit + CLI smoke test).
    - [x] Update README + docs/howto/synthforest.md with CLI usage, JSON examples, and troubleshooting notes.
+7. [x] Publish Sphinx docs via GitHub Pages (follow the FHOPS pattern for parity).
+   - [x] Mirror the `UBC-FRESH/fhops` workflow (`.github/workflows/ci.yml`) so CI now installs doc deps, runs `sphinx-build -b html docs _build/html -W`, stages `_build/html` under `tmp/pages/.nojekyll`, and uploads it with `actions/upload-pages-artifact`.
+   - [x] Add a `deploy-docs` job gated on `main`, configured with the `github-pages` environment plus `pages: write` / `id-token: write` permissions, so docs auto-deploy after CI succeeds (mirrors FHOPS `deploy-pages` job).
+   - [x] Keep room for telemetry/benchmark artifacts alongside the HTML output by staging everything under `tmp/pages/` before publishing; extend later if ingest telemetry needs its own mini-site.
