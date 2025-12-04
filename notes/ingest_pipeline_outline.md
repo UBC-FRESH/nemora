@@ -6,7 +6,7 @@ Status: In progress — stand-table aggregation, FTP fetch helper (with overwrit
 ## Objectives
 
 - Mirror the published FAIB data dictionaries so downstream users can trace column provenance.
-- Subsample PSP and non-PSP tables by basal area factor (BAF) to create stand-table inputs suitable for `nemora.distfit`.
+- Subsample PSP and non-PSP tables by basal area factor (BAF) to create stand-table inputs suitable for `nemora.fit`.
 - Provide CLI entry points to fetch, cache, and transform raw CSV extracts.
 
 ## Proposed Pipeline

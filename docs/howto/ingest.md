@@ -3,7 +3,7 @@
 This page introduces the scaffolding for the forthcoming `nemora.ingest` module.
 It covers the core abstractions (`DatasetSource`, `TransformPipeline`) that new
 connectors will extend to transform raw forest inventory releases (BC FAIB, FIA,
-etc.) into the tidy stand tables consumed by `nemora.distfit`, `nemora.sampling`,
+etc.) into the tidy stand tables consumed by `nemora.fit`, `nemora.sampling`,
 and other modules.
 
 ## DatasetSource

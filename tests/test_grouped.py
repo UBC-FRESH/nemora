@@ -3,7 +3,7 @@ import pytest
 from scipy.stats import fatiguelife
 
 from nemora.core import InventorySpec
-from nemora.distfit import fit_inventory
+from nemora.fit import fit_inventory
 from nemora.workflows.hps import fit_hps_inventory
 
 

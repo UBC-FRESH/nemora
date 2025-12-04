@@ -1,4 +1,4 @@
-# `nemora.synthforest` module planning notes
+# `nemora.synthesis` module planning notes
 
 
 ## Rlandscape package
@@ -19,7 +19,7 @@ Also have a look at the FLG project documentation under `reference-papers/flg`. 
 ### Phase 0 — Research & design scaffolding
 - [ ] Catalogue requirements from the CJFR paper (`reference-papers/2012-a-voronoi-tessellation-based-approach-to-generate-hypothetical-forest-landscapes.pdf`) and the legacy R source (rpubs link) into this document (algorithms, inputs, stochastic controls, outputs).
 - [ ] Review the FLG documentation (`reference-papers/flg/*`) to capture complementary insights (stand attribute templates, historical assumptions) and flag what, if anything, we will reuse.
-- [ ] Define the Python module skeleton in `src/nemora/synthforest/` (submodules for tessellation, canopy assignment, stand population, exporters) plus matching `tests/` scaffolding and doc stubs.
+- [ ] Define the Python module skeleton in `src/nemora/synthesis/` (submodules for tessellation, canopy assignment, stand population, exporters) plus matching `tests/` scaffolding and doc stubs.
 
 ### Phase 1 — Landscape geometry & metadata
 - [ ] Implement Voronoi-based tiling mirroring Rlandscape behaviour:
@@ -27,7 +27,7 @@ Also have a look at the FLG project documentation under `reference-papers/flg`. 
   - [ ] Boundary clipping + min/max polygon size constraints, including optional shapefile/GeoJSON masks.
   - [ ] Optional slope/elevation raster support for physiographic modifiers.
 - [ ] Attach stand-level attributes (species mix, age class, site index, crown closure) using probability surfaces or user-specified distributions; expose hooks for ingesting real inventory summaries.
-- [ ] Write regression tests comparing polygon statistics vs. Rlandscape reference runs (small seeds stored under `tests/fixtures/synthforest`).
+- [ ] Write regression tests comparing polygon statistics vs. Rlandscape reference runs (small seeds stored under `tests/fixtures/synthesis`).
 
 ### Phase 2 — Stand tree-list synthesis
 - [ ] Integrate the sampling stack so each synthesized stand can draw DBH vectors via bootstrap or analytic sampling:
@@ -40,10 +40,10 @@ Also have a look at the FLG project documentation under `reference-papers/flg`. 
 
 ### Phase 3 — Export, visualization, and CLI
 - [ ] Add exporters for GeoJSON/GeoPackage (stands + tree points), CSV/Parquet tree lists, and lightweight rasters (canopy height, basal area density).
-- [ ] Provide a `nemora synthforest generate-landscape` CLI:
+- [ ] Provide a `nemora synthesis generate-landscape` CLI:
   - [ ] Accept seeds/config files (YAML/JSON) describing tiling + stand recipes.
   - [ ] Optionally chain into the bootstrap inspection CLI so users can preview per-stand distributions before generation.
-- [ ] Extend docs with a synthforest how-to that covers landscape generation, CLI usage, and integration with future simulations; include provenance/credit for Rlandscape.
+- [ ] Extend docs with a synthesis how-to that covers landscape generation, CLI usage, and integration with future simulations; include provenance/credit for Rlandscape.
 
 ### Phase 4 — Validation & extensions
 - [ ] Benchmark outputs against historical Rlandscape/FLG examples (document deviations, add a gallery notebook).

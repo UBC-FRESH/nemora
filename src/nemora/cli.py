@@ -23,8 +23,8 @@ from rich.table import Table
 from . import __version__
 from .core import FitResult, InventorySpec
 from .dataprep import PlotSelection
-from .distfit import fit_inventory
 from .distributions import get_distribution, list_distributions, list_registry_metadata
+from .fit import fit_inventory
 from .ingest.faib import (
     FAIBManifestResult,
     auto_select_bafs,
@@ -59,10 +59,10 @@ from .ingest.hps import (
     load_plot_selections as load_hps_plot_selections,
 )
 from .sampling import BootstrapResult, bootstrap_inventory
-from .synthforest.helpers import bootstrap_payload
+from .synthesis.helpers import bootstrap_payload
 from .workflows.hps import fit_hps_inventory
 
-app = typer.Typer(help="Nemora distribution fitting CLI (distfit alpha).")
+app = typer.Typer(help="Nemora distribution fitting CLI (fit module).")
 console = Console()
 
 REGISTRY_DESCRIBE_OPTION = typer.Option(
@@ -830,7 +830,7 @@ def sampling_describe_bootstrap(  # noqa: B008
         show_default=False,
     ),
 ) -> None:
-    """Inspect bootstrap metadata for synthforest consumers."""
+    """Inspect bootstrap metadata for synthesis consumers."""
 
     bins, tallies = _load_stand_table(stand_table)
     parameter_map = _parse_parameter_assignments(params) if params else {}

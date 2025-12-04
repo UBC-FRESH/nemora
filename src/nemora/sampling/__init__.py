@@ -11,8 +11,8 @@ import numpy as np
 from scipy import integrate
 
 from ..core import FitResult, MixtureFitResult
-from ..distfit.mixture import sample_mixture as distfit_sample_mixture
 from ..distributions import Pdf, get_distribution
+from ..fit.mixture import sample_mixture as fit_sample_mixture
 
 if TYPE_CHECKING:  # pragma: no cover
     import pandas as pd
@@ -257,7 +257,7 @@ def sample_mixture_fit(
         seed = int(random_state)
     else:
         seed = None
-    return distfit_sample_mixture(size, fit.components, random_state=seed)
+    return fit_sample_mixture(size, fit.components, random_state=seed)
 
 
 def bootstrap_inventory(

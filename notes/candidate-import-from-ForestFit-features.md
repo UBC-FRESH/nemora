@@ -13,7 +13,7 @@ is to credit the original work while planning concrete ports into our workflow-d
   frequency tables. Built-in GOF metrics (AIC, BIC, Anderson–Darling, Cramér–von Mises, KS) are
   computed per component configuration.
 - **nemora port plan:**
-  - Add a `nemora.distfit.mixture` module that wraps a generic EM routine. Components would reuse
+  - Add a `nemora.fit.mixture` module that wraps a generic EM routine. Components would reuse
     the existing distribution registry (so any registered PDF/CDF can participate).
   - Provide grouped-data adapters mirroring our HPS workflow (bin midpoints + tallies) so mixtures
     plug directly into `fit_hps_inventory` once an `--mixture` option is introduced.
@@ -37,7 +37,7 @@ is to credit the original work while planning concrete ports into our workflow-d
   to binned frequencies (including correction terms for lower/upper bounds, covariance estimation,
   and a battery of GOF statistics).
 - **Port plan:** integrate the grouped-data EM implementations for Weibull, Generalised Exponential,
-  Birnbaum–Saunders, etc., as optional back-ends inside `nemora.distfit.fit_inventory`. We can encapsulate the math
+  Birnbaum–Saunders, etc., as optional back-ends inside `nemora.fit.fit_inventory`. We can encapsulate the math
   in dedicated strategy objects so HPS tallies (which are naturally grouped) benefit from the
   improved estimators.
 - **Rationale:** improves parameter stability when only stand tables—not raw tree lists—are
@@ -61,7 +61,7 @@ is to credit the original work while planning concrete ports into our workflow-d
   for Bayesian posterior sampling and credible intervals.
 - **Port plan:** prototype a lightweight Bayesian interface using PyMC or NumPyro wrappers around the
   same distributions, outputting posterior summaries alongside our deterministic fits. The hook would
-  live in a new `nemora.distfit.bayes` module with optional dependencies.
+  live in a new `nemora.fit.bayes` module with optional dependencies.
 - **Benefit:** Provides uncertainty quantification paths familiar to ForestFit users while keeping the
   workflow inside the Python stack (important for students who want probabilistic assessments).
 

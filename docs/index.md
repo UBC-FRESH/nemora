@@ -20,4 +20,4 @@ examples/faib_manifest_parquet
 examples/hps_benchmark
 ```
 
-.. todo:: Update this section once the nemora.ingest / sampling / synthforest modules land to reflect the broader workflow.
+.. todo:: Update this section once the nemora.ingest / sampling / synthesis modules land to reflect the broader workflow.

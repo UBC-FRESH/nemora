@@ -1,4 +1,4 @@
-"""Bootstrap helpers for synthforest consumers."""
+"""Bootstrap helpers for synthesis (forest/stand/tree) consumers."""
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ __all__ = ["BootstrapPayload", "bootstrap_to_dataframe", "bootstrap_payload"]
 
 @dataclass(slots=True)
 class BootstrapPayload:
-    """Structured payload for synthforest bootstrap consumers."""
+    """Structured payload for synthesis bootstrap consumers."""
 
     frame: pd.DataFrame
     stacked: np.ndarray

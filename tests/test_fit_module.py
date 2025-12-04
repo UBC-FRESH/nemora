@@ -3,12 +3,14 @@ import pytest
 
 import nemora
 from nemora.core import InventorySpec
-from nemora.distfit import default_fit_config, fit_inventory
+from nemora.fit import default_fit_config, fit_inventory
 
 
-def test_package_exports_distfit_module() -> None:
-    assert hasattr(nemora, "distfit"), "nemora.distfit should be available from the package root"
-    assert hasattr(nemora.distfit, "default_fit_config")
+def test_package_exports_fit_module() -> None:
+    assert hasattr(nemora, "fit"), "nemora.fit should be available from the package root"
+    assert hasattr(nemora.fit, "default_fit_config")
+    # Compatibility shim remains until downstream consumers migrate.
+    assert hasattr(nemora, "distfit")
 
 
 def test_default_fit_config_weibull_seed_values() -> None:

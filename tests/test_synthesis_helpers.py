@@ -7,7 +7,7 @@ import pandas.testing as pdt
 
 from nemora.core import FitResult
 from nemora.sampling import BootstrapResult, bootstrap_inventory
-from nemora.synthforest.helpers import bootstrap_payload, bootstrap_to_dataframe
+from nemora.synthesis.helpers import bootstrap_payload, bootstrap_to_dataframe
 
 
 def _bootstrap_result() -> tuple[BootstrapResult, np.ndarray, np.ndarray]:
