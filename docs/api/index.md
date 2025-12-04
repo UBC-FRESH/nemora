@@ -4,7 +4,7 @@
 :maxdepth: 1
 
 nemora
-distfit
+fit
 ingest
-synthforest
+synthesis
 ```

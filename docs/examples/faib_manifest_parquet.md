@@ -43,7 +43,7 @@ import numpy as np
 import pandas as pd
 
 from nemora.core import InventorySpec
-from nemora.distfit import fit_inventory
+from nemora.fit import fit_inventory
 from nemora.sampling import SamplingConfig, sample_distribution
 
 manifest = pd.read_parquet("examples/faib_manifest/faib_manifest.parquet")

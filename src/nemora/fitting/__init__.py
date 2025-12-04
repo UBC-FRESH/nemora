@@ -1,13 +1,16 @@
-"""Compatibility wrapper forwarding to ``nemora.distfit``."""
+"""Compatibility wrapper forwarding to ``nemora.fit``."""
 
 from __future__ import annotations
 
 from warnings import warn
 
-from ..distfit import *  # noqa: F401,F403
+from ..fit import *  # noqa: F401,F403
+from ..fit import __all__ as _fit_all
 
 warn(
-    "`nemora.fitting` has moved to `nemora.distfit`. Please update imports accordingly.",
+    "`nemora.fitting` has moved to `nemora.fit`. Please update imports accordingly.",
     DeprecationWarning,
     stacklevel=2,
 )
+
+__all__ = _fit_all

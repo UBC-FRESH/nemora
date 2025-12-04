@@ -14,14 +14,14 @@ still fluid—expect rapid iteration and watch the changelog.
   forestry-relevant PDFs/CDFs used by ingestion, fitting, sampling, and synthetic generation.
   Inspect metadata via `nemora.distributions.list_registry_metadata()` or the CLI (`nemora registry
   --describe <name>` / `--show-metadata`) to review bounds/defaults/extras for built-ins and plugins.
-- **Distribution fitting (`nemora.distfit`)** – grouped estimators, mixture fitting, and goodness-of-fit
+- **Distribution fitting (`nemora.fit`)** – grouped estimators, mixture fitting, and goodness-of-fit
   diagnostics. This is the first module we are pushing to alpha.
 - **Sampling utilities (`nemora.sampling`)** – analytic/numeric PDF→CDF inversion, bootstrap and
   Monte Carlo samplers, mixture helpers.
 - **Ingestion/ETL (`nemora.ingest`)** – transforms raw inventory releases (provincial portals,
   open data) into the tidy secondary forms consumed by the rest of Nemora.
-- **Synthetic forest generation (`nemora.synthforest`)** – builds landscape mosaics, stand-level
-  attributes, and stem populations for simulation and testing.
+- **Synthesis (`nemora.synthesis`)** – builds landscape mosaics, stand-level attributes, and
+  stem populations for simulation and testing.
 - **Inventory simulations (`nemora.simulations`)** – simulates measurement campaigns (plots, LiDAR,
   transects) against synthetic forests with configurable error models.
 - **CLI & API parity** – Nemora ships both a Typer-based CLI (`nemora …`) and a user-facing Python
@@ -32,12 +32,12 @@ still fluid—expect rapid iteration and watch the changelog.
 | Module              | Status / Notes                                                                 |
 | ------------------- | ------------------------------------------------------------------------------ |
 | `core`              | ✅ Bootstrapped. Hosts shared dataclasses and compatibility shims.             |
-| `distributions`     | ✅ Central registry connected to `distfit`, `sampling`, and future modules.    |
-| `distfit`           | ✅ Alpha surface live (grouped EM, mixtures, CLI).                             |
+| `distributions`     | ✅ Central registry connected to `fit`, `sampling`, and future modules.        |
+| `fit`               | ✅ Alpha surface live (grouped EM, mixtures, CLI).                             |
 | `sampling`          | 🚧 Bootstrap + numeric inversion utilities landed; downstream adoption next.  |
 | `ingest`            | 🚧 FAIB/FIA/HPS pipelines + CLI shipped; benchmarking + telemetry ongoing.    |
-| `synthforest`       | 📝 Bootstrap payload helper + CLI inspection command; generators in planning. |
-| `simulations`       | 📝 Planned. Builds on synthforest; design sketches in roadmap.                 |
+| `synthesis`         | 📝 Bootstrap payload helper + CLI inspection command; generators in planning. |
+| `simulations`       | 📝 Planned. Builds on synthesis; design sketches in roadmap.                  |
 
 See [`notes/nemora_modular_reorg_plan.md`](notes/nemora_modular_reorg_plan.md) for the detailed
 timeline, sequencing, and dependencies. The plan mirrors the table above and is the source of
@@ -121,10 +121,10 @@ regressions quickly.
 src/nemora/
     core/            # Shared dataclasses and helpers
     distributions/   # Canonical distribution registry
-    distfit/         # Distribution fitting (alpha focus)
+    fit/             # Distribution fitting (alpha focus)
     ingest/          # (planned) inventory ETL pipelines
     sampling/        # (planned) PDF/CDF inversion & sampling
-    synthforest/     # (planned) synthetic forest generator
+    synthesis/       # (planned) synthesis helpers (forest/stand/tree)
     simulations/     # (planned) inventory simulation module
     cli.py           # Typer CLI entry point (subcommands on the roadmap)
 docs/                # Sphinx documentation (How-to, reference, theory)
@@ -142,7 +142,7 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
 pre-commit install
-nemora --help  # CLI smoke test (distfit alpha commands live here)
+nemora --help  # CLI smoke test (fit module commands live here)
 ```
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for coding standards, testing expectations, and review
@@ -153,16 +153,16 @@ the module reorganisation stabilises.
 
 Many doc pages still assume the original scope. As the new modules land we will:
 
-- Rework the “How-to” guides to spotlight ingest, sampling, synthforest, and simulations.
+- Rework the “How-to” guides to spotlight ingest, sampling, synthesis, and simulations.
 - Expand the reference section with per-module API docs (`nemora.core`, `nemora.distributions`,
-  `nemora.distfit`, …).
+  `nemora.fit`, …).
 - Annotate legacy pages with `.. todo::` blocks indicating where scope has changed.
 
 ## Contributing
 
 Pull requests are welcome. Please run `ruff`, `mypy`, and `pytest` locally before submitting and
 update docs/tests alongside code changes. When touching the reorganised modules, keep an eye on the
-alpha plan so we can land the distfit milestone quickly.
+alpha plan so we can land the fit milestone quickly.
 
 ## License
 

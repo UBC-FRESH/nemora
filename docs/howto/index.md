@@ -9,6 +9,6 @@ hps_dataset
 custom_distributions
 ingest
 sampling
-synthforest
+synthesis
 contributing
 ```

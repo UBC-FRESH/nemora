@@ -2,7 +2,7 @@
 
 Nemora’s ingest package wraps reusable dataset abstractions and pipelines that
 convert raw inventory releases (FAIB PSP, FIA Datamart, etc.) into the tidy stand
-tables consumed by `nemora.distfit`, `nemora.sampling`, and downstream tooling.
+tables consumed by `nemora.fit`, `nemora.sampling`, and downstream tooling.
 The key entry points mirror the concepts introduced in the
 [`Ingest Module` how-to](../howto/ingest.md):
 

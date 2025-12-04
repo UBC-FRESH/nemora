@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from nemora.distfit import (
+from nemora.fit import (
     MixtureComponentSpec,
     fit_mixture_grouped,
     fit_mixture_samples,

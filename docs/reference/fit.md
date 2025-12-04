@@ -1,6 +1,6 @@
-# Distribution Fitting (`nemora.distfit`)
+# Distribution Fitting (`nemora.fit`)
 
-`nemora.distfit` hosts the shared estimators, grouped-data solvers, and helper utilities that power
+`nemora.fit` hosts the shared estimators, grouped-data solvers, and helper utilities that power
 the current alpha milestone. The module is designed to work with the canonical distribution registry
 in `nemora.distributions` and the shared dataclasses in `nemora.core`.
 
@@ -11,7 +11,7 @@ in `nemora.distributions` and the shared dataclasses in `nemora.core`.
   Grouped estimators are selected automatically when `inventory.metadata["grouped"]` evaluates to
   `True`.
 - **Grouped estimators** for Weibull, Johnson SB, Birnbaum–Saunders, and generalised secant mixtures
-  live under `nemora.distfit.grouped`. They expose diagnostics describing the solver path
+  live under `nemora.fit.grouped`. They expose diagnostics describing the solver path
   (`grouped-ls`, `grouped-em`, `grouped-mle`).
 - **Mixture utilities** (`fit_mixture_grouped`, `fit_mixture_samples`, `mixture_pdf`, `mixture_cdf`,
   `sample_mixture`) support finite mixtures with grouped tallies or sample-level data.
@@ -23,7 +23,7 @@ Module-level functions return `FitResult` or `MixtureFitResult` instances from `
 
 ```python
 import numpy as np
-from nemora.distfit import MixtureComponentSpec, fit_mixture_grouped
+from nemora.fit import MixtureComponentSpec, fit_mixture_grouped
 
 hist, edges = np.histogram(samples, bins=40)
 midpoints = 0.5 * (edges[:-1] + edges[1:])
@@ -38,19 +38,19 @@ print(mixture.components[0].weight)
 
 ## API Reference
 
-```{automodule} nemora.distfit
+```{automodule} nemora.fit
 :members:
 :undoc-members:
 :show-inheritance:
 ```
 
-```{automodule} nemora.distfit.grouped
+```{automodule} nemora.fit.grouped
 :members:
 :undoc-members:
 :show-inheritance:
 ```
 
-```{automodule} nemora.distfit.mixture
+```{automodule} nemora.fit.mixture
 :members:
 :undoc-members:
 :show-inheritance:

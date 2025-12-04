@@ -12,11 +12,13 @@ except metadata.PackageNotFoundError:  # pragma: no cover - local dev fallback
     pass
 
 from . import core as core  # noqa: F401
-from . import distfit as distfit  # noqa: F401
+from . import distfit as distfit  # noqa: F401  # compatibility shim
 from . import distributions as distributions  # noqa: F401
+from . import fit as fit  # noqa: F401
 from . import ingest as ingest  # noqa: F401
 from . import sampling as sampling  # noqa: F401
-from . import synthforest as synthforest  # noqa: F401
+from . import synthesis as synthesis  # noqa: F401
+from . import synthforest as synthforest  # noqa: F401  # compatibility shim
 from .core import FitResult, FitSummary, InventorySpec  # noqa: F401
 from .workflows.censoring import fit_censored_inventory  # noqa: F401
 from .workflows.hps import fit_hps_inventory  # noqa: F401
@@ -25,6 +27,8 @@ __all__ = [
     "__version__",
     "core",
     "distributions",
+    "fit",
+    "synthesis",
     "distfit",
     "ingest",
     "sampling",

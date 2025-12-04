@@ -23,11 +23,11 @@ Status: Working outline for Phase 2 sampling deliverables.
 3. **Bootstrap API surface**
    - [x] Finalise `bootstrap_inventory` interface and introduce `BootstrapResult` with metadata + helper methods (`stacked()`, `to_dataframe()`), documenting usage in `docs/howto/sampling.md`.
    - [ ] Provide helpers/examples for sampling DBH vectors vs stand tables and clarify grouped-fit metadata propagation.
-   - [x] Ensure compatibility with synthforest by exposing helper utilities (`nemora.synthforest.helpers`) and documenting how `BootstrapResult` feeds downstream workflows (`docs/howto/synthforest.md`).
+   - [x] Ensure compatibility with synthesis by exposing helper utilities (`nemora.synthesis.helpers`) and documenting how `BootstrapResult` feeds downstream workflows (`docs/howto/synthesis.md`).
    - [x] Ship a CLI inspection path (`nemora sampling-describe-bootstrap`) plus docs/tests so downstream modules can preview bootstrap metadata without scripting.
 4. **Mixture sampling enhancements**
    - [ ] Allow direct seeding via `numpy.random.Generator` for mixture helpers and integrate diagnostics.
-   - [ ] Add support for truncated mixtures / mixture-of-experts weighting if synthforest requires them.
+   - [ ] Add support for truncated mixtures / mixture-of-experts weighting if synthesis requires them.
 
 ## Documentation tasks
 
@@ -39,7 +39,7 @@ Status: Working outline for Phase 2 sampling deliverables.
 
 - Deterministic RNG fixtures (`numpy.random.Generator`) for reproducible sampling tests.
 - Property-based tests (Hypothesis) checking that sampled distributions approximate expected moments.
-- Integration tests ensuring sampling + distfit pipelines remain compatible when toggling grouped solver modes.
+- Integration tests ensuring sampling + fit pipelines remain compatible when toggling grouped solver modes.
 
 ## Open questions
 
@@ -54,5 +54,5 @@ Status: Working outline for Phase 2 sampling deliverables.
 - [x] Cache/reuse numeric grids (or memoized integration results) for repeated sampling workloads.
 - [x] Add property-based / numeric accuracy tests covering trapezoid, Simpson, and quad integration modes.
 - [x] Introduce `BootstrapResult`, document its metadata contract, and expose helper methods (e.g., `stacked`, `to_dataframe`).
-- [ ] Align naming/structure with upcoming synthforest sampling needs, including DBH vector helpers and grouped-fit metadata propagation (follow-up: add CLI/tests that exercise the new helper).
+- [ ] Align naming/structure with upcoming synthesis sampling needs, including DBH vector helpers and grouped-fit metadata propagation (follow-up: add CLI/tests that exercise the new helper).
 - [x] Extend sampling docs/examples with an ingest-produced Parquet manifest walkthrough plus numeric integration tuning examples (ties into ROADMAP Phase 2 sampling adoption task).

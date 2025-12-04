@@ -2,7 +2,7 @@
 
 The `nemora.sampling` module provides helpers for converting registered PDFs
 into CDFs, drawing random variates, sampling fitted mixtures, and bootstrapping
-stand tables from `nemora.distfit` results.
+stand tables from `nemora.fit` results.
 
 ## Convert a PDF to a CDF
 
@@ -56,7 +56,7 @@ uniform, lognormal) use analytic inversion internally for improved accuracy.
 ## Sample from a mixture fit
 
 ```python
-from nemora.distfit import MixtureComponentFit, MixtureFitResult
+from nemora.fit import MixtureComponentFit, MixtureFitResult
 from nemora.sampling import sample_mixture_fit
 
 components = [
@@ -112,13 +112,13 @@ containing:
 - `bins`, `tallies`, `resamples`, `sample_size`, `rng_seed`
 - Convenience helpers: `stacked()` to concatenate samples and `to_dataframe()` to return a DataFrame with `resample`, `bin`, and `draw` columns.
 
-Use the metadata when passing bootstrap outputs into synthforest or simulations.
+Use the metadata when passing bootstrap outputs into synthesis or simulations.
 
 ## Using bootstrap outputs downstream
 
 - **Synthforest** expects paired `(bin, draw)` arrays plus the originating fit metadata so stem or
   stand generators can report provenance. Use
-  `nemora.synthforest.helpers.bootstrap_payload(result)` to obtain both the stacked array and a
+  `nemora.synthesis.helpers.bootstrap_payload(result)` to obtain both the stacked array and a
   `pandas.DataFrame` with metadata attached in `frame.attrs["nemora_bootstrap"]`.
   Prefer the CLI helper (`nemora sampling-describe-bootstrap <stand-table.csv>`) when you want to
   preview metadata from an existing stand table or emit JSON for automation.

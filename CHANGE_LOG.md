@@ -60,14 +60,14 @@
 ## 2025-11-06 — Project Renaming
 
 - Renamed the project from `dbhdistfit` to `nemora`,
-- Bootstrapped `nemora.core` and centralised the distribution registry, migrating the fitting stack into the new `nemora.distfit` subpackage with compatibility shims and updated imports/docs. updating package/module paths, CLI entry points, documentation, and supporting scripts.
+- Bootstrapped `nemora.core` and centralised the distribution registry, migrating the fitting stack into the new `nemora.fit` subpackage with compatibility shims and updated imports/docs. updating package/module paths, CLI entry points, documentation, and supporting scripts.
 - Switched the Typer CLI to `nemora`, refreshed installation instructions (`pip install "nemora[data]"`), and retargeted the DataLad helper to the new repository namespace.
 - Renamed the R reticulate wrapper scaffold to `nemorar` and rewired all tests/docs to import `nemora`.
 - Adjusted packaging metadata (`pyproject.toml`), coverage/pytest settings, and Sphinx configuration to match the new module namespace.
 
 ## 2025-11-06 — Distfit Alpha Docs & Coverage
 
-- Updated the top-level package exports so `nemora.distfit`, `nemora.core`, and `nemora.distributions` are reachable from `import nemora`; refreshed the parity notebook to import from the new namespace.
+- Updated the top-level package exports so `nemora.fit`, `nemora.core`, and `nemora.distributions` are reachable from `import nemora`; refreshed the parity notebook to import from the new namespace.
 - Added `docs/reference/distfit.md` and `docs/api/distfit.md`, updated the reference/API toctrees, and ensured Sphinx builds succeed after installing `myst-parser` and a compatible `sphinx-autodoc-typehints`.
 - Introduced `tests/test_distfit_module.py` to exercise `default_fit_config`, `fit_inventory`, and the new re-export, bringing the distfit alpha surface under direct unit coverage.
 - Ran `pytest`, `mypy src`, and `sphinx-build -b html docs _build/html -W` to validate the refactor; cleaned up the documentation build artifacts afterwards.
@@ -245,3 +245,10 @@
 
 - Added `pyarrow>=14.0` and `openpyxl>=3.1` to the core project dependencies so `faib-manifest` (now emitting Parquet by default) and the FAIB dictionary helpers/tests can run without optional-install surprises locally or in CI.
 - Tests / validation: `ruff format src tests`, `ruff check src tests`, `mypy src` (fails on existing typing errors in `src/nemora/dataprep/hps.py` and `src/nemora/ingest/{fia,faib}.py`), `pytest`, `sphinx-build -b html docs _build/html -W`, `pre-commit run --all-files`.
+
+## 2025-12-04 — Rename distfit→fit and synthforest→synthesis
+
+- Moved the distribution-fitting stack under `src/nemora/fit` (with compatibility shims at `nemora.distfit`/`nemora.fitting`) and relocated the bootstrap helpers to `src/nemora/synthesis` so forest/stand/tree synthesis plans live under the new namespace.
+- Updated imports, CLI wiring, docs (README, roadmap, API/how-to/reference pages), planning notes, and examples/tests (`tests/test_fit_module.py`, `tests/test_synthesis_helpers.py`, notebooks) to use the new names while keeping the legacy modules as deprecation shims.
+- Added new docs pages (`docs/api/fit.md`, `docs/api/synthesis.md`, `docs/howto/synthesis.md`, `docs/reference/fit.md`) and refreshed toctrees/status tables so contributors can find the renamed modules; README now describes the `synthesis` scope.
+- Tests / validation: `ruff format src tests`, `ruff check src tests`, `mypy src` (fails on existing issues in `src/nemora/dataprep/hps.py` and `src/nemora/ingest/{fia,faib}.py`), `pytest`, `sphinx-build -b html docs _build/html -W`, `pre-commit run --all-files`.

@@ -8,9 +8,9 @@ Status: In progress — core helpers implemented; benchmarking/stability reviews
 - Provide reusable helpers that turn registered PDFs into CDFs (analytic when
   closed-form is available, numerical otherwise).
 - Support bootstrap/Monte Carlo sampling from fitted distributions and finite
-  mixtures produced by `nemora.distfit`.
+  mixtures produced by `nemora.fit`.
 - Keep the public API Pydantic/typing-friendly, mirroring the approach used in
-  `nemora.distfit`.
+  `nemora.fit`.
 
 ## Proposed API Surface
 
@@ -63,7 +63,7 @@ def bootstrap_inventory(
   integration (Simpson / trapezoidal rule) across a supplied grid.
 - `sample_distribution` should honour the `distribution.cdf` when available.
   Otherwise use inverse transform sampling against the numeric CDF.
-- `sample_mixture_fit` can reuse existing utilities in `nemora.distfit.mixture`
+- `sample_mixture_fit` can reuse existing utilities in `nemora.fit.mixture`
   but should expose a friendlier API for notebooks/CLI commands.
 - `bootstrap_inventory` ought to resample tallies with replacement,
   then call `sample_distribution` for each resample to propagate uncertainty.
