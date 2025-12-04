@@ -52,6 +52,8 @@ draws = sample_distribution("gamma", {"beta": 4.0, "p": 3.0, "s": 1.0}, size=500
 
 Distributions with closed-form inverse CDFs (Weibull, exponential, Pareto,
 uniform, lognormal) use analytic inversion internally for improved accuracy.
+Logistic/Fisk currently fall back to the numeric pathway described above; this is documented in
+`notes/sampling_inverse_matrix.md` and will only change once synthesis requires a closed-form helper.
 
 ## Sample from a mixture fit
 
@@ -124,6 +126,7 @@ Use the metadata when passing bootstrap outputs into synthesis or the simulation
   preview metadata from an existing stand table or emit JSON for automation.
 - **Simulation (`nemora.simulation`)** can persist the entire `BootstrapResult` (including RNG seed) to regenerate
   uncertainty studies or re-run Monte Carlo workflows deterministically.
+- **DBH helpers (planned)** will expose `nemora.sampling.helpers.bootstrap_dbh_vectors(...)`, producing per-stand DBH arrays + metadata suitable for synthesis/simulation. Until the helper lands, follow the manifest walkthrough in `docs/examples/faib_manifest_parquet.md` to assemble grouped DBH payloads manually.
 - **Ingest + benchmarking notebooks** should write the stacked output to Parquet so future steps can
   slice by distribution, BAF, or inventory metadata without re-running the bootstrap sampling step.
 

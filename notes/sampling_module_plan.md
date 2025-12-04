@@ -15,7 +15,7 @@ Status: Working outline for Phase 2 sampling deliverables.
    - [x] Capture formulas + SciPy references for analytic candidates (`exp`, `pareto`, `u`, `weibull`, `ln`) in `notes/sampling_inverse_matrix.md`.
    - [x] Implement `inverse_cdf` hooks within the distribution registry and fall back to SciPy where closed forms are unavailable.
    - [x] Add regression tests comparing analytic inversion to SciPy stats implementations.
-   - [ ] Decide whether to add logistic/fisk inverses or document their numeric fallback explicitly.
+   - [x] Document the logistic/fisk decision: record numeric fallback in `notes/sampling_inverse_matrix.md` + docs so contributors know no analytic helper exists yet.
 2. **Numeric PDF→CDF integration**
    - [x] Extend `pdf_to_cdf` to accept trapezoid/Simpson grids and `scipy.integrate.quad`, exposing tolerances via `SamplingConfig`.
    - [x] Cache numeric grids for reuse when sampling repeatedly from the same fit (optional `cache_numeric_cdf=True`).
@@ -28,6 +28,33 @@ Status: Working outline for Phase 2 sampling deliverables.
 4. **Mixture sampling enhancements**
    - [ ] Allow direct seeding via `numpy.random.Generator` for mixture helpers and integrate diagnostics.
    - [ ] Add support for truncated mixtures / mixture-of-experts weighting if synthesis requires them.
+
+## December 2025 Task Queue
+
+- [x] **Analytic coverage decision**
+  Recorded that logistic/fisk remain numeric-only (see `notes/sampling_inverse_matrix.md`) and added a docs note so downstream modules expect the fallback.
+- [ ] **Bootstrap DBH helper + examples**
+  Ship a focused helper (and CLI stub) that accepts `BootstrapResult` plus stand metadata, emits DBH vectors grouped by stand, and showcases the flow in `docs/examples/faib_manifest_parquet.md`. Extend tests to cover grouped-fit metadata propagation.
+- [ ] **Mixture RNG plumbing**
+  Thread `numpy.random.Generator` support through `sample_mixture`/`SamplingConfig`, add deterministic regression cases, and write short docs in `docs/howto/sampling.md`.
+- [ ] **Truncated / weighted mixtures**
+  Decide on API for truncation bounds and mixture-of-experts weights, stub the interface, and log follow-up notes for synthesis/simulation consumers.
+
+### BootstrapResult → DBH helper spec
+
+- Helper lives under `nemora.sampling.helpers` and exposes `bootstrap_dbh_vectors(result: BootstrapResult, *, stand_id: str | int, metadata: Mapping[str, Any]) -> DBHBootstrap`.
+- `DBHBootstrap` dataclass returns:
+  - `stand_id`
+  - `dbh_vectors`: `dict[int, np.ndarray]` keyed by `resample`
+  - `frame`: optional pandas DataFrame with `resample`, `bin`, `draw`, `dbh`, `weight`
+  - `metadata`: union of `result.metadata` plus any stand-level overrides
+- CLI: `nemora sampling export-bootstrap-dbh` accepts a stand table path + optional YAML describing stand IDs; writes JSON/Parquet artifact.
+- Docs/examples:
+  - `docs/examples/faib_manifest_parquet.md`: add a section showing how to call the helper for a manifest entry.
+  - `docs/howto/sampling.md`: describe how DBH vectors propagate into synthesis/simulation.
+- Tests:
+  - Unit test verifying grouped-fit metadata persistence and deterministic RNG ordering.
+  - CLI smoke test ensuring JSON output matches helper structure.
 
 ## Documentation tasks
 
