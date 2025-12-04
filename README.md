@@ -45,8 +45,10 @@ truth for day-to-day work.
 
 ## Documentation
 
-Live documentation is published on Read the Docs: https://nemora.readthedocs.io/en/latest/
-The site tracks the main branch and will expand as new modules come online.
+Browse the latest build of the docs on GitHub Pages: https://ubc-fresh.github.io/nemora/
+If you prefer Read the Docs you can still find the project at
+https://nemora.readthedocs.io/en/latest/ (updates as the site catches up).
+The content will expand as new modules come online.
 
 ## Nightly Monitoring
 
