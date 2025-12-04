@@ -20,7 +20,7 @@ src/nemora/
     fit/             # Distribution inference & grouped estimators (build to alpha first)
     sampling/        # PDF/CDF inversion, bootstrap, Monte Carlo helpers
     synthesis/       # Synthetic landscape + stem generation engines
-    simulations/     # Inventory collection simulators (plots, remote sensing, etc.)
+    simulation/      # Inventory collection simulators (plots, remote sensing, etc.)
     cli/             # Subcommand entry points (Python API remains primary interface)
 ```
 
@@ -59,7 +59,7 @@ src/nemora/
    - [ ] Implement stand attribute sampling, stem population generation, and optional high-resolution detail.
    - [ ] Deliver visualization/export tools and robust unit tests.
 
-7. **Inventory simulation (`nemora.simulations`)**
+7. **Inventory simulation (`nemora.simulation`)**
    - [ ] Create interfaces for field and remote-sensing inventory simulations wired to `synthesis`.
    - [ ] Provide CLI workflows and integrate with sampling for uncertainty runs.
    - [ ] Build validation harness comparing simulated outputs to known ground truths.
@@ -87,7 +87,7 @@ src/nemora/
 11. **Release milestones**
     - Alpha: `nemora.distributions` + `nemora.fit` stabilised, docs/tests updated.
     - Beta: ingest + sampling modules added with CLI/API coverage.
-    - v0.1.0: synthesis, simulations, and associated docs/tests in place.
+    - v0.1.0: synthesis, simulation, and associated docs/tests in place.
 
 ## Dependencies & Sequencing Notes
 
@@ -96,7 +96,7 @@ src/nemora/
 - `fit` alpha complete; results feed directly into upcoming sampling/ingest modules.
 - `ingest` depends on `core`/`distributions` types; plan abstractions now that fit is settled.
 - `sampling` depends on the central registry and fit outputs; schedule right after ingest scaffolding.
-- `synthesis` and `simulations` layer on top of fit + sampling and can follow after alpha milestones.
+- `synthesis` and `simulation` layer on top of fit + sampling and can follow after alpha milestones.
 - Maintain strong unit testing and CI gating at each step.
 
 ## Open Questions
@@ -108,7 +108,7 @@ src/nemora/
 ## Next Steps
 
 1. [x] Consolidate distribution metadata (bounds/defaults/extras) into `nemora.distributions`, add registry helper docs/tests, and align top-level roadmap tasks with the new coverage.
-2. [x] Extend the sampling roadmap: wire `BootstrapResult` outputs into synthesis/simulations and document CLI usage for the new integration controls (bootstrap payload helper + docs captured in `docs/howto/synthesis.md`).
+2. [x] Extend the sampling roadmap: wire `BootstrapResult` outputs into synthesis/simulation and document CLI usage for the new integration controls (bootstrap payload helper + docs captured in `docs/howto/synthesis.md`).
    - [x] Document how ingest-generated Parquet manifests feed sampling flows, including numeric integration tuning (`docs/examples/faib_manifest_parquet.md`, `docs/howto/sampling.md`).
 3. [x] Capture ingest benchmarking metrics (from `nemora ingest-benchmark` and nightly runs), decide how to surface trends, and document the workflow in README/CONTRIBUTING for ongoing monitoring. *(Nightly workflow summaries + threshold enforcement now publish tables to the job summary and failure issues; README/CONTRIBUTING explain how to rerun locally and interpret the data.)*
    - [x] Promote FAIB manifest Parquet adoption from optional to default so downstream notebooks/tests can rely on the columnar artifact (`nemora faib-manifest` writes CSV+Parquet unless `--no-parquet` is passed).

@@ -112,17 +112,17 @@ containing:
 - `bins`, `tallies`, `resamples`, `sample_size`, `rng_seed`
 - Convenience helpers: `stacked()` to concatenate samples and `to_dataframe()` to return a DataFrame with `resample`, `bin`, and `draw` columns.
 
-Use the metadata when passing bootstrap outputs into synthesis or simulations.
+Use the metadata when passing bootstrap outputs into synthesis or the simulation module.
 
 ## Using bootstrap outputs downstream
 
-- **Synthforest** expects paired `(bin, draw)` arrays plus the originating fit metadata so stem or
+- **Synthesis (`nemora.synthesis`)** expects paired `(bin, draw)` arrays plus the originating fit metadata so stem or
   stand generators can report provenance. Use
   `nemora.synthesis.helpers.bootstrap_payload(result)` to obtain both the stacked array and a
   `pandas.DataFrame` with metadata attached in `frame.attrs["nemora_bootstrap"]`.
   Prefer the CLI helper (`nemora sampling-describe-bootstrap <stand-table.csv>`) when you want to
   preview metadata from an existing stand table or emit JSON for automation.
-- **Simulations** can persist the entire `BootstrapResult` (including RNG seed) to regenerate
+- **Simulation (`nemora.simulation`)** can persist the entire `BootstrapResult` (including RNG seed) to regenerate
   uncertainty studies or re-run Monte Carlo workflows deterministically.
 - **Ingest + benchmarking notebooks** should write the stacked output to Parquet so future steps can
   slice by distribution, BAF, or inventory metadata without re-running the bootstrap sampling step.

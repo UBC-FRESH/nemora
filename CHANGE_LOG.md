@@ -173,7 +173,7 @@
 
 - Centralised Nemora’s canonical parameter bounds via `default_parameter_bounds` inside `src/nemora/distributions`, hooked `default_fit_config` to consume the shared helper, and documented the API in the custom distributions how-to so CLI/fitting helpers all share one metadata source.
 - Added regression coverage for the new helper in `tests/test_registry.py` and ensured the roadmap/plan documents reflect the completed metadata consolidation plus the remaining ingestion/sampling follow-ups.
-- Hardened sampling accuracy tests: new SciPy-backed assertions cover trapezoid, Simpson, and quad integration modes, while the sampling how-to now calls out how downstream modules (synthforest, simulations, ingest benchmarking) should consume `BootstrapResult` metadata.
+- Hardened sampling accuracy tests: new SciPy-backed assertions cover trapezoid, Simpson, and quad integration modes, while the sampling how-to now calls out how downstream modules (`nemora.synthesis`, `nemora.simulation`, ingest benchmarking) should consume `BootstrapResult` metadata.
 
 ## 2025-11-08 — Registry inspection planning
 
@@ -252,3 +252,9 @@
 - Updated imports, CLI wiring, docs (README, roadmap, API/how-to/reference pages), planning notes, and examples/tests (`tests/test_fit_module.py`, `tests/test_synthesis_helpers.py`, notebooks) to use the new names while keeping the legacy modules as deprecation shims.
 - Added new docs pages (`docs/api/fit.md`, `docs/api/synthesis.md`, `docs/howto/synthesis.md`, `docs/reference/fit.md`) and refreshed toctrees/status tables so contributors can find the renamed modules; README now describes the `synthesis` scope.
 - Tests / validation: `ruff format src tests`, `ruff check src tests`, `mypy src` (fails on existing issues in `src/nemora/dataprep/hps.py` and `src/nemora/ingest/{fia,faib}.py`), `pytest`, `sphinx-build -b html docs _build/html -W`, `pre-commit run --all-files`.
+
+## 2025-12-05 — Rename simulations→simulation (planning stubs)
+
+- Updated README, ROADMAP, and planning docs (modular reorg + synthesis plan) to reference the future module as `nemora.simulation`, aligning the directory layout and status table before implementation begins.
+- Synced how-to guides (`docs/howto/sampling.md`, `docs/howto/synthesis.md`) so downstream workflows now point to the renamed simulation module and the synthesis helper terminology matches the current package names.
+- Tests / validation: `sphinx-build -b html docs _build/html -W`.

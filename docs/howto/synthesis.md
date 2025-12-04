@@ -24,7 +24,7 @@ attached metadata). Each bootstrap sample preserves:
 - `resample`, `bin`, `draw`: per-stem data powering stem generation.
 
 Stand/stem generators should persist the metadata (e.g., attach `distribution`/`parameters` to the
-output manifests) so simulations can trace provenance.
+output manifests) so simulation workflows can trace provenance.
 
 ## Helper module (`nemora.synthesis.helpers`)
 
@@ -63,7 +63,7 @@ output programmatically.
 ## Next steps
 
 - Flesh out synthesis stubs (`generate_stems_from_bootstrap` etc.) to consume the helper.
-- Extend simulations planning notes so inventory simulators can ingest the same DataFrame.
+- Extend simulation planning notes so inventory simulators can ingest the same DataFrame.
 - Wire automated docs/examples once synthesis code lands.
 
 For now, keep this contract in mind when scripting bootstrap-driven workflows so future synthesis

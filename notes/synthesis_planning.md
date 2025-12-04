@@ -47,5 +47,5 @@ Also have a look at the FLG project documentation under `reference-papers/flg`. 
 
 ### Phase 4 — Validation & extensions
 - [ ] Benchmark outputs against historical Rlandscape/FLG examples (document deviations, add a gallery notebook).
-- [ ] Hook into the upcoming `nemora.simulations` module so synthetic landscapes feed observation simulators (plot sampling, remote-sensing emulation).
+- [ ] Hook into the upcoming `nemora.simulation` module so synthetic landscapes feed observation simulators (plot sampling, remote-sensing emulation).
 - [ ] Explore advanced features: disturbance simulation (fire/harvest patches), time-stepped growth, integration with ingest benchmark telemetry for calibration.

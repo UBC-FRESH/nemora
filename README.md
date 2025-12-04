@@ -22,7 +22,7 @@ still fluid—expect rapid iteration and watch the changelog.
   open data) into the tidy secondary forms consumed by the rest of Nemora.
 - **Synthesis (`nemora.synthesis`)** – builds landscape mosaics, stand-level attributes, and
   stem populations for simulation and testing.
-- **Inventory simulations (`nemora.simulations`)** – simulates measurement campaigns (plots, LiDAR,
+- **Inventory simulation (`nemora.simulation`)** – simulates measurement campaigns (plots, LiDAR,
   transects) against synthetic forests with configurable error models.
 - **CLI & API parity** – Nemora ships both a Typer-based CLI (`nemora …`) and a user-facing Python
   API. Scripts in `scripts/` remain available; we plan to add CLI shims rather than remove them.
@@ -37,7 +37,7 @@ still fluid—expect rapid iteration and watch the changelog.
 | `sampling`          | 🚧 Bootstrap + numeric inversion utilities landed; downstream adoption next.  |
 | `ingest`            | 🚧 FAIB/FIA/HPS pipelines + CLI shipped; benchmarking + telemetry ongoing.    |
 | `synthesis`         | 📝 Bootstrap payload helper + CLI inspection command; generators in planning. |
-| `simulations`       | 📝 Planned. Builds on synthesis; design sketches in roadmap.                  |
+| `simulation`        | 📝 Planned. Builds on synthesis; design sketches in roadmap.                  |
 
 See [`notes/nemora_modular_reorg_plan.md`](notes/nemora_modular_reorg_plan.md) for the detailed
 timeline, sequencing, and dependencies. The plan mirrors the table above and is the source of
@@ -125,7 +125,7 @@ src/nemora/
     ingest/          # (planned) inventory ETL pipelines
     sampling/        # (planned) PDF/CDF inversion & sampling
     synthesis/       # (planned) synthesis helpers (forest/stand/tree)
-    simulations/     # (planned) inventory simulation module
+    simulation/      # (planned) inventory simulation module
     cli.py           # Typer CLI entry point (subcommands on the roadmap)
 docs/                # Sphinx documentation (How-to, reference, theory)
 tests/               # Pytest suites + fixtures
@@ -153,7 +153,7 @@ the module reorganisation stabilises.
 
 Many doc pages still assume the original scope. As the new modules land we will:
 
-- Rework the “How-to” guides to spotlight ingest, sampling, synthesis, and simulations.
+- Rework the “How-to” guides to spotlight ingest, sampling, synthesis, and simulation.
 - Expand the reference section with per-module API docs (`nemora.core`, `nemora.distributions`,
   `nemora.fit`, …).
 - Annotate legacy pages with `.. todo::` blocks indicating where scope has changed.

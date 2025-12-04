@@ -36,7 +36,7 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
   - [ ] Define landscape/stem data models.
   - [ ] Implement stand attribute sampling, stem population generation.
   - [ ] Provide export & visualisation helpers (GeoJSON, rasters).
-- `nemora.simulations`
+- `nemora.simulation`
   - [ ] Create interfaces for plot-based and remote-sensing simulations.
   - [ ] Integrate with synthesis outputs and sampling utilities.
   - [ ] Model measurement noise / detection bias; deliver CLI workflows.
