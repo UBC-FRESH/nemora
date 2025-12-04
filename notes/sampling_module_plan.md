@@ -55,4 +55,4 @@ Status: Working outline for Phase 2 sampling deliverables.
 - [x] Add property-based / numeric accuracy tests covering trapezoid, Simpson, and quad integration modes.
 - [x] Introduce `BootstrapResult`, document its metadata contract, and expose helper methods (e.g., `stacked`, `to_dataframe`).
 - [ ] Align naming/structure with upcoming synthforest sampling needs, including DBH vector helpers and grouped-fit metadata propagation (follow-up: add CLI/tests that exercise the new helper).
-- [ ] Extend sampling docs/examples with an ingest-produced Parquet manifest walkthrough plus numeric integration tuning examples (ties into ROADMAP Phase 2 sampling adoption task).
+- [x] Extend sampling docs/examples with an ingest-produced Parquet manifest walkthrough plus numeric integration tuning examples (ties into ROADMAP Phase 2 sampling adoption task).

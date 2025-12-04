@@ -212,6 +212,11 @@
 - `docs/howto/synthforest.md` and `docs/howto/sampling.md` now document the CLI workflow so downstream teams can inspect bootstrap payloads without writing Python.
 - README module table reflects the CLI availability, and the new command ships with regression coverage (unit + CLI).
 
+## 2025-11-08 — Sampling manifest walkthrough + ingest telemetry docs
+
+- Extended `docs/examples/faib_manifest_parquet.md` and `docs/howto/sampling.md` so sampling workflows demonstrate how to read Parquet manifests, fit distributions, and draw samples with custom `SamplingConfig` settings (quad integration, dense grids, caching).
+- README, `CONTRIBUTING.md`, and the ingest benchmarking example now capture the JSONL telemetry workflow (`nemora ingest-benchmark --report-path ...`), instructing contributors to append logs locally and reference nightly artifacts when assessing performance regressions.
+
 ## 2025-11-08 — Sampling cache & bootstrap helpers
 
 - Added optional numeric CDF caching (`SamplingConfig.cache_numeric_cdf`) so repeated sampling calls can reuse previously integrated grids; docs highlight the flag and tests verify the cache path.

@@ -129,3 +129,18 @@ Use the metadata when passing bootstrap outputs into synthforest or simulations.
 
 Downstream modules should rely on the metadata provided here rather than reconstructing provenance
 manually.
+
+## Sampling directly from ingest-created manifests
+
+After generating Parquet manifests via `nemora faib-manifest --parquet`, select an
+entry, fit a distribution, and draw samples while tuning the numeric integration
+settings. `docs/examples/faib_manifest_parquet.md` contains a complete example that:
+
+1. Loads the Parquet manifest and resolves the stand-table path.
+2. Wraps the DBH bins/tallies in an `InventorySpec`.
+3. Fits a distribution via `fit_inventory`.
+4. Calls `sample_distribution(..., config=SamplingConfig(...))` to test
+   trapezoid/Simpson/quad integration modes, grid densities, and cache settings.
+
+Use this pattern when validating ingest outputs or when you need to benchmark how
+numeric integration tolerances impact downstream sampling accuracy.

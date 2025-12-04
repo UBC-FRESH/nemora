@@ -72,6 +72,19 @@ The nightly workflow also runs `nemora ingest-benchmark --report-path` and uploa
 as an artifact so we can track ingest runtime trends over time. Use the same flag locally when
 profiling changes to append metrics to your own log.
 
+```bash
+# Append local telemetry (logs/ingest_benchmark.jsonl will grow over time)
+nemora ingest-benchmark data/external/faib --no-fetch --iterations 3 \
+  --report-path logs/ingest_benchmark.jsonl
+
+tail -n 1 logs/ingest_benchmark.jsonl
+{"timestamp": "...", "iterations": 3, "average_seconds": 1.82, ...}
+```
+
+Include the latest JSON line in your PR notes whenever you touch ingest
+performance-sensitive code—reviewers compare it to the nightly artifact to spot
+regressions quickly.
+
 ## Relationship to Other Toolkits
 
 - **ForestFit (R)** – Nemora borrows ideas from the ForestFit literature and logs planned imports in

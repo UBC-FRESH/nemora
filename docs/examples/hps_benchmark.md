@@ -35,3 +35,18 @@ Tree total: 12,408 (plots=3, live_status=L)
 - **Tree total / plot count** confirm the benchmark used the expected subset.
 - Record typical timings in your project notes; if nightly ingest monitoring reports
 significant deviations, rerun this benchmark to diagnose regression vs. upstream changes.
+
+## Capturing JSONL telemetry
+
+Use `--report-path` to append JSON lines that mirror the console summary. These logs power the
+nightly ingest monitoring workflow and are handy when reviewing performance-sensitive pull requests.
+
+```bash
+nemora ingest-benchmark data/external/faib --no-fetch --iterations 3 \
+  --report-path logs/ingest_benchmark.jsonl
+tail -n 1 logs/ingest_benchmark.jsonl
+{"timestamp":"2025-11-08T08:12:02.345Z","iterations":3,"average_seconds":1.82,"tree_total":12408,...}
+```
+
+Check the nightly GitHub Actions artifact (`ingest-benchmark-report`) if you need the latest trends
+without rerunning the benchmark locally.

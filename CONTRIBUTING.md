@@ -48,6 +48,23 @@ for contributing code, documentation, and examples.
 5. Fill out the PR template, summarising changes and testing.
 6. Respond to review feedback promptly.
 
+## Ingest benchmarking telemetry
+
+- When modifying FAIB/FIA ingest code or the HPS pipeline, run the benchmark locally and append a
+  JSON record so reviewers can compare against historical runtimes:
+
+  ```bash
+  nemora ingest-benchmark data/external/faib --no-fetch --iterations 3 \
+    --report-path logs/ingest_benchmark.jsonl
+  tail -n1 logs/ingest_benchmark.jsonl
+  ```
+
+- The nightly `Nightly Ingest Integration` workflow runs the same command and uploads the resulting
+  JSONL artifact (`ingest-benchmark-report`). If your PR changes runtime materially, mention it in
+  the description and include the latest log line so maintainers can gauge the impact quickly.
+- Logs contain timestamped metrics (`average_seconds`, `fastest_seconds`, `tree_total`, etc.); feel
+  free to ingest them into notebooks when diagnosing regressions.
+
 ## Code Review Checklist
 
 Reviewers verify that:
