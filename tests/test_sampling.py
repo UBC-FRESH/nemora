@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import cast
+
 import numpy as np
 import pytest
 from scipy.stats import gamma as scipy_gamma
@@ -14,6 +16,7 @@ from nemora.sampling import (
     sample_distribution,
     sample_mixture_fit,
 )
+from nemora.sampling.helpers import bootstrap_dbh_vectors
 
 ACCURACY_CASES: tuple[tuple[SamplingConfig, float], ...] = (
     (
@@ -184,3 +187,33 @@ def test_bootstrap_result_to_dataframe() -> None:
     assert list(frame.columns) == ["resample", "bin", "draw"]
     assert frame["resample"].nunique() == 2
     assert len(frame) == 10
+
+
+def test_bootstrap_dbh_vectors_payload() -> None:
+    rng = np.random.default_rng(7)
+    bins = np.array([8.0, 18.0, 28.0])
+    tallies = np.array([3.0, 4.0, 3.0])
+    fit = FitResult(
+        distribution="weibull",
+        parameters={"a": 2.1, "beta": 11.0, "s": 1.0},
+    )
+    result = cast(
+        BootstrapResult,
+        bootstrap_inventory(
+            fit,
+            bins,
+            tallies,
+            resamples=2,
+            sample_size=6,
+            random_state=rng,
+            return_result=True,
+        ),
+    )
+    payload = bootstrap_dbh_vectors(result, stand_id="stand-1")
+    assert payload.stand_id == "stand-1"
+    assert set(payload.dbh_vectors) == {0, 1}
+    assert payload.metadata["stand_id"] == "stand-1"
+    frame = payload.frame
+    assert frame is not None
+    assert {"stand_id", "resample", "dbh", "weight"} <= set(frame.columns)
+    assert frame["resample"].nunique() == 2

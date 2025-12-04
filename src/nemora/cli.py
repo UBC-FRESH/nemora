@@ -58,7 +58,7 @@ from .ingest.hps import (
 from .ingest.hps import (
     load_plot_selections as load_hps_plot_selections,
 )
-from .sampling import BootstrapResult, bootstrap_inventory
+from .sampling import BootstrapResult, bootstrap_dbh_vectors, bootstrap_inventory
 from .synthesis.helpers import bootstrap_payload
 from .workflows.hps import fit_hps_inventory
 
@@ -209,6 +209,55 @@ def _parse_parameter_assignments(assignments: Iterable[str]) -> dict[str, float]
     return parameters
 
 
+def _prepare_bootstrap_result(
+    stand_table: Path,
+    distribution: str,
+    params: list[str] | None,
+    *,
+    resamples: int,
+    sample_size: int,
+    seed: numbers.Integral | None,
+) -> tuple[FitResult, BootstrapResult, bool]:
+    """Fit (when needed) and bootstrap a stand table."""
+
+    bins, tallies = _load_stand_table(stand_table)
+    parameter_map = _parse_parameter_assignments(params) if params else {}
+    explicit_params = bool(parameter_map)
+    if parameter_map:
+        fit = FitResult(distribution=distribution, parameters=parameter_map)
+    else:
+        inventory = InventorySpec(
+            name=stand_table.stem,
+            sampling="stand-table",
+            bins=bins,
+            tallies=tallies,
+            metadata={"grouped": True},
+        )
+        try:
+            fit = fit_inventory(inventory, [distribution], configs={})[0]
+        except Exception as exc:  # noqa: BLE001
+            console.print(f"[red]Failed to fit {distribution}:[/red] {exc}")
+            raise typer.Exit(code=1) from exc
+
+    try:
+        bootstrap_result = cast(
+            BootstrapResult,
+            bootstrap_inventory(
+                fit,
+                bins,
+                tallies,
+                resamples=resamples,
+                sample_size=sample_size,
+                random_state=seed,
+                return_result=True,
+            ),
+        )
+    except Exception as exc:  # noqa: BLE001
+        console.print(f"[red]Bootstrap failed:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+    return fit, bootstrap_result, explicit_params
+
+
 def _render_bootstrap_metadata(metadata: dict[str, object]) -> None:
     table = Table(title="Bootstrap Metadata")
     table.add_column("Field", style="cyan")
@@ -268,6 +317,28 @@ STAND_TABLE_ARGUMENT = typer.Argument(
     exists=True,
     readable=True,
     help="CSV/Parquet stand table with bin/tally columns.",
+)
+
+BOOTSTRAP_DBH_OUTPUT_OPTION = typer.Option(
+    Path("bootstrap_dbh.json"),
+    "--output",
+    "-o",
+    help="Destination JSON path for DBH vectors + metadata.",
+    show_default=True,
+)
+
+BOOTSTRAP_DBH_TABLE_OPTION = typer.Option(
+    None,
+    "--table-output",
+    help="Optional CSV/Parquet path for the long-form bootstrap table.",
+    show_default=False,
+)
+
+BOOTSTRAP_DBH_STAND_ID_OPTION = typer.Option(
+    None,
+    "--stand-id",
+    help="Override the stand identifier embedded in exports (defaults to file stem).",
+    show_default=False,
 )
 BAF_OPTION = typer.Option(..., "--baf", help="Basal area factor used for the HPS tally.")
 
@@ -832,41 +903,15 @@ def sampling_describe_bootstrap(  # noqa: B008
 ) -> None:
     """Inspect bootstrap metadata for synthesis consumers."""
 
-    bins, tallies = _load_stand_table(stand_table)
-    parameter_map = _parse_parameter_assignments(params) if params else {}
-    if parameter_map:
-        fit = FitResult(distribution=distribution, parameters=parameter_map)
-    else:
-        inventory = InventorySpec(
-            name=stand_table.stem,
-            sampling="stand-table",
-            bins=bins,
-            tallies=tallies,
-            metadata={"grouped": True},
-        )
-        try:
-            fit = fit_inventory(inventory, [distribution], configs={})[0]
-        except Exception as exc:  # noqa: BLE001
-            console.print(f"[red]Failed to fit {distribution}:[/red] {exc}")
-            raise typer.Exit(code=1) from exc
-
     rng_seed = cast(numbers.Integral | None, seed)
-    try:
-        bootstrap_result = cast(
-            BootstrapResult,
-            bootstrap_inventory(
-                fit,
-                bins,
-                tallies,
-                resamples=resamples,
-                sample_size=sample_size,
-                random_state=rng_seed,
-                return_result=True,
-            ),
-        )
-    except Exception as exc:  # noqa: BLE001
-        console.print(f"[red]Bootstrap failed:[/red] {exc}")
-        raise typer.Exit(code=1) from exc
+    fit, bootstrap_result, explicit_params = _prepare_bootstrap_result(
+        stand_table,
+        distribution,
+        params,
+        resamples=resamples,
+        sample_size=sample_size,
+        seed=rng_seed,
+    )
 
     payload = bootstrap_payload(bootstrap_result)
     metadata = payload.metadata
@@ -881,7 +926,7 @@ def sampling_describe_bootstrap(  # noqa: B008
         )
         return
 
-    if not parameter_map:
+    if not explicit_params:
         console.print(
             f"[green]Auto-fitted[/green] {fit.distribution} parameters before bootstrapping."
         )
@@ -905,6 +950,72 @@ def sampling_describe_bootstrap(  # noqa: B008
                     f"{draw_value:.3f}",
                 )
             console.print(sample_table)
+
+
+@app.command("sampling-export-bootstrap-dbh")
+def sampling_export_bootstrap_dbh(  # noqa: B008
+    stand_table: Path = STAND_TABLE_ARGUMENT,
+    output: Path = BOOTSTRAP_DBH_OUTPUT_OPTION,
+    table_output: Path | None = BOOTSTRAP_DBH_TABLE_OPTION,
+    stand_id: str | None = BOOTSTRAP_DBH_STAND_ID_OPTION,
+    distribution: str = typer.Option(
+        "weibull",
+        "--distribution",
+        "-d",
+        help="Distribution to bootstrap (auto-fitted when no parameters provided).",
+        show_default=True,
+    ),
+    params: list[str] | None = PARAMETER_ASSIGNMENTS_OPTION,
+    resamples: int = typer.Option(5, "--resamples", "-r", min=1, help="Bootstrap resample count."),
+    sample_size: int = typer.Option(
+        25,
+        "--sample-size",
+        "-s",
+        min=1,
+        help="Samples per resample.",
+        show_default=True,
+    ),
+    seed: int | None = typer.Option(
+        None,
+        "--seed",
+        help="Optional RNG seed for reproducible sampling.",
+        show_default=False,
+    ),
+) -> None:
+    """Export per-resample DBH vectors + metadata for downstream synthesis."""
+
+    rng_seed = cast(numbers.Integral | None, seed)
+    _, bootstrap_result, _ = _prepare_bootstrap_result(
+        stand_table,
+        distribution,
+        params,
+        resamples=resamples,
+        sample_size=sample_size,
+        seed=rng_seed,
+    )
+    stand_identifier = stand_id or stand_table.stem
+    payload = bootstrap_dbh_vectors(bootstrap_result, stand_id=stand_identifier)
+
+    json_payload = {
+        "stand_id": stand_identifier,
+        "metadata": _json_ready_metadata(payload.metadata),
+        "dbh_vectors": {str(idx): values.tolist() for idx, values in payload.dbh_vectors.items()},
+    }
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(json_payload, indent=2))
+    console.print(f"[green]Bootstrap DBH JSON written[/green] {output}")
+
+    if table_output is not None:
+        frame = payload.frame
+        if frame is None or frame.empty:
+            console.print("[yellow]No bootstrap samples available; skipping table export.[/yellow]")
+        else:
+            table_output.parent.mkdir(parents=True, exist_ok=True)
+            if table_output.suffix.lower() == ".parquet":
+                frame.to_parquet(table_output, index=False)
+            else:
+                frame.to_csv(table_output, index=False)
+            console.print(f"[green]Bootstrap DBH table written[/green] {table_output}")
 
 
 @app.command("ingest-faib")

@@ -87,3 +87,23 @@ grid. Adjust `SamplingConfig` to benchmark how different grid densities or
 integration methods affect accuracy/performance, and swap in
 `nemora.sampling.bootstrap_inventory` when you need the richer metadata tracked
 by `BootstrapResult`.
+
+## Export bootstrap DBH vectors
+
+After calling `bootstrap_inventory(..., return_result=True)` you can convert the result into per-resample DBH vectors (plus an optional long-form table) using `nemora.sampling.bootstrap_dbh_vectors`. The Typer CLI wraps this workflow so you can export JSON + Parquet artifacts without writing code:
+
+```bash
+nemora sampling-export-bootstrap-dbh "$(python - <<'PY'
+import pandas as pd
+manifest = pd.read_parquet('examples/faib_manifest/faib_manifest.parquet')
+print(manifest.loc[0, 'path'])
+PY
+)" \
+  --stand-id faib-demo-001 \
+  --output examples/faib_manifest/faib_demo_dbh.json \
+  --table-output examples/faib_manifest/faib_demo_dbh.parquet \
+  --resamples 3 \
+  --sample-size 25
+```
+
+The JSON file captures metadata (`distribution`, fitted parameters, bins/tallies, RNG seed) alongside per-resample DBH arrays, while the Parquet export stores every `(resample, bin, dbh)` row plus tally-derived weights. Feed either artifact directly into upcoming synthesis/simulation tooling or archive them with your sampling experiment logs.

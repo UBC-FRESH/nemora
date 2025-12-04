@@ -22,7 +22,7 @@ Status: Working outline for Phase 2 sampling deliverables.
    - [x] Validate numeric integration against additional reference distributions and capture error bounds/benchmarks in docs/tests (gamma vs. SciPy coverage landed).
 3. **Bootstrap API surface**
    - [x] Finalise `bootstrap_inventory` interface and introduce `BootstrapResult` with metadata + helper methods (`stacked()`, `to_dataframe()`), documenting usage in `docs/howto/sampling.md`.
-   - [ ] Provide helpers/examples for sampling DBH vectors vs stand tables and clarify grouped-fit metadata propagation.
+   - [x] Provide helpers/examples for sampling DBH vectors vs stand tables and clarify grouped-fit metadata propagation (`nemora.sampling.bootstrap_dbh_vectors` + CLI export command + docs/tests).
    - [x] Ensure compatibility with synthesis by exposing helper utilities (`nemora.synthesis.helpers`) and documenting how `BootstrapResult` feeds downstream workflows (`docs/howto/synthesis.md`).
    - [x] Ship a CLI inspection path (`nemora sampling-describe-bootstrap`) plus docs/tests so downstream modules can preview bootstrap metadata without scripting.
 4. **Mixture sampling enhancements**
@@ -33,7 +33,7 @@ Status: Working outline for Phase 2 sampling deliverables.
 
 - [x] **Analytic coverage decision**
   Recorded that logistic/fisk remain numeric-only (see `notes/sampling_inverse_matrix.md`) and added a docs note so downstream modules expect the fallback.
-- [ ] **Bootstrap DBH helper + examples**
+- [x] **Bootstrap DBH helper + examples**
   Ship a focused helper (and CLI stub) that accepts `BootstrapResult` plus stand metadata, emits DBH vectors grouped by stand, and showcases the flow in `docs/examples/faib_manifest_parquet.md`. Extend tests to cover grouped-fit metadata propagation.
 - [ ] **Mixture RNG plumbing**
   Thread `numpy.random.Generator` support through `sample_mixture`/`SamplingConfig`, add deterministic regression cases, and write short docs in `docs/howto/sampling.md`.

@@ -258,3 +258,10 @@
 - Updated README, ROADMAP, and planning docs (modular reorg + synthesis plan) to reference the future module as `nemora.simulation`, aligning the directory layout and status table before implementation begins.
 - Synced how-to guides (`docs/howto/sampling.md`, `docs/howto/synthesis.md`) so downstream workflows now point to the renamed simulation module and the synthesis helper terminology matches the current package names.
 - Tests / validation: `sphinx-build -b html docs _build/html -W`.
+
+## 2025-12-05 — Bootstrap DBH helper + CLI export
+
+- Added `nemora.sampling.bootstrap_dbh_vectors` (and the `DBHBootstrap` dataclass) so `BootstrapResult` objects can be converted into per-resample DBH arrays, metadata dictionaries, and optional long-form DataFrames with tally-derived weights.
+- Introduced `nemora sampling-export-bootstrap-dbh`, a Typer command that runs the helper end-to-end and writes JSON + optional CSV/Parquet artifacts; sampling docs and the FAIB manifest example now cover both the helper and CLI workflows.
+- Expanded regression coverage for the helper and CLI export path so grouped-fit metadata propagation remains deterministic.
+- Tests / validation: `ruff format src tests`, `ruff check src tests`, `mypy src`, `pytest`, `sphinx-build -b html docs _build/html -W`, `pre-commit run --all-files`.

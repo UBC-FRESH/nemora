@@ -250,6 +250,37 @@ def test_sampling_describe_bootstrap_cli_json() -> None:
     assert isinstance(payload["preview"], list)
 
 
+def test_sampling_export_bootstrap_dbh_cli(tmp_path: Path) -> None:
+    stand_table = Path("tests/fixtures/hps_psp_stand_table.csv")
+    json_path = tmp_path / "dbh.json"
+    table_path = tmp_path / "dbh.parquet"
+    result = runner.invoke(
+        app,
+        [
+            "sampling-export-bootstrap-dbh",
+            str(stand_table),
+            "--stand-id",
+            "demo-stand",
+            "--output",
+            str(json_path),
+            "--table-output",
+            str(table_path),
+            "--resamples",
+            "1",
+            "--sample-size",
+            "2",
+            "--seed",
+            "11",
+        ],
+    )
+    assert result.exit_code == 0
+    payload = json.loads(json_path.read_text())
+    assert payload["stand_id"] == "demo-stand"
+    assert "0" in payload["dbh_vectors"]
+    frame = pd.read_parquet(table_path)
+    assert {"stand_id", "dbh", "weight"} <= set(frame.columns)
+
+
 def test_ingest_faib_command(tmp_path: Path) -> None:
     fixtures = Path("tests/fixtures/faib")
     output = tmp_path / "stand_table.csv"

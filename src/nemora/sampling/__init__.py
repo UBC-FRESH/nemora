@@ -13,6 +13,7 @@ from scipy import integrate
 from ..core import FitResult, MixtureFitResult
 from ..distributions import Pdf, get_distribution
 from ..fit.mixture import sample_mixture as fit_sample_mixture
+from .helpers import DBHBootstrap, bootstrap_dbh_vectors
 
 if TYPE_CHECKING:  # pragma: no cover
     import pandas as pd
@@ -23,7 +24,9 @@ _CDF_CACHE: dict[
 
 __all__ = [
     "BootstrapResult",
+    "DBHBootstrap",
     "SamplingConfig",
+    "bootstrap_dbh_vectors",
     "pdf_to_cdf",
     "sample_distribution",
     "sample_mixture_fit",

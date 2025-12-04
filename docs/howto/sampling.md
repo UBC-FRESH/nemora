@@ -126,12 +126,38 @@ Use the metadata when passing bootstrap outputs into synthesis or the simulation
   preview metadata from an existing stand table or emit JSON for automation.
 - **Simulation (`nemora.simulation`)** can persist the entire `BootstrapResult` (including RNG seed) to regenerate
   uncertainty studies or re-run Monte Carlo workflows deterministically.
-- **DBH helpers (planned)** will expose `nemora.sampling.helpers.bootstrap_dbh_vectors(...)`, producing per-stand DBH arrays + metadata suitable for synthesis/simulation. Until the helper lands, follow the manifest walkthrough in `docs/examples/faib_manifest_parquet.md` to assemble grouped DBH payloads manually.
+- **DBH helpers** use `nemora.sampling.helpers.bootstrap_dbh_vectors(...)` (or the CLI shown below) to produce per-stand DBH arrays + metadata suitable for synthesis/simulation. See `docs/examples/faib_manifest_parquet.md` for an end-to-end manifest walkthrough.
 - **Ingest + benchmarking notebooks** should write the stacked output to Parquet so future steps can
   slice by distribution, BAF, or inventory metadata without re-running the bootstrap sampling step.
 
 Downstream modules should rely on the metadata provided here rather than reconstructing provenance
 manually.
+
+## Export DBH vectors for synthesis
+
+Turn a `BootstrapResult` into per-resample DBH vectors (and an optional long-form table) via the helper:
+
+```python
+from nemora.sampling import bootstrap_dbh_vectors
+
+payload = bootstrap_dbh_vectors(result, stand_id="psp-stand-001")
+print(payload.dbh_vectors[0][:5])
+payload.frame.head()
+```
+
+The helper preserves metadata (`distribution`, `parameters`, `bins`, `tallies`, RNG seed) and annotates each row with the stand identifier plus the original tally-derived weights. When you prefer a no-code path, the CLI mirrors this workflow:
+
+```bash
+nemora sampling-export-bootstrap-dbh tests/fixtures/hps_psp_stand_table.csv \
+    --stand-id psp-stand-001 \
+    --output tmp/bootstrap_dbh.json \
+    --table-output tmp/bootstrap_dbh.parquet \
+    --resamples 3 \
+    --sample-size 25 \
+    --seed 2025
+```
+
+The JSON file captures per-resample DBH arrays and metadata, while the table export (Parquet or CSV) stores every `(resample, bin, dbh)` row for downstream analysis.
 
 ## Sampling directly from ingest-created manifests
 
