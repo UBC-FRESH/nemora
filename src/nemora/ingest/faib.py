@@ -433,7 +433,7 @@ def build_faib_dataset_source(
         f"{'psp' if normalized_dataset == 'psp' else 'non_psp'}/"
     )
     description = (
-        "BC FAIB ground sample extracts " "(PSP dataset)"
+        "BC FAIB ground sample extracts (PSP dataset)"
         if normalized_dataset == "psp"
         else "BC FAIB non-PSP ground sample extracts"
     )

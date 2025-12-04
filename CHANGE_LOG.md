@@ -221,3 +221,9 @@
 
 - Added optional numeric CDF caching (`SamplingConfig.cache_numeric_cdf`) so repeated sampling calls can reuse previously integrated grids; docs highlight the flag and tests verify the cache path.
 - `BootstrapResult` now offers `to_dataframe()` in addition to `stacked()`, making it easier for upcoming synthforest/simulation consumers to ingest metadata-rich bootstrap outputs.
+
+## 2025-11-09 — Nightly ingest benchmark summaries
+
+- Extended `.github/workflows/nightly-ingest.yml` so ingest benchmarks emit Markdown/Text summaries, publish them to the workflow step summary, attach the latest snapshot to failure issues, and enforce `INGEST_BENCHMARK_AVG_THRESHOLD=3.0s` before surfacing a runtime regression.
+- README, CONTRIBUTING, and `docs/examples/hps_benchmark.md` now explain how the automation works, how to read the summary artifacts locally, and how to reproduce the nightly FAIB/FIA workflow; the roadmap + modular reorg plan mark the telemetry tasks complete.
+- Tests / validation: `ruff format src tests`, `ruff check src tests`, `mypy src` (fails on existing typing errors in `src/nemora/dataprep/hps.py` and `src/nemora/ingest/{fia,faib}.py`), `pytest`, `sphinx-build -b html docs _build/html -W`, `pre-commit run --all-files`.

@@ -50,3 +50,12 @@ tail -n 1 logs/ingest_benchmark.jsonl
 
 Check the nightly GitHub Actions artifact (`ingest-benchmark-report`) if you need the latest trends
 without rerunning the benchmark locally.
+
+## Nightly automation
+
+The `Nightly Ingest Integration` workflow runs the benchmark every night, parses the JSONL output
+into Markdown/text summaries (`reports/ingest_benchmark_summary.md` / `.txt`), and enforces
+`INGEST_BENCHMARK_AVG_THRESHOLD=3.0` seconds for the average runtime. When the threshold is
+exceeded the job fails and the auto-created issue includes the summary table, making it easy to spot
+regressions without digging through raw logs. Download the artifact if you need the full JSONL +
+summary history for deeper analysis.

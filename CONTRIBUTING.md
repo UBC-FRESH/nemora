@@ -60,10 +60,28 @@ for contributing code, documentation, and examples.
   ```
 
 - The nightly `Nightly Ingest Integration` workflow runs the same command and uploads the resulting
-  JSONL artifact (`ingest-benchmark-report`). If your PR changes runtime materially, mention it in
-  the description and include the latest log line so maintainers can gauge the impact quickly.
+  JSONL artifact (`ingest-benchmark-report`) alongside Markdown/text summaries. If your PR changes
+  runtime materially, mention it in the description and include the latest log line so maintainers
+  can gauge the impact quickly.
 - Logs contain timestamped metrics (`average_seconds`, `fastest_seconds`, `tree_total`, etc.); feel
   free to ingest them into notebooks when diagnosing regressions.
+- The workflow enforces an environment-configurable threshold (`INGEST_BENCHMARK_AVG_THRESHOLD`;
+  defaults to 3.0 seconds). When the average runtime exceeds the threshold the job fails and the
+  auto-created issue includes the most recent summary so you can investigate quickly.
+
+## Nightly ingest workflow
+
+- To reproduce the nightly FAIB/FIA integration locally, run:
+
+  ```bash
+  NEMORA_RUN_FAIB_INTEGRATION=1 NEMORA_RUN_FIA_INTEGRATION=1 \
+    pytest tests/test_ingest_faib.py::test_build_faib_dataset_source_integration \
+           tests/test_ingest_faib.py::test_download_faib_csvs_integration \
+           tests/test_ingest_fia.py::test_download_fia_tables_integration
+  ```
+
+- Watch the repository (GitHub **Watch → All Activity**) so workflow failure issues (`nightly-ingest-
+  failure` label) reach your inbox; each issue also copies the benchmark summary logged by the job.
 
 ## Code Review Checklist
 

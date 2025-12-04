@@ -12,6 +12,8 @@ jobs:
     permissions:
       contents: read
       issues: write
+    env:
+      INGEST_BENCHMARK_AVG_THRESHOLD: "3.0"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -42,12 +44,84 @@ jobs:
           mkdir -p reports
           nemora ingest-benchmark data/external/faib --iterations 3 --report-path reports/ingest_benchmark.jsonl
         continue-on-error: true
+      - name: Summarize ingest benchmark
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          reports_dir = Path("reports")
+          reports_dir.mkdir(parents=True, exist_ok=True)
+          report_path = reports_dir / "ingest_benchmark.jsonl"
+          summary_md_path = reports_dir / "ingest_benchmark_summary.md"
+          summary_txt_path = reports_dir / "ingest_benchmark_summary.txt"
+          alert_flag = reports_dir / "benchmark_alert.flag"
+          threshold = float(os.environ.get("INGEST_BENCHMARK_AVG_THRESHOLD", "3.0"))
+
+          if not report_path.exists():
+              summary_txt_path.write_text(
+                  "Benchmark summary unavailable (report missing).",
+                  encoding="utf-8",
+              )
+              raise SystemExit(0)
+
+          records: list[dict[str, object]] = []
+          with report_path.open(encoding="utf-8") as handle:
+              for line in handle:
+                  line = line.strip()
+                  if line:
+                      records.append(json.loads(line))
+          if not records:
+              summary_txt_path.write_text(
+                  "Benchmark summary unavailable (report empty).",
+                  encoding="utf-8",
+              )
+              raise SystemExit(0)
+
+          latest = records[-1]
+          average = float(latest["average_seconds"])
+          summary_md = (
+              "| Iterations | Avg (s) | Fastest (s) | Slowest (s) | Tree Total | Plots |\n"
+              "| --- | --- | --- | --- | --- | --- |\n"
+              f"| {latest['iterations']} | {average:.3f} | "
+              f"{float(latest['fastest_seconds']):.3f} | "
+              f"{float(latest['slowest_seconds']):.3f} | "
+              f"{latest['tree_total']} | {latest['plots']} |\n"
+          )
+          summary_txt = (
+              f"{latest['timestamp']} UTC · avg {average:.3f}s "
+              f"(fastest {float(latest['fastest_seconds']):.3f}s, "
+              f"slowest {float(latest['slowest_seconds']):.3f}s, "
+              f"iterations {latest['iterations']}, "
+              f"tree_total {latest['tree_total']}, plots {latest['plots']})."
+          )
+          if average > threshold:
+              summary_txt += f" Threshold {threshold:.2f}s exceeded."
+              alert_flag.write_text("avg-exceeded", encoding="utf-8")
+
+          summary_md_path.write_text(summary_md, encoding="utf-8")
+          summary_txt_path.write_text(summary_txt, encoding="utf-8")
+          print(summary_md)
+          PY
+          if [ -f reports/ingest_benchmark_summary.md ]; then
+            {
+              echo "### Ingest Benchmark Summary"
+              cat reports/ingest_benchmark_summary.md
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Enforce benchmark threshold
+        if: always() && hashFiles('reports/benchmark_alert.flag') != ''
+        run: |
+          echo "::error::Ingest benchmark average runtime exceeded threshold ${INGEST_BENCHMARK_AVG_THRESHOLD}s."
+          exit 1
       - name: Upload ingest benchmark artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ingest-benchmark-report
-          path: reports/ingest_benchmark.jsonl
+          path: reports
           if-no-files-found: ignore
       - name: Create GitHub issue on failure
         if: failure()
@@ -64,13 +138,16 @@ jobs:
               --description "Nightly ingest workflow failure tracker" \
               || echo "Label $LABEL already exists or could not be created."
           fi
+          SUMMARY="$(cat reports/ingest_benchmark_summary.txt 2>/dev/null || echo "Benchmark summary unavailable.")"
+          EVENT_NAME="${{ github.event_name }}"
           TITLE="Nightly ingest integration failed (#${{ github.run_number }})"
-          BODY=$(cat <<'EOF'
+          BODY=$(cat <<EOF
           #### Nightly ingest integration workflow failed
 
           - Workflow: `Nightly Ingest Integration`
           - Run: $RUN_URL
-          - Trigger: `${{ github.event_name }}`
+          - Trigger: \`$EVENT_NAME\`
+          - Benchmark summary: $SUMMARY
 
           Please review the logs to determine whether upstream FAIB/FIA schemas changed or if the failure is transient.
           EOF

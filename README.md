@@ -57,7 +57,8 @@ Failures automatically open an issue labeled `nightly-ingest-failure`. To receiv
 2. In GitHub **Settings → Notifications**, ensure email alerts for *Issues* and *Actions workflow
    runs* are enabled.
 3. When an issue arrives, inspect the linked workflow logs to determine whether the failure is
-   transient or indicates upstream schema changes.
+   transient or indicates upstream schema changes. Each failure issue now includes the most recent
+   ingest-benchmark summary so you can spot runtime regressions without downloading artifacts.
 
 Re-run the workflow locally with:
 
@@ -69,8 +70,12 @@ NEMORA_RUN_FAIB_INTEGRATION=1 NEMORA_RUN_FIA_INTEGRATION=1 \
 ```
 
 The nightly workflow also runs `nemora ingest-benchmark --report-path` and uploads the JSONL report
-as an artifact so we can track ingest runtime trends over time. Use the same flag locally when
-profiling changes to append metrics to your own log.
+as an artifact so we can track ingest runtime trends over time. The workflow summarizes the latest
+record into `reports/ingest_benchmark_summary.{md,txt}`, publishes the Markdown table to the job
+summary, and enforces a default `INGEST_BENCHMARK_AVG_THRESHOLD=3.0` seconds for the average runtime.
+If the threshold is exceeded the workflow fails with a helpful error and flags the issue for follow
+up, so ingest regressions are surfaced automatically. Use the same flag locally when profiling
+changes to append metrics to your own log.
 
 ```bash
 # Append local telemetry (logs/ingest_benchmark.jsonl will grow over time)
@@ -79,6 +84,19 @@ nemora ingest-benchmark data/external/faib --no-fetch --iterations 3 \
 
 tail -n 1 logs/ingest_benchmark.jsonl
 {"timestamp": "...", "iterations": 3, "average_seconds": 1.82, ...}
+
+# Render a Markdown summary identical to the nightly report
+python - <<'PY'
+import json
+from pathlib import Path
+records = [json.loads(line) for line in Path("logs/ingest_benchmark.jsonl").read_text().splitlines() if line]
+latest = records[-1]
+print(f"| Iterations | Avg (s) | Fastest (s) | Slowest (s) | Tree Total | Plots |\n"
+      f"| --- | --- | --- | --- | --- | --- |\n"
+      f"| {latest['iterations']} | {latest['average_seconds']:.3f} | "
+      f"{latest['fastest_seconds']:.3f} | {latest['slowest_seconds']:.3f} | "
+      f"{latest['tree_total']} | {latest['plots']} |")
+PY
 ```
 
 Include the latest JSON line in your PR notes whenever you touch ingest

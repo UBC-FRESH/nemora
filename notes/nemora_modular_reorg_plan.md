@@ -110,15 +110,15 @@ src/nemora/
 1. [x] Consolidate distribution metadata (bounds/defaults/extras) into `nemora.distributions`, add registry helper docs/tests, and align top-level roadmap tasks with the new coverage.
 2. [x] Extend the sampling roadmap: wire `BootstrapResult` outputs into synthforest/simulations and document CLI usage for the new integration controls (bootstrap payload helper + docs captured in `docs/howto/synthforest.md`).
    - [x] Document how ingest-generated Parquet manifests feed sampling flows, including numeric integration tuning (`docs/examples/faib_manifest_parquet.md`, `docs/howto/sampling.md`).
-3. [ ] Capture ingest benchmarking metrics (from `nemora ingest-benchmark` and nightly runs), decide how to surface trends, and document the workflow in README/CONTRIBUTING for ongoing monitoring.
+3. [x] Capture ingest benchmarking metrics (from `nemora ingest-benchmark` and nightly runs), decide how to surface trends, and document the workflow in README/CONTRIBUTING for ongoing monitoring. *(Nightly workflow summaries + threshold enforcement now publish tables to the job summary and failure issues; README/CONTRIBUTING explain how to rerun locally and interpret the data.)*
 4. [x] Build registry inspection tooling:
    - [x] Expose a Python helper (`list_registry_metadata`) that returns each distribution’s bounds/defaults/extras for downstream modules/tests.
    - [x] Add a `nemora registry --describe/--show-metadata/--json` CLI path that prints the helper output so contributors can audit plugin registrations.
    - [x] Extend `tests/test_registry.py` (and CLI smoke tests) to cover the helper/CLI plus plugin edge cases; ensure failures remain descriptive.
    - [x] Update docs/README to explain how to inspect the registry (linking to the helper, CLI command, and YAML/entry-point sections).
-5. [ ] Automate ingest benchmark telemetry collection:
-   - [ ] Wire the `ingest-benchmark --report-path` JSONL output into the nightly workflow (persist as artifact + attach issue snippet on failure).
-   - [ ] Summarise rolling metrics in docs/CHANGE_LOG so trend shifts are visible, and define alert thresholds for future automation.
+5. [x] Automate ingest benchmark telemetry collection:
+   - [x] Wire the `ingest-benchmark --report-path` JSONL output into the nightly workflow (persist as artifact + attach issue snippet on failure).
+   - [x] Summarise rolling metrics in docs/CHANGE_LOG so trend shifts are visible, and define alert thresholds for future automation. *(Summary Markdown/text artifacts land under `reports/`, `INGEST_BENCHMARK_AVG_THRESHOLD` enforces a 3.0s ceiling, and README/CONTRIBUTING/docs capture the behavior.)*
 6. [x] Expose synthforest bootstrap consumption through the CLI/tests once helpers stabilize (e.g., `nemora sampling describe-bootstrap`), then document the workflow in README + notes.
    - [x] Prototype a Typer subcommand that loads a stand table (CSV/Parquet), auto-fits or parses parameters, and renders the metadata via `nemora.synthforest.helpers`.
    - [x] Add pytest coverage for the CLI + helper plumbing (unit + CLI smoke test).
