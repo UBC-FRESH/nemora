@@ -1,0 +1,52 @@
+# Synthforest Bootstrap Integration (Planning)
+
+Nemora’s upcoming `synthforest` module will consume bootstrap samples produced by
+`nemora.sampling.bootstrap_inventory`. This page sketches how `BootstrapResult` feeds stem/stand
+generators so downstream modules can align on a common contract. The helper utilities now live in
+`nemora.synthforest.helpers` so downstream consumers do not need to duplicate schema wrangling.
+
+## Expected input shape
+
+```python
+from nemora.sampling import BootstrapResult, bootstrap_inventory
+from nemora.synthforest.helpers import bootstrap_to_dataframe
+
+result: BootstrapResult = bootstrap_inventory(..., return_result=True)
+frame = bootstrap_to_dataframe(result)
+frame.attrs["nemora_bootstrap"]  # metadata dict (distribution, parameters, bins, tallies, etc.)
+```
+
+Synthforest can read either the stacked array (`result.stacked()`) or the richer DataFrame (with
+attached metadata). Each bootstrap sample preserves:
+
+- `distribution`, `parameters`: provenance of the fitted distribution.
+- `bins`, `tallies`: original stand-table inputs (useful for diagnostics).
+- `resample`, `bin`, `draw`: per-stem data powering stem generation.
+
+Stand/stem generators should persist the metadata (e.g., attach `distribution`/`parameters` to the
+output manifests) so simulations can trace provenance.
+
+## Helper module (`nemora.synthforest.helpers`)
+
+Nemora exposes helper utilities that convert bootstrap results into synthforest-ready payloads:
+
+```python
+from nemora.synthforest.helpers import bootstrap_payload
+
+payload = bootstrap_payload(result)
+frame = payload.frame          # pandas.DataFrame with resample/bin/draw columns
+stacked = payload.stacked      # numpy.ndarray view of all sampled (bin, draw) pairs
+metadata = payload.metadata    # dict: distribution, parameters, bins, tallies, etc.
+```
+
+Upcoming synthforest APIs (`generate_stems_from_bootstrap`, `build_stand_attributes`) accept the
+`BootstrapPayload` so they can group by `resample` and persist provenance alongside generated stems.
+
+## Next steps
+
+- Flesh out synthforest stubs (`generate_stems_from_bootstrap` etc.) to consume the helper.
+- Extend simulations planning notes so inventory simulators can ingest the same DataFrame.
+- Wire automated docs/examples once synthforest code lands.
+
+For now, keep this contract in mind when scripting bootstrap-driven workflows so future synthforest
+components integrate cleanly.

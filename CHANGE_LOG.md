@@ -199,6 +199,13 @@
 - Updated the roadmap and modular reorg plan to mark the registry CLI tasks complete and queue the next deliverables (sampling adoption + ingest benchmark telemetry automation).
 - Documented `ingest-benchmark --report-path` usage in the ingest how-to and captured the plan to persist JSONL metrics via the nightly workflow / CHANGE_LOG trend summaries.
 
+## 2025-11-08 — Synthforest bootstrap helper & docs
+
+- Added `nemora.synthforest.helpers` with `bootstrap_to_dataframe` and `bootstrap_payload` so synthforest consumers can access bootstrap samples, stacked arrays, and provenance metadata via a single helper; exported the package under `nemora.synthforest`.
+- Expanded sampling docs and the new synthforest how-to with helper usage examples, plus an API reference page and toctree links so Sphinx builds now surface the module; refreshed the README module status table accordingly.
+- Recorded the work in ROADMAP detailed notes, the modular reorg plan, and the sampling module plan so the planning artifacts mark the helper task complete and queue the upcoming CLI/consumer wiring.
+- Added regression coverage for the helper module to ensure DataFrame metadata/stacked payloads remain stable.
+
 ## 2025-11-08 — Sampling cache & bootstrap helpers
 
 - Added optional numeric CDF caching (`SamplingConfig.cache_numeric_cdf`) so repeated sampling calls can reuse previously integrated grids; docs highlight the flag and tests verify the cache path.

@@ -33,10 +33,10 @@ still fluid—expect rapid iteration and watch the changelog.
 | ------------------- | ------------------------------------------------------------------------------ |
 | `core`              | ✅ Bootstrapped. Hosts shared dataclasses and compatibility shims.             |
 | `distributions`     | ✅ Central registry connected to `distfit`, `sampling`, and future modules.    |
-| `distfit`           | 🚧 Targeting alpha; grouped EM, mixtures, CLI wiring migrated here.            |
-| `sampling`          | 📝 Planned. Will consume registry + distfit outputs after alpha ships.         |
-| `ingest`            | 📝 Planned. Will supersede current helper scripts—design in progress.          |
-| `synthforest`       | 📝 Planned. Synthetic landscape and stem generation to follow sampling module. |
+| `distfit`           | ✅ Alpha surface live (grouped EM, mixtures, CLI).                             |
+| `sampling`          | 🚧 Bootstrap + numeric inversion utilities landed; downstream adoption next.  |
+| `ingest`            | 🚧 FAIB/FIA/HPS pipelines + CLI shipped; benchmarking + telemetry ongoing.    |
+| `synthforest`       | 📝 Bootstrap payload helper published; stem/stand generators in planning.     |
 | `simulations`       | 📝 Planned. Builds on synthforest; design sketches in roadmap.                 |
 
 See [`notes/nemora_modular_reorg_plan.md`](notes/nemora_modular_reorg_plan.md) for the detailed

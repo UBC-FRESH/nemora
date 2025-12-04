@@ -117,8 +117,9 @@ Use the metadata when passing bootstrap outputs into synthforest or simulations.
 ## Using bootstrap outputs downstream
 
 - **Synthforest** expects paired `(bin, draw)` arrays plus the originating fit metadata so stem or
-  stand generators can report provenance. `BootstrapResult.stacked()` produces the 2-column arrays
-  synthforest will ingest directly.
+  stand generators can report provenance. Use
+  `nemora.synthforest.helpers.bootstrap_payload(result)` to obtain both the stacked array and a
+  `pandas.DataFrame` with metadata attached in `frame.attrs["nemora_bootstrap"]`.
 - **Simulations** can persist the entire `BootstrapResult` (including RNG seed) to regenerate
   uncertainty studies or re-run Monte Carlo workflows deterministically.
 - **Ingest + benchmarking notebooks** should write the stacked output to Parquet so future steps can

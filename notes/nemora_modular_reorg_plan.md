@@ -108,7 +108,7 @@ src/nemora/
 ## Next Steps
 
 1. [x] Consolidate distribution metadata (bounds/defaults/extras) into `nemora.distributions`, add registry helper docs/tests, and align top-level roadmap tasks with the new coverage.
-2. [ ] Extend the sampling roadmap: wire `BootstrapResult` outputs into synthforest/simulations and document CLI usage for the new integration controls (accuracy tests + numeric CDF caching landed; next focus is downstream consumers).
+2. [x] Extend the sampling roadmap: wire `BootstrapResult` outputs into synthforest/simulations and document CLI usage for the new integration controls (bootstrap payload helper + docs captured in `docs/howto/synthforest.md`).
 3. [ ] Capture ingest benchmarking metrics (from `nemora ingest-benchmark` and nightly runs), decide how to surface trends, and document the workflow in README/CONTRIBUTING for ongoing monitoring.
 4. [x] Build registry inspection tooling:
    - [x] Expose a Python helper (`list_registry_metadata`) that returns each distribution’s bounds/defaults/extras for downstream modules/tests.
@@ -118,3 +118,4 @@ src/nemora/
 5. [ ] Automate ingest benchmark telemetry collection:
    - [ ] Wire the `ingest-benchmark --report-path` JSONL output into the nightly workflow (persist as artifact + attach issue snippet on failure).
    - [ ] Summarise rolling metrics in docs/CHANGE_LOG so trend shifts are visible, and define alert thresholds for future automation.
+6. [ ] Expose synthforest bootstrap consumption through the CLI/tests once helpers stabilize (e.g., `nemora sampling describe-bootstrap`), then document the workflow in README + notes.
