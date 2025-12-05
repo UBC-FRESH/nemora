@@ -1618,7 +1618,8 @@ def synthesis_assign_stands_cli(  # noqa: B008
         console.print(f"[red]Failed to read stand attributes:[/red] {exc}")
         raise typer.Exit(code=1) from exc
 
-    valid_polygon_count = sum(1 for poly in polygons if poly.size > 0)
+    valid_polygons = [poly for poly in polygons if poly.size > 0]
+    valid_polygon_count = len(valid_polygons)
     if not valid_polygon_count or not samples:
         console.print("[red]No polygons or stand samples available for assignment.[/red]")
         raise typer.Exit(code=1)
@@ -1629,12 +1630,18 @@ def synthesis_assign_stands_cli(  # noqa: B008
         )
         raise typer.Exit(code=1)
 
-    features = stands.build_stand_features(polygons, samples)
-    if not features:
-        console.print("[red]Failed to build stand features from the provided inputs.[/red]")
-        raise typer.Exit(code=1)
-    exporters.export_geojson(features, output, crs=crs)
-    assigned = len(features)
+    try:
+        assigned = exporters.export_stand_geojson_from_polygons(
+            valid_polygons,
+            samples,
+            output,
+            crs=crs,
+            strict=strict,
+            expected_count=min(valid_polygon_count, len(samples)),
+        )
+    except Exception as exc:  # noqa: BLE001
+        console.print(f"[red]Failed to build stand GeoJSON:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
     if assigned < len(samples):
         console.print(
             "[yellow]Warning:[/yellow] unused samples "

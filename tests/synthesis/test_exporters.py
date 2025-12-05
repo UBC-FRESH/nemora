@@ -6,7 +6,7 @@ from typing import cast
 
 import numpy as np
 
-from nemora.synthesis import exporters, tessellation
+from nemora.synthesis import exporters, stands, tessellation
 
 
 def test_export_metadata_json(tmp_path: Path) -> None:
@@ -77,3 +77,19 @@ def test_seed_recipe_payload_can_include_polygons(tmp_path: Path) -> None:
     polygons = cast(list[list[list[float]]], payload["polygons"])
     assert len(polygons) == 3
     assert isinstance(polygons[0][0][0], float)
+
+
+def test_export_stand_geojson_from_polygons(tmp_path: Path) -> None:
+    polygons = [
+        np.array([[0.0, 0.0], [0.2, 0.0], [0.2, 0.2], [0.0, 0.2]], dtype=float),
+        np.array([[0.5, 0.5], [0.7, 0.5], [0.6, 0.7]], dtype=float),
+    ]
+    samples = [
+        stands.StandAttributeSample("fir", "20-40", 3.0),
+        stands.StandAttributeSample("pine", "40-60", 2.0),
+    ]
+    path = tmp_path / "stands.geojson"
+    assigned = exporters.export_stand_geojson_from_polygons(polygons, samples, path)
+    assert assigned == 2
+    payload = json.loads(path.read_text())
+    assert payload["type"] == "FeatureCollection"

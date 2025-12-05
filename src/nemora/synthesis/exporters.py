@@ -3,11 +3,16 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Iterable, Mapping, MutableMapping
+from collections.abc import Iterable, Mapping, MutableMapping, Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+import numpy as np
+
+from . import stands
+
 if TYPE_CHECKING:
+    from .stands import StandAttributeSample
     from .tessellation import VoronoiSeedConfig, VoronoiSeedResult
 
 __all__ = [
@@ -15,6 +20,7 @@ __all__ = [
     "export_metadata_json",
     "export_seed_recipe",
     "seed_recipe_payload",
+    "export_stand_geojson_from_polygons",
 ]
 
 
@@ -83,6 +89,51 @@ def export_seed_recipe(
     )
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
+def export_stand_geojson_from_polygons(
+    polygons: Sequence[np.ndarray],
+    samples: Sequence[StandAttributeSample],
+    path: Path,
+    *,
+    crs: str | None = None,
+    strict: bool = False,
+    expected_count: int | None = None,
+) -> int:
+    """Export a GeoJSON pairing polygons and stand samples.
+
+    Parameters
+    ----------
+    polygons:
+        Iterable of polygon arrays (already filtered to remove empty polygons).
+    samples:
+        Stand attribute samples produced by `sample_stand_attributes`.
+    path:
+        Output GeoJSON file path.
+    crs:
+        Optional CRS identifier stored in the GeoJSON metadata.
+    strict:
+        When True, require the generated feature count to match ``expected_count`` (or the min of
+        polygons/samples when the expectation is omitted). A mismatch raises ``ValueError``.
+    expected_count:
+        Optional explicit expected feature count for strict mode.
+    """
+
+    features = stands.build_stand_features(polygons, samples)
+    assigned = len(features)
+    if not features:
+        raise ValueError("No stand features could be built from the provided inputs.")
+    if strict:
+        expected = (
+            expected_count if expected_count is not None else min(len(polygons), len(samples))
+        )
+        if assigned != expected:
+            raise ValueError(
+                "Strict assignment requires a 1:1 mapping between polygons and samples "
+                f"(expected {expected}, assigned {assigned})."
+            )
+    export_geojson(features, path, crs=crs)
+    return assigned
 
 
 def _config_payload(config: VoronoiSeedConfig) -> dict[str, Any]:

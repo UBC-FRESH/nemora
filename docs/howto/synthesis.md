@@ -351,7 +351,7 @@ nemora synthesis-sample-attributes \
     --output artifacts/stands_sampled.json
 ```
 
-3. Assign the samples to polygons and emit GeoJSON:
+3. Assign the samples to polygons and emit GeoJSON (`export_stand_geojson_from_polygons` powers this CLI):
 
 ```bash
 nemora synthesis-assign-stands \
@@ -364,6 +364,10 @@ Use `--strict-count` when you expect the number of non-empty polygons to match t
 exactly; otherwise, the command truncates whichever list is longer and prints a warning. The output
 GeoJSON stores both the sampled template area and the actual polygon area so downstream workflows
 can reconcile differences.
+
+Behind the scenes the CLI calls `nemora.synthesis.exporters.export_stand_geojson_from_polygons`,
+which you can also import directly if you want to stitch polygons + samples inside a notebook or
+custom workflow.
 
 ## Helper module (`nemora.synthesis.helpers`)
 
