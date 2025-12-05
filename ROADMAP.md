@@ -35,9 +35,9 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 - `nemora.synthesis`
   - [x] Phase 0 research + scaffolding (CJFR/rlandscape + FLG requirements, module/tests/docs landing zones).
   - [x] Phase 1 kickoff: deterministic seed generator covering all four point processes plus CJFR hole/merge editing with exporter-friendly metadata.
-  - [x] Phase 1 continuation: Voronoi clipping + target metric reporting (n, CV, μ_d, σ_d) wired into exporters/CLI, including optional convex GeoJSON masks; raster-based physiographic modifiers remain queued.
-  - [x] Phase 1 deterministic layouts: hex-packed grids and imported point sets exposed via `SeedLayoutConfig` and the `synthesis-generate-seeds` CLI (`--layout hex|imported`).
-  - [ ] Implement stand attribute sampling, stem population generation.
+  - [x] Phase 1 continuation: Voronoi clipping + target metric reporting (n, CV, μ_d, σ_d) wired into exporters/CLI, including convex GeoJSON masks, multi-mask overlays, and raster keep/exclude modifiers.
+  - [x] Phase 1 deterministic layouts: hex-packed grids, imported point sets, and GeoJSON centroid placement exposed via `SeedLayoutConfig` and the CLI (`--layout hex|imported|geojson`).
+  - [ ] Implement stand attribute sampling, stem population generation (initial template sampler landed; DBH integration still pending).
   - [ ] Provide export & visualisation helpers (GeoJSON, rasters).
 - `nemora.simulation`
   - [ ] Create interfaces for plot-based and remote-sensing simulations.
@@ -80,8 +80,9 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 5. **Synthesis Phase 1 — tessellation prototype**
    - [x] Upgrade `tessellation.generate_seed_points` so it produces a `VoronoiSeedResult` with process-mix counts plus CJFR hole/merge bookkeeping, wired into docs/tests.
    - [x] Persist the metadata via exporters + CLI plumbing so seed recipes become first-class artifacts.
-  - [x] Extend Phase 1 with Voronoi clipping + target metric reporting (`n`, `CV`, `μ_d`, `σ_d`) benchmarked against CJFR/rlandscape fixtures and add deterministic layout controls (hex grids + imported points) to both the API and CLI.
-  - [ ] Layer in physiographic modifiers (raster-informed masks, multi-mask combos) once the deterministic layout plumbing stabilises.
+  - [x] Extend Phase 1 with Voronoi clipping + target metric reporting (`n`, `CV`, `μ_d`, `σ_d`) benchmarked against CJFR/rlandscape fixtures and add deterministic layout controls (hex grids + imported/geojson points) to both the API and CLI.
+  - [x] Layer in physiographic modifiers (raster-informed masks, multi-mask combos) once the deterministic layout plumbing stabilises.
+  - [x] Bootstrap stand attribute sampling scaffolding (template loader + stochastic sampler); integrate with ingest-fed manifests next.
 
 ## Backlog & Ideas
 - [ ] Investigate GPU acceleration for large tally batches.

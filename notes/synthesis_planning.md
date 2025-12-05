@@ -43,9 +43,15 @@ Also have a look at the FLG project documentation under `reference-papers/flg`. 
       and `--layout imported --layout-points path/to/points.csv|json`.
     - Imported layouts require coordinates inside the unit box so Voronoi clipping remains stable;
       metadata records the layout type/source for downstream recipes/tests.
+    - Added `--layout geojson` support so polygon centroids can seed deterministic layouts directly
+      from GeoJSON feature collections.
   - [x] Boundary clipping + min/max polygon size constraints (CJFR metrics tracked via Voronoi polygons); convex GeoJSON mask clipping plumbs through CLI/exporters (physiographic rasters remain TODO).
-  - [ ] Optional slope/elevation raster support for physiographic modifiers.
+  - [x] Optional slope/elevation raster support for physiographic modifiers.
+    - Multiple vector overlays supported via repeatable `--mask-geojson`/`--mask-mode` pairs
+      (clip/exclude), plus raster-based keep/exclude grids with threshold controls.
 - [ ] Attach stand-level attributes (species mix, age class, site index, crown closure) using probability surfaces or user-specified distributions; expose hooks for ingesting real inventory summaries.
+  - [x] Initial scaffolding: `sample_stand_attributes` consumes templates (JSON or iterable records)
+    and fills a requested area with vegetation/age-class assignments for downstream DBH sampling.
 - [ ] Write regression tests comparing polygon statistics vs. Rlandscape reference runs (small seeds stored under `tests/fixtures/synthesis`).
 
 ### Phase 2 — Stand tree-list synthesis
