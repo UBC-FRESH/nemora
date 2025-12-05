@@ -144,5 +144,5 @@ src/nemora/
    - [x] Provide CLI/exporters (`synthesis-sample-attributes`, `synthesis-assign-stands`, GeoJSON helpers) so Voronoi polygons + attributes can be emitted as ready-to-plot artifacts.
 10. [ ] Synthesis Phase 2 — bootstrap integration
     - [x] Ship the stand→bootstrap manifest helper + CLI (`synthesis-link-bootstraps`), including plan parser, manifest writer, docs, and regression coverage.
-    - [ ] Thread the manifest into `synthesis-assign-stands`/exporters so polygons carry `bootstrap_id`/metadata for downstream tree generation.
+    - [x] Thread the manifest into `synthesis-assign-stands`/exporters so polygons carry `stand_id`/`bootstrap_id` plus metadata for downstream tree generation.
     - [ ] Add the analytic-mode pathway (parameter-based payloads) and document the end-to-end workflow (seed recipe → stand templates → bootstrap manifest → tree synthesis).

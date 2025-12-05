@@ -11,7 +11,7 @@ import numbers
 import statistics
 import subprocess
 import time
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, cast
@@ -494,6 +494,17 @@ STAND_BOOTSTRAP_PLAN_OPTION = typer.Option(
     "--plan",
     "-p",
     help="JSON file describing stand→bootstrap rules (see docs/howto/synthesis.md).",
+    exists=True,
+    file_okay=True,
+    dir_okay=False,
+    readable=True,
+    show_default=False,
+)
+
+STAND_BOOTSTRAP_MANIFEST_OPTION = typer.Option(
+    None,
+    "--bootstrap-manifest",
+    help="Optional stand→bootstrap manifest JSON produced by synthesis-link-bootstraps.",
     exists=True,
     file_okay=True,
     dir_okay=False,
@@ -1604,6 +1615,7 @@ def synthesis_assign_stands_cli(  # noqa: B008
     seed_recipe_path: Path = SEED_RECIPE_INPUT_OPTION,
     attributes_path: Path = STAND_ATTRIBUTES_INPUT_OPTION,
     output: Path = STAND_GEOJSON_OUTPUT_OPTION,
+    bootstrap_manifest_path: Path | None = STAND_BOOTSTRAP_MANIFEST_OPTION,
     crs: str | None = typer.Option(
         None,
         "--crs",
@@ -1657,6 +1669,24 @@ def synthesis_assign_stands_cli(  # noqa: B008
         )
         raise typer.Exit(code=1)
 
+    manifest_assignments: Sequence[stands.StandBootstrapAssignment] | None = None
+    bootstrap_library: Mapping[str, stands.StandBootstrapLibraryEntry] | None = None
+    if bootstrap_manifest_path is not None:
+        try:
+            manifest = stands.load_bootstrap_manifest(bootstrap_manifest_path)
+        except Exception as exc:  # noqa: BLE001
+            console.print(f"[red]Failed to read bootstrap manifest:[/red] {exc}")
+            raise typer.Exit(code=1) from exc
+        manifest_assignments = manifest.assignments
+        bootstrap_library = manifest.bootstraps
+        expected = min(valid_polygon_count, len(samples))
+        if len(manifest_assignments) < expected:
+            console.print(
+                "[red]Bootstrap manifest provides fewer assignments than required[/red] "
+                f"(assignments={len(manifest_assignments)}, required={expected})."
+            )
+            raise typer.Exit(code=1)
+
     try:
         assigned = exporters.export_stand_geojson_from_polygons(
             valid_polygons,
@@ -1665,6 +1695,8 @@ def synthesis_assign_stands_cli(  # noqa: B008
             crs=crs,
             strict=strict,
             expected_count=min(valid_polygon_count, len(samples)),
+            assignments=manifest_assignments,
+            bootstrap_library=bootstrap_library,
         )
     except Exception as exc:  # noqa: BLE001
         console.print(f"[red]Failed to build stand GeoJSON:[/red] {exc}")

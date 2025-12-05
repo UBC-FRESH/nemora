@@ -99,6 +99,8 @@ def export_stand_geojson_from_polygons(
     crs: str | None = None,
     strict: bool = False,
     expected_count: int | None = None,
+    assignments: Sequence[stands.StandBootstrapAssignment] | None = None,
+    bootstrap_library: Mapping[str, stands.StandBootstrapLibraryEntry] | None = None,
 ) -> int:
     """Export a GeoJSON pairing polygons and stand samples.
 
@@ -119,7 +121,12 @@ def export_stand_geojson_from_polygons(
         Optional explicit expected feature count for strict mode.
     """
 
-    features = stands.build_stand_features(polygons, samples)
+    features = stands.build_stand_features(
+        polygons,
+        samples,
+        assignments=assignments,
+        bootstrap_library=bootstrap_library,
+    )
     assigned = len(features)
     if not features:
         raise ValueError("No stand features could be built from the provided inputs.")

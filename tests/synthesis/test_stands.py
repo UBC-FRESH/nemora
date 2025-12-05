@@ -123,3 +123,51 @@ def test_load_bootstrap_plan_and_assignments(tmp_path: Path) -> None:
     fir_payload = library[assignments[0].bootstrap_id]
     assert fir_payload.metadata["distribution"] == "weibull"
     assert "0" in fir_payload.dbh_vectors
+
+
+def test_build_stand_features_includes_bootstrap_metadata(tmp_path: Path) -> None:
+    polygons = [
+        np.array([[0.0, 0.0], [0.3, 0.0], [0.3, 0.3], [0.0, 0.3]], dtype=float),
+    ]
+    samples = [
+        stands.StandAttributeSample("fir", "60-80", 3.0),
+    ]
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "attributes_source": "attributes.json",
+                "plan_source": "plan.json",
+                "bootstraps": {
+                    "fir-old": {
+                        "source": "bootstrap_a.json",
+                        "metadata": {"distribution": "weibull", "parameters": {"shape": 2.1}},
+                        "dbh_vectors": {"0": [10.0, 12.0]},
+                    }
+                },
+                "assignments": [
+                    {
+                        "stand_id": "stand-0001",
+                        "vegetation_type": "fir",
+                        "age_class": "60-80",
+                        "area": 3.0,
+                        "bootstrap_id": "fir-old",
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    manifest = stands.load_bootstrap_manifest(manifest_path)
+    features = stands.build_stand_features(
+        polygons,
+        samples,
+        assignments=manifest.assignments,
+        bootstrap_library=manifest.bootstraps,
+    )
+    props = cast(dict[str, object], features[0]["properties"])
+    assert props["stand_id"] == "stand-0001"
+    assert props["bootstrap_id"] == "fir-old"
+    bootstrap_meta = cast(dict[str, object], props["bootstrap_metadata"])
+    assert bootstrap_meta["distribution"] == "weibull"
+    assert cast(dict[str, object], bootstrap_meta["parameters"])["shape"] == 2.1

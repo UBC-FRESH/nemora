@@ -85,7 +85,7 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
   - [x] Bootstrap stand attribute sampling scaffolding (template loader + stochastic sampler); integrate with ingest-fed manifests next.
 6. **Synthesis Phase 2 — stand bootstrap linking**
    - [x] Ship the stand→bootstrap manifest helper + CLI so sampled attributes can reference DBH payloads exported via `sampling-export-bootstrap-dbh` (plan parser, manifest writer, docs/tests).
-   - [ ] Thread the manifest into polygon exporters/GeoJSON so each stand feature carries a `bootstrap_id` and metadata preview for downstream tree generation.
+   - [x] Thread the manifest into polygon exporters/GeoJSON so each stand feature carries a `stand_id`, `bootstrap_id`, and metadata preview for downstream tree generation.
    - [ ] Outline the analytic (parameter-driven) pathway alongside bootstrap payloads and document the end-to-end workflow (seed recipe → stand templates → bootstrap manifest → tree synthesis) in `docs/howto/synthesis.md`.
 
 ## Backlog & Ideas

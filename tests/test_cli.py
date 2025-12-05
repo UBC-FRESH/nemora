@@ -617,6 +617,100 @@ def test_synthesis_link_bootstraps_cli(tmp_path: Path) -> None:
     assert payload["assignments"][0]["stand_id"].startswith("plot-")
 
 
+def test_synthesis_assign_stands_with_bootstrap_manifest(tmp_path: Path) -> None:
+    cfg = tessellation.VoronoiSeedConfig(
+        count=2,
+        rng=np.random.default_rng(22),
+    )
+    seed_result = tessellation.generate_seed_points(cfg)
+    recipe_path = tmp_path / "recipe.json"
+    exporters.export_seed_recipe(
+        seed_result,
+        recipe_path,
+        include_points=False,
+        include_polygons=True,
+    )
+    attributes_path = tmp_path / "attributes.json"
+    attributes = [
+        {"vegetation_type": "fir", "age_class": "60-80", "area": 3.2},
+        {"vegetation_type": "pine", "age_class": "20-40", "area": 2.7},
+    ]
+    attributes_path.write_text(json.dumps(attributes), encoding="utf-8")
+    bootstrap_a = tmp_path / "bootstrap_a.json"
+    bootstrap_a.write_text(
+        json.dumps(
+            {
+                "metadata": {"distribution": "weibull", "resamples": 2},
+                "dbh_vectors": {"0": [12.0, 13.0], "1": [11.0]},
+            }
+        ),
+        encoding="utf-8",
+    )
+    bootstrap_b = tmp_path / "bootstrap_b.json"
+    bootstrap_b.write_text(
+        json.dumps(
+            {
+                "metadata": {"distribution": "lognormal", "resamples": 1},
+                "dbh_vectors": {"0": [9.0]},
+            }
+        ),
+        encoding="utf-8",
+    )
+    plan_path = tmp_path / "plan.json"
+    plan_path.write_text(
+        json.dumps(
+            {
+                "rules": [
+                    {
+                        "name": "fir-old",
+                        "vegetation_type": "fir",
+                        "bootstrap": bootstrap_a.name,
+                    }
+                ],
+                "default_bootstrap": bootstrap_b.name,
+            }
+        ),
+        encoding="utf-8",
+    )
+    manifest_path = tmp_path / "stand_bootstrap_manifest.json"
+    link_result = runner.invoke(
+        app,
+        [
+            "synthesis-link-bootstraps",
+            "--attributes",
+            str(attributes_path),
+            "--plan",
+            str(plan_path),
+            "--output",
+            str(manifest_path),
+            "--id-prefix",
+            "stand",
+        ],
+    )
+    assert link_result.exit_code == 0
+
+    output = tmp_path / "stands.geojson"
+    assign_result = runner.invoke(
+        app,
+        [
+            "synthesis-assign-stands",
+            "--seed-recipe",
+            str(recipe_path),
+            "--attributes",
+            str(attributes_path),
+            "--bootstrap-manifest",
+            str(manifest_path),
+            "--output",
+            str(output),
+        ],
+    )
+    assert assign_result.exit_code == 0
+    payload = json.loads(output.read_text())
+    feature_props = cast(dict[str, object], payload["features"][0]["properties"])
+    assert feature_props["stand_id"] == "stand-0001"
+    assert feature_props["bootstrap_id"] in {"fir-old", "default"}
+
+
 def test_ingest_faib_command(tmp_path: Path) -> None:
     fixtures = Path("tests/fixtures/faib")
     output = tmp_path / "stand_table.csv"

@@ -15,11 +15,13 @@ __all__ = [
     "StandAttributeSample",
     "StandBootstrapAssignment",
     "StandBootstrapLibraryEntry",
+    "StandBootstrapManifest",
     "StandBootstrapPlan",
     "StandBootstrapRule",
     "build_bootstrap_assignments",
     "build_stand_features",
     "build_templates",
+    "load_bootstrap_manifest",
     "load_bootstrap_plan",
     "load_samples_from_json",
     "load_templates_from_json",
@@ -192,6 +194,9 @@ def load_samples_from_json(path: Path) -> list[StandAttributeSample]:
 def build_stand_features(
     polygons: Sequence[np.ndarray],
     samples: Sequence[StandAttributeSample],
+    *,
+    assignments: Sequence[StandBootstrapAssignment] | None = None,
+    bootstrap_library: Mapping[str, StandBootstrapLibraryEntry] | None = None,
 ) -> list[dict[str, object]]:
     """Pair Voronoi polygons with sampled attributes and return GeoJSON features."""
 
@@ -199,11 +204,17 @@ def build_stand_features(
     if not valid_polygons or not samples:
         return []
     count = min(len(valid_polygons), len(samples))
+    if assignments is not None and len(assignments) < count:
+        raise ValueError("Not enough bootstrap assignments to match the available stand samples.")
     features: list[dict[str, object]] = []
     for idx in range(count):
         polygon = valid_polygons[idx]
         sample = samples[idx]
         area = _polygon_area(polygon)
+        assignment = assignments[idx] if assignments is not None else None
+        entry = None
+        if assignment is not None and bootstrap_library is not None:
+            entry = bootstrap_library.get(assignment.bootstrap_id)
         features.append(
             {
                 "type": "Feature",
@@ -212,6 +223,15 @@ def build_stand_features(
                     "age_class": sample.age_class,
                     "area_template": sample.area,
                     "polygon_area": area,
+                    **(
+                        {
+                            "stand_id": assignment.stand_id,
+                            "bootstrap_id": assignment.bootstrap_id,
+                            "bootstrap_metadata": _bootstrap_feature_metadata(entry),
+                        }
+                        if assignment is not None
+                        else {}
+                    ),
                 },
                 "geometry": {
                     "type": "Polygon",
@@ -228,6 +248,24 @@ def _polygon_area(polygon: np.ndarray) -> float:
     x = polygon[:, 0]
     y = polygon[:, 1]
     return 0.5 * float(abs(np.dot(x, np.roll(y, -1)) - np.dot(y, np.roll(x, -1))))
+
+
+def _bootstrap_feature_metadata(
+    entry: StandBootstrapLibraryEntry | None,
+) -> dict[str, object] | None:
+    if entry is None:
+        return None
+    metadata = entry.metadata
+    subset: dict[str, object] = {}
+    for key in ("distribution", "resamples", "sample_size"):
+        value = metadata.get(key)
+        if value is not None:
+            subset[key] = value
+    params = metadata.get("parameters")
+    if isinstance(params, Mapping):
+        subset["parameters"] = dict(params)
+    subset["source"] = entry.source
+    return subset
 
 
 @dataclass(slots=True)
@@ -288,6 +326,16 @@ class StandBootstrapLibraryEntry:
     dbh_vectors: dict[str, list[float]]
 
 
+@dataclass(slots=True)
+class StandBootstrapManifest:
+    """Resolved bootstrap manifest linking stands to payloads."""
+
+    attributes_source: str | None
+    plan_source: str | None
+    assignments: Sequence[StandBootstrapAssignment]
+    bootstraps: Mapping[str, StandBootstrapLibraryEntry]
+
+
 def load_bootstrap_plan(path: Path) -> StandBootstrapPlan:
     """Load a bootstrap assignment plan describing stand → payload rules."""
 
@@ -340,6 +388,68 @@ def load_bootstrap_plan(path: Path) -> StandBootstrapPlan:
             source=default_ref,
         )
     return StandBootstrapPlan(rules=tuple(rules), default_rule=default_rule)
+
+
+def load_bootstrap_manifest(path: Path) -> StandBootstrapManifest:
+    """Load a stand→bootstrap manifest produced by the linker CLI."""
+
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, Mapping):
+        raise ValueError("Bootstrap manifest must be a mapping.")
+    assignments_payload = payload.get("assignments")
+    if not isinstance(assignments_payload, list) or not assignments_payload:
+        raise ValueError("Bootstrap manifest must include a non-empty 'assignments' list.")
+    assignments: list[StandBootstrapAssignment] = []
+    for record in assignments_payload:
+        if not isinstance(record, Mapping):
+            raise ValueError("Each assignment entry must be a mapping.")
+        stand_id_raw = record.get("stand_id")
+        bootstrap_id_raw = record.get("bootstrap_id")
+        if not stand_id_raw or not bootstrap_id_raw:
+            raise ValueError("Assignments require both 'stand_id' and 'bootstrap_id'.")
+        assignments.append(
+            StandBootstrapAssignment(
+                stand_id=str(stand_id_raw),
+                vegetation_type=str(record.get("vegetation_type", "")),
+                age_class=str(record.get("age_class", "")),
+                area=float(record.get("area", 0.0)),
+                bootstrap_id=str(bootstrap_id_raw),
+            )
+        )
+    raw_bootstraps = payload.get("bootstraps")
+    if not isinstance(raw_bootstraps, Mapping):
+        raise ValueError("Bootstrap manifest must include a 'bootstraps' mapping.")
+    library: dict[str, StandBootstrapLibraryEntry] = {}
+    for identifier_raw, entry in raw_bootstraps.items():
+        identifier = str(identifier_raw)
+        if not isinstance(entry, Mapping):
+            raise ValueError("Each bootstrap entry must be a mapping.")
+        metadata = entry.get("metadata")
+        if not isinstance(metadata, Mapping):
+            raise ValueError(f"Bootstrap '{identifier}' is missing metadata.")
+        dbh_vectors_raw = entry.get("dbh_vectors")
+        if not isinstance(dbh_vectors_raw, Mapping):
+            raise ValueError(f"Bootstrap '{identifier}' is missing dbh_vectors.")
+        vector_map: dict[str, list[float]] = {}
+        for key, values in dbh_vectors_raw.items():
+            if not isinstance(values, Sequence):
+                raise ValueError("Each dbh_vectors entry must be a sequence.")
+            vector_map[str(key)] = [float(value) for value in values]
+        source_value = entry.get("source")
+        library[identifier] = StandBootstrapLibraryEntry(
+            identifier=identifier,
+            source=str(source_value) if source_value is not None else identifier,
+            metadata=dict(metadata),
+            dbh_vectors=vector_map,
+        )
+    attributes_source = payload.get("attributes_source")
+    plan_source = payload.get("plan_source")
+    return StandBootstrapManifest(
+        attributes_source=str(attributes_source) if attributes_source else None,
+        plan_source=str(plan_source) if plan_source else None,
+        assignments=tuple(assignments),
+        bootstraps=library,
+    )
 
 
 def build_bootstrap_assignments(

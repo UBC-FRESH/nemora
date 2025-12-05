@@ -430,6 +430,29 @@ the `bootstrap_id` field stored on every assignment. Future synthesis steps will
 with the polygon GeoJSON so each stand polygon has both attribute defaults and DBH vectors ready for
 tree-list generation.
 
+### Embed bootstrap metadata in the stand GeoJSON
+
+Pass the manifest into `synthesis-assign-stands` to propagate the generated stand IDs and bootstrap
+references into the GeoJSON output:
+
+```bash
+nemora synthesis-assign-stands \
+    --seed-recipe artifacts/seeds_with_polygons.json \
+    --attributes artifacts/stands_sampled.json \
+    --bootstrap-manifest artifacts/stand_bootstrap_manifest.json \
+    --output artifacts/stands_with_bootstrap.geojson
+```
+
+Each feature now includes the sampled vegetation/age attributes plus:
+
+- `stand_id`: deterministic identifier from the manifest (`stand-0001`, etc.).
+- `bootstrap_id`: key referencing the embedded payload.
+- `bootstrap_metadata`: subset of the payload metadata (distribution, parameters, resamples, sample
+  size, and source path).
+
+Downstream tools can read the GeoJSON directly to discover which DBH payload to use for each polygon,
+removing the need to join manifests manually.
+
 ## Helper module (`nemora.synthesis.helpers`)
 
 Nemora exposes helper utilities that convert bootstrap results into synthesis-ready payloads:
