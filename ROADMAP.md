@@ -21,7 +21,7 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 ## Phase 2 — Core Module Expansion (sequenced after fit alpha)
 - `nemora.distributions`
   - [x] Document extension points, add user-facing registry helpers.
-  - [ ] Move remaining distribution metadata (bounds, defaults) from ad-hoc code.
+  - [x] Move remaining distribution metadata (bounds, defaults) from ad-hoc code.
 - `nemora.sampling`
   - [x] Implement PDF→CDF inversion (analytic + numeric).
   - [x] Provide bootstrap / Monte Carlo sampling utilities & tests.

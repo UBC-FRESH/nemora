@@ -17,20 +17,20 @@ Also have a look at the FLG project documentation under `reference-papers/flg`. 
 ## Multi-phase implementation plan
 
 ### Phase 0 — Research & design scaffolding
-- [ ] **CJFR + Rlandscape requirements dump**
+- [x] **CJFR + Rlandscape requirements dump**
   Catalogue requirements from the CJFR paper (`reference-papers/2012-a-voronoi-tessellation-based-approach-to-generate-hypothetical-forest-landscapes.pdf`) and the legacy R source (rpubs link) into this document (algorithms, inputs, stochastic controls, outputs).
-  - [ ] Summarise core algorithm steps (seed point generation, Voronoi clipping, stand attribute assignment) with explicit page references for each mechanism.
-  - [ ] Extract data requirements (input rasters, stand tables, configuration parameters), calling out which inputs are optional vs. mandatory.
-  - [ ] Capture stochastic controls (seed handling, distribution selection, reproducibility guarantees) and cite how Rlandscape handles them today.
-- [ ] **FLG documentation review**
+  - [x] Summarise core algorithm steps (seed point generation, Voronoi clipping, stand attribute assignment) with explicit page references for each mechanism.
+  - [x] Extract data requirements (input rasters, stand tables, configuration parameters), calling out which inputs are optional vs. mandatory.
+  - [x] Capture stochastic controls (seed handling, distribution selection, reproducibility guarantees) and cite how Rlandscape handles them today.
+- [x] **FLG documentation review**
   Review the FLG documentation (`reference-papers/flg/*`) to capture complementary insights (stand attribute templates, historical assumptions) and flag what, if anything, we will reuse.
-  - [ ] List reusable artefacts (attribute schemas, calibration datasets) and explicitly log any FLG features we intend to drop or modernise.
-  - [ ] Identify calibration/validation data mentioned in FLG docs that can seed regression tests or gallery notebooks.
-- [ ] **Module/test/doc scaffolding**
+  - [x] List reusable artefacts (attribute schemas, calibration datasets) and explicitly log any FLG features we intend to drop or modernise.
+  - [x] Identify calibration/validation data mentioned in FLG docs that can seed regression tests or gallery notebooks.
+- [x] **Module/test/doc scaffolding**
   Define the Python module skeleton in `src/nemora/synthesis/` (submodules for tessellation, canopy assignment, stand population, exporters) plus matching `tests/` scaffolding and doc stubs.
-  - [ ] Create placeholder modules (`tessellation.py`, `stands.py`, `exporters.py`) with TODO docstrings outlining responsibilities + dependencies.
-  - [ ] Add `tests/synthesis/` scaffolding (fixtures directory, smoke-test placeholders) plus sample seed data for future Voronoi tests.
-  - [ ] Expand `docs/howto/synthesis.md` + `docs/reference/synthesis.md` with section headings aligned to Phases 1‑3 so we know where upcoming content lands.
+  - [x] Create placeholder modules (`tessellation.py`, `stands.py`, `exporters.py`) with TODO docstrings outlining responsibilities + dependencies.
+  - [x] Add `tests/synthesis/` scaffolding (fixtures directory, smoke-test placeholders) plus sample seed data for future Voronoi tests.
+  - [x] Expand `docs/howto/synthesis.md` + `docs/reference/synthesis.md` with section headings aligned to Phases 1‑3 so we know where upcoming content lands.
 - [ ] **Roadmap alignment**
   When the Phase 0 checklist is complete, update ROADMAP Phase 2 (`nemora.synthesis`) and `notes/nemora_modular_reorg_plan.md` to mark the research groundwork done and unblock Phase 1 implementation.
 
@@ -62,3 +62,17 @@ Also have a look at the FLG project documentation under `reference-papers/flg`. 
 - [ ] Benchmark outputs against historical Rlandscape/FLG examples (document deviations, add a gallery notebook).
 - [ ] Hook into the upcoming `nemora.simulation` module so synthetic landscapes feed observation simulators (plot sampling, remote-sensing emulation).
 - [ ] Explore advanced features: disturbance simulation (fire/harvest patches), time-stepped growth, integration with ingest benchmark telemetry for calibration.
+
+### Phase 0 research notes (2025-12-05)
+
+- **CJFR / rlandscape highlights**
+  - Section “Generating a landscape” (pp. 79–82) defines four control metrics — number of management units (`n`), coefficient of variation for polygon areas (`CV`), and the mean/standard deviation of vertex degree (`μ_d`, `σ_d`). These map directly to Nemora metadata we can already compute from adjacency tables, so the synthesis module should emit these values for regression checks.
+  - The seed-point strategy combines four point processes (uniform, clustering, simple sequential inhibition, lattice grid) with proportions `p_unif`, `p_clust`, `p_SSI`, `p_lat` plus process-specific parameters (cluster size/spread, inhibition distance, lattice resolution). Mixtures allow us to sweep from highly regular to highly variable mosaics.
+  - Post-processing uses two tuning parameters: `p_H` (hole fraction) deletes polygons after tessellation to simulate rivers/voids, whereas `p_M` (merge fraction) collapses boundaries to create non-convex units and introduce right angles. Both operations inflate `n_tot` to hit the target `n` after deletions/merges. These controls inform the placeholder dataclasses in `synthesis.tessellation`.
+  - Aspect ratio `a` and linear models linking target metrics to control parameters (Fig. 2) mean we eventually need a lightweight regression or lookup table that maps desired `{n, CV, μ_d, σ_d}` → seed config. For Phase 0 we simply record the dependency so the future API (`VoronoiSeedConfig`) exposes the same knobs.
+
+- **FLG (Paradis & Richards 2001) takeaways**
+  - FLG is raster-driven: users specify vegetation-type distributions plus age-class CDFs and patch-size Weibull parameters (`W_a`, `W_b`, `W_c`). This matches the data we already keep in sampling manifests, so `StandAttributeTemplate` is shaped around those tuples.
+  - Patch growth uses a “mother cell + concentric layers” algorithm with randomised edge selection to avoid geometric bias. Sorting samples by descending patch size before allocation mitigates truncation when space runs out; we’ll mimic this ordering when we integrate bootstrap-driven DBH payloads.
+  - Edge effects and merging identical neighbours are explicitly handled (oversized matrix, attribute checks). These behaviours translate into future post-processing hooks for the stands module.
+  - Outputs include both raster and dissolved vector layers plus adjacency scripts, reinforcing that our exporter stubs should plan for GeoJSON/CSV outputs in tandem.

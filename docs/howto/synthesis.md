@@ -66,5 +66,22 @@ output programmatically.
 - Extend simulation planning notes so inventory simulators can ingest the same DataFrame.
 - Wire automated docs/examples once synthesis code lands.
 
+## Roadmap alignment
+
+### Phase 1 — Landscape geometry scaffolding
+
+- Translate the CJFR control metrics (`n`, `CV`, `μ_d`, `σ_d`) into CLI/API inputs.
+- Map desired metrics to `tessellation.VoronoiSeedConfig` and persist the chosen parameters with the exported metadata JSON.
+
+### Phase 2 — Stand & stem generation
+
+- Use `stands.StandAttributeTemplate` to ingest vegetation/age tables (FLG-style Weibull parameters) and drive DBH generation via `nemora.sampling`.
+- Ensure downstream exporters attach the bootstrap metadata so simulations inherit the provenance trail.
+
+### Phase 3 — Export + CLI workflows
+
+- Emit both GeoJSON and CSV/Parquet assets via `nemora.synthesis.exporters`.
+- Provide a `nemora synthesis generate-landscape` CLI entry point that accepts YAML/JSON recipes describing seed processes, attribute templates, and exporter settings.
+
 For now, keep this contract in mind when scripting bootstrap-driven workflows so future synthesis
 components integrate cleanly.
