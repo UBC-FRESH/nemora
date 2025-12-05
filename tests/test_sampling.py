@@ -139,6 +139,53 @@ def test_sample_mixture_fit_accepts_generator() -> None:
     np.testing.assert_allclose(draws_a, draws_b)
 
 
+def test_sample_mixture_fit_truncation_bounds() -> None:
+    components = [
+        MixtureComponentFit(name="gamma", weight=0.5, parameters={"beta": 3.0, "p": 2.0}),
+        MixtureComponentFit(name="gamma", weight=0.5, parameters={"beta": 7.0, "p": 4.0}),
+    ]
+    mixture = MixtureFitResult(
+        distribution="mixture",
+        components=components,
+        log_likelihood=-5.0,
+        iterations=4,
+        converged=True,
+    )
+    draws = sample_mixture_fit(
+        mixture,
+        size=200,
+        random_state=np.random.default_rng(123),
+        lower=1.0,
+        upper=40.0,
+    )
+    assert draws.size == 200
+    assert np.all(draws >= 1.0)
+    assert np.all(draws <= 40.0)
+
+
+def test_sample_mixture_fit_weight_overrides() -> None:
+    components = [
+        MixtureComponentFit(name="gamma", weight=0.1, parameters={"beta": 2.0, "p": 2.0}),
+        MixtureComponentFit(name="gamma", weight=0.9, parameters={"beta": 12.0, "p": 5.0}),
+    ]
+    mixture = MixtureFitResult(
+        distribution="mixture",
+        components=components,
+        log_likelihood=-8.0,
+        iterations=6,
+        converged=True,
+    )
+    draws = sample_mixture_fit(
+        mixture,
+        size=500,
+        random_state=123,
+        weight_overrides=[1.0, 0.0],
+    )
+    assert draws.size == 500
+    # Overrides zero-out the second component so the mean should reflect the first component.
+    assert np.mean(draws) < 8.0
+
+
 def test_bootstrap_inventory_resamples() -> None:
     rng = np.random.default_rng(42)
     bins = np.array([10.0, 20.0, 30.0])

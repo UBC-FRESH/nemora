@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import numbers
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal
 
@@ -251,6 +251,9 @@ def sample_mixture_fit(
     size: int,
     *,
     random_state: np.random.Generator | int | None = None,
+    lower: float | None = None,
+    upper: float | None = None,
+    weight_overrides: Sequence[float] | None = None,
 ) -> np.ndarray:
     """Sample from a :class:`MixtureFitResult`."""
     rng: np.random.Generator | int | None
@@ -260,7 +263,14 @@ def sample_mixture_fit(
         rng = int(random_state)
     else:
         rng = None
-    return fit_sample_mixture(size, fit.components, random_state=rng)
+    return fit_sample_mixture(
+        size,
+        fit.components,
+        random_state=rng,
+        lower=lower,
+        upper=upper,
+        weight_overrides=weight_overrides,
+    )
 
 
 def bootstrap_inventory(

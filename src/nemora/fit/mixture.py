@@ -307,6 +307,9 @@ def sample_mixture(
     components: Sequence[MixtureComponentFit],
     *,
     random_state: np.random.Generator | numbers.Integral | None = None,
+    lower: float | None = None,
+    upper: float | None = None,
+    weight_overrides: Sequence[float] | None = None,
 ) -> np.ndarray:
     """Draw random samples from a fitted mixture."""
     if isinstance(random_state, np.random.Generator):
@@ -316,10 +319,22 @@ def sample_mixture(
     else:
         rng = np.random.default_rng()
     weights = np.array([component.weight for component in components], dtype=float)
+    if weight_overrides is not None:
+        override_arr = np.asarray(weight_overrides, dtype=float)
+        if override_arr.shape != weights.shape:
+            raise ValueError("weight_overrides must match the number of mixture components.")
+        if np.any(override_arr < 0):
+            raise ValueError("weight_overrides must be non-negative.")
+        total_override = float(np.sum(override_arr))
+        if total_override <= 0:
+            raise ValueError("weight_overrides must sum to a positive value.")
+        weights = override_arr / total_override
     if not np.isclose(np.sum(weights), 1.0):
         raise ValueError("Component weights must sum to one.")
     if np.any(weights < 0):
         raise ValueError("Component weights must be non-negative.")
+    if lower is not None and upper is not None and lower >= upper:
+        raise ValueError("lower must be less than upper when both bounds are provided.")
     choices = rng.choice(len(components), size=size, p=weights)
     samples = np.empty(size, dtype=float)
     for idx, component in enumerate(components):
@@ -328,7 +343,12 @@ def sample_mixture(
             continue
         dist = get_distribution(component.name)
         samples[choices == idx] = _sample_from_distribution(
-            dist.name, count, component.parameters, rng
+            dist.name,
+            count,
+            component.parameters,
+            rng,
+            lower=lower,
+            upper=upper,
         )
     return samples
 
@@ -338,8 +358,23 @@ def _sample_from_distribution(
     size: int,
     params: Mapping[str, float],
     rng: np.random.Generator,
+    *,
+    lower: float | None = None,
+    upper: float | None = None,
 ) -> np.ndarray:
     """Sample from a known distribution using numpy or scipy helpers."""
+    draws = _sample_distribution_raw(name, size, params, rng)
+    if lower is None and upper is None:
+        return draws
+    return _truncate_draws(name, size, params, rng, lower, upper, initial_draws=draws)
+
+
+def _sample_distribution_raw(
+    name: str,
+    size: int,
+    params: Mapping[str, float],
+    rng: np.random.Generator,
+) -> np.ndarray:
     name_lower = name.lower()
     if name_lower == "gamma":
         shape = params["p"]
@@ -354,6 +389,46 @@ def _sample_from_distribution(
         "Consider overriding _sample_from_distribution."
     )
     raise NotImplementedError(message)
+
+
+def _truncate_draws(
+    name: str,
+    size: int,
+    params: Mapping[str, float],
+    rng: np.random.Generator,
+    lower: float | None,
+    upper: float | None,
+    *,
+    initial_draws: np.ndarray,
+) -> np.ndarray:
+    """Reject-sample until all draws fall within [lower, upper]."""
+
+    def _mask(values: np.ndarray) -> np.ndarray:
+        mask = np.ones_like(values, dtype=bool)
+        if lower is not None:
+            mask &= values >= lower
+        if upper is not None:
+            mask &= values <= upper
+        return mask
+
+    accepted = initial_draws[_mask(initial_draws)]
+    result = np.empty(size, dtype=float)
+    take = min(size, accepted.size)
+    result[:take] = accepted[:take]
+    filled = take
+    while filled < size:
+        needed = size - filled
+        draws = _sample_distribution_raw(name, max(needed * 2, needed), params, rng)
+        valid = draws[_mask(draws)]
+        if valid.size == 0:
+            raise RuntimeError(
+                "Unable to sample values within the provided truncation bounds. "
+                "Consider relaxing the bounds or reviewing the component parameters."
+            )
+        take_now = min(needed, valid.size)
+        result[filled : filled + take_now] = valid[:take_now]
+        filled += take_now
+    return result
 
 
 def _numeric_cdf(points: np.ndarray, name: str, params: Mapping[str, float]) -> np.ndarray:

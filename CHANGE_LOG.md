@@ -264,5 +264,5 @@
 - Added `nemora.sampling.bootstrap_dbh_vectors` (and the `DBHBootstrap` dataclass) so `BootstrapResult` objects can be converted into per-resample DBH arrays, metadata dictionaries, and optional long-form DataFrames with tally-derived weights.
 - Introduced `nemora sampling-export-bootstrap-dbh`, a Typer command that runs the helper end-to-end and writes JSON + optional CSV/Parquet artifacts; sampling docs and the FAIB manifest example now cover both the helper and CLI workflows.
 - Expanded regression coverage for the helper and CLI export path so grouped-fit metadata propagation remains deterministic.
-- Threaded deterministic RNG support through `sample_mixture_fit`/`fit.mixture.sample_mixture`, enabling direct `numpy.random.Generator` usage plus updated docs/tests confirming parity with seeded runs.
+- Threaded deterministic RNG support through `sample_mixture_fit`/`fit.mixture.sample_mixture`, enabling direct `numpy.random.Generator` usage, plus new truncation + `weight_overrides` parameters for mixture-of-experts scenarios (docs/tests outline the workflows).
 - Tests / validation: `ruff format src tests`, `ruff check src tests`, `mypy src`, `pytest`, `sphinx-build -b html docs _build/html -W`, `pre-commit run --all-files`.

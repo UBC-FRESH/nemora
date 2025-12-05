@@ -26,8 +26,8 @@ Status: Working outline for Phase 2 sampling deliverables.
    - [x] Ensure compatibility with synthesis by exposing helper utilities (`nemora.synthesis.helpers`) and documenting how `BootstrapResult` feeds downstream workflows (`docs/howto/synthesis.md`).
    - [x] Ship a CLI inspection path (`nemora sampling-describe-bootstrap`) plus docs/tests so downstream modules can preview bootstrap metadata without scripting.
 4. **Mixture sampling enhancements**
-   - [ ] Allow direct seeding via `numpy.random.Generator` for mixture helpers and integrate diagnostics.
-   - [ ] Add support for truncated mixtures / mixture-of-experts weighting if synthesis requires them.
+  - [x] Allow direct seeding via `numpy.random.Generator` for mixture helpers and integrate diagnostics (2025-12-05 update).
+  - [x] Add support for truncated mixtures / mixture-of-experts weighting if synthesis requires them (`sample_mixture_fit` now accepts `lower`/`upper` bounds + `weight_overrides`, with docs/tests).
 
 ## December 2025 Task Queue
 
@@ -35,11 +35,11 @@ Status: Working outline for Phase 2 sampling deliverables.
   Recorded that logistic/fisk remain numeric-only (see `notes/sampling_inverse_matrix.md`) and added a docs note so downstream modules expect the fallback.
 - [x] **Bootstrap DBH helper + examples**
   Ship a focused helper (and CLI stub) that accepts `BootstrapResult` plus stand metadata, emits DBH vectors grouped by stand, and showcases the flow in `docs/examples/faib_manifest_parquet.md`. Extend tests to cover grouped-fit metadata propagation.
-- [ ] **Mixture RNG plumbing**
+- [x] **Mixture RNG plumbing**
   Thread `numpy.random.Generator` support through `sample_mixture`/`SamplingConfig`, add deterministic regression cases, and write short docs in `docs/howto/sampling.md`.
 - [x] Implemented via `sample_mixture_fit(..., random_state=Generator | int)` with regression coverage + doc updates (2025-12-05).
-- [ ] **Truncated / weighted mixtures**
-  Decide on API for truncation bounds and mixture-of-experts weights, stub the interface, and log follow-up notes for synthesis/simulation consumers.
+- [x] **Truncated / weighted mixtures**
+  API delivered via `lower`/`upper` bounds + `weight_overrides`; docs/tests highlight usage and failure modes.
 
 ### BootstrapResult → DBH helper spec
 

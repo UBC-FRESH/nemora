@@ -77,6 +77,21 @@ draws = sample_mixture_fit(mixture, size=1000, random_state=np.random.default_rn
 
 Pass a `numpy.random.Generator` (or integer seed) via `random_state` to obtain reproducible mixture draws.
 
+Use the optional `lower`/`upper` parameters to truncate the draws (rejection sampling ensures all values fall inside the interval), and `weight_overrides=[...]` when you need to re-weight components dynamically (e.g., mixture-of-experts routing):
+
+```python
+draws = sample_mixture_fit(
+    mixture,
+    size=250,
+    random_state=123,
+    lower=5.0,
+    upper=25.0,
+    weight_overrides=[1.0, 0.0],  # ignore the second component for this scenario
+)
+```
+
+Invalid overrides (negative weights, wrong lengths, or zero totals) raise `ValueError` so calling code can fall back gracefully.
+
 ## Bootstrap a fitted inventory
 
 ```python
