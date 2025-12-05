@@ -5,6 +5,42 @@ Nemora’s upcoming `synthesis` module will consume bootstrap samples produced b
 generators so downstream modules can align on a common contract. The helper utilities now live in
 `nemora.synthesis.helpers` so downstream consumers do not need to duplicate schema wrangling.
 
+## Voronoi seed configuration (Phase 1 kickoff)
+
+Phase 1 starts with reproducible Voronoi seed sets that mirror the CJFR/rlandscape control knobs.
+Use `tessellation.VoronoiSeedConfig` to describe the point-process mixture, aspect ratio, and the
+hole/merge editing fractions (`p_H`, `p_M`). The generator now returns a
+`tessellation.VoronoiSeedResult` so downstream code (or docs/tests) can persist the control
+parameters alongside the coordinates.
+
+```python
+import numpy as np
+from pathlib import Path
+
+from nemora.synthesis import tessellation, exporters
+
+cfg = tessellation.VoronoiSeedConfig(
+    count=200,
+    aspect_ratio=2.0,
+    mix=tessellation.PointProcessMix(uniform=0.4, cluster=0.4, inhibition=0.2),
+    edit=tessellation.VoronoiEditConfig(hole_fraction=0.05, merge_fraction=0.1),
+    rng=np.random.default_rng(20251205),
+)
+result = tessellation.generate_seed_points(cfg)
+exporters.export_metadata_json(result.metadata(), Path("artifacts/seeds.json"))
+```
+
+`result.points` always contains `cfg.count` coordinates (post-editing). The metadata captures the
+initial seed totals plus the hole/merge selections so Voronoi builders/CLI plumbing can reproduce
+the same mixture later on.
+
+### Editing knobs
+
+`hole_fraction` and `merge_fraction` apply to the final target polygon count. The seed generator
+internally produces `count + n_hole + n_merge` points, deletes the requested hole fraction, and
+collapses random merge pairs into shared midpoints. Fractions must sum to < 1 (mirroring the CJFR
+constraints) to guarantee a feasible configuration.
+
 ## Expected input shape
 
 ```python

@@ -266,3 +266,17 @@
 - Expanded regression coverage for the helper and CLI export path so grouped-fit metadata propagation remains deterministic.
 - Threaded deterministic RNG support through `sample_mixture_fit`/`fit.mixture.sample_mixture`, enabling direct `numpy.random.Generator` usage, plus new truncation + `weight_overrides` parameters for mixture-of-experts scenarios (docs/tests outline the workflows).
 - Tests / validation: `ruff format src tests`, `ruff check src tests`, `mypy src`, `pytest`, `sphinx-build -b html docs _build/html -W`, `pre-commit run --all-files`.
+
+## 2025-12-05 — Synthesis phase 0 scaffolding
+
+- Documented Phase 0 requirements in `notes/synthesis_planning.md`, including the CJFR/rlandscape control metrics (`n`, `CV`, `μ_d`, `σ_d`), the four point processes (`p_unif`, `p_clust`, `p_SSI`, `p_lat`), and the editing knobs (`p_H`, `p_M`). FLG notes capture the raster-centric patch templates (Weibull patch sizes, age-class CDFs) and the prioritised reuse items.
+- Added synthesis scaffolding modules: `tessellation` (seed config dataclasses + uniform placeholder), `stands` (FLG-inspired attribute templates), and `exporters` (JSON/GeoJSON helpers). New regression tests cover the scaffolding APIs.
+- Extended synthesis documentation (how-to + reference) with roadmap-aligned sections so Phase 1–3 deliverables have a landing zone.
+- Tests / validation: `ruff format src tests`, `ruff check src tests`, `mypy src` *(fails on existing ingest/HPS typing issues in `src/nemora/dataprep/hps.py`, `src/nemora/ingest/{fia,faib}.py`)*, `pytest`, `sphinx-build -b html docs _build/html -W`, `pre-commit run --all-files`.
+
+## 2025-12-05 — Voronoi seed generator prototype
+
+- Upgraded `nemora.synthesis.tessellation.generate_seed_points` to return a `VoronoiSeedResult` object that captures process-mix counts plus CJFR hole/merge selections, ensuring the resulting coordinates always honour the requested polygon count.
+- Added deterministic editing logic (hole deletions + random merge midpoints) and exposed a `metadata()` helper so exporters/CLI tooling can persist the control knobs without bespoke glue.
+- Expanded synthesis how-to docs, roadmap entries, and planning notes to mark Phase 0 as complete and outline the Phase 1 tessellation follow-ups; added regression tests covering cluster-only mixes, editing fractions, and invalid configs.
+- Tests / validation: `ruff format src tests`, `ruff check src tests`, `mypy src` *(fails on pre-existing typing gaps in `src/nemora/dataprep/hps.py` and `src/nemora/ingest/{fia,faib}.py`)*, `pytest`, `sphinx-build -b html docs _build/html -W`, `pre-commit run --all-files`.

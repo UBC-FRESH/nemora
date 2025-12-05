@@ -31,11 +31,12 @@ Also have a look at the FLG project documentation under `reference-papers/flg`. 
   - [x] Create placeholder modules (`tessellation.py`, `stands.py`, `exporters.py`) with TODO docstrings outlining responsibilities + dependencies.
   - [x] Add `tests/synthesis/` scaffolding (fixtures directory, smoke-test placeholders) plus sample seed data for future Voronoi tests.
   - [x] Expand `docs/howto/synthesis.md` + `docs/reference/synthesis.md` with section headings aligned to Phases 1‑3 so we know where upcoming content lands.
-- [ ] **Roadmap alignment**
+- [x] **Roadmap alignment**
   When the Phase 0 checklist is complete, update ROADMAP Phase 2 (`nemora.synthesis`) and `notes/nemora_modular_reorg_plan.md` to mark the research groundwork done and unblock Phase 1 implementation.
 
 ### Phase 1 — Landscape geometry & metadata
 - [ ] Implement Voronoi-based tiling mirroring Rlandscape behaviour:
+  - [x] Deliver deterministic `VoronoiSeedResult` generation that mixes the four point processes and applies the CJFR hole/merge editing knobs, returning metadata for exporters/tests.
   - [ ] Deterministic seed/control of initial plot centers (random, hex-packed, or imported points).
   - [ ] Boundary clipping + min/max polygon size constraints, including optional shapefile/GeoJSON masks.
   - [ ] Optional slope/elevation raster support for physiographic modifiers.

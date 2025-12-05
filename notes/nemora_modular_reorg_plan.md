@@ -133,3 +133,7 @@ src/nemora/
    - [x] Draft shim strategy (`nemora.distfit`/`nemora.synthforest` re-export with deprecation warnings) and update CLI command prefixes to avoid breaking existing tutorials.
    - [x] Execute the package/layout rename on this branch, run the full validation suite, and record the breaking change in CHANGE_LOG once ready to merge to `main`.
    - [x] Repo sweep (2025-12-04) confirmed no lingering `nemora.distfit`/`nemora.synthforest` references outside the shims, roadmap note, and CHANGE_LOG history.
+9. [ ] Synthesis Phase 1 — tessellation prototype
+   - [x] Upgrade `tessellation.generate_seed_points` to emit a `VoronoiSeedResult` that tracks point-process mixes plus CJFR hole/merge selections, backed by docs/tests/changelog notes.
+   - [ ] Thread the metadata through `nemora.synthesis.exporters` (JSON + CLI wiring) so seed recipes can be persisted without bespoke glue.
+   - [ ] Add Voronoi boundary clipping + target metric computation (`n`, `CV`, `μ_d`, `σ_d`) wired to regression fixtures mirroring the CJFR reference runs.

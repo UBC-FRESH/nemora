@@ -33,7 +33,9 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
   - [x] Publish ingest how-to updates covering FAIB/FIA workflows.
   - [x] Add regression coverage for FAIB manifest + pipeline orchestration.
 - `nemora.synthesis`
-  - [ ] Define landscape/stem data models.
+  - [x] Phase 0 research + scaffolding (CJFR/rlandscape + FLG requirements, module/tests/docs landing zones).
+  - [x] Phase 1 kickoff: deterministic seed generator covering all four point processes plus CJFR hole/merge editing with exporter-friendly metadata.
+  - [ ] Phase 1 continuation: Voronoi clipping + target metric reporting (n, CV, μ_d, σ_d) and physiographic modifiers.
   - [ ] Implement stand attribute sampling, stem population generation.
   - [ ] Provide export & visualisation helpers (GeoJSON, rasters).
 - `nemora.simulation`
@@ -74,6 +76,10 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
    - [x] Rename the distribution-fitting stack under `nemora.fit` while preserving compatibility shims/CLI aliases so downstream docs/tests stay stable during the transition.
    - [x] Rename `nemora.synthforest` to `nemora.synthesis`, folding forest/stand/tree-level generators under the clearer namespace and updating planning docs/notes accordingly.
    - [x] Announce the breaking rename in README/CHANGE_LOG once the shims/tests/CLI wiring are proven on the `rename-modules-plan` branch (ready to merge into `main`).
+5. **Synthesis Phase 1 — tessellation prototype**
+   - [x] Upgrade `tessellation.generate_seed_points` so it produces a `VoronoiSeedResult` with process-mix counts plus CJFR hole/merge bookkeeping, wired into docs/tests.
+   - [ ] Persist the metadata via exporters + CLI plumbing so seed recipes become first-class artifacts.
+   - [ ] Extend Phase 1 with Voronoi clipping + target metric reporting (`n`, `CV`, `μ_d`, `σ_d`) benchmarked against CJFR/rlandscape fixtures.
 
 ## Backlog & Ideas
 - [ ] Investigate GPU acceleration for large tally batches.
