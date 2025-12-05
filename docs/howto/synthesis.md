@@ -60,7 +60,9 @@ nemora synthesis-generate-seeds \
 
 The resulting JSON contains the full configuration metadata (point-process mix, cluster/SSI/lattice
 parameters, edit fractions) and, by default, the raw coordinate arrays. Add `--metadata-only` when
-you only need the knobs (e.g., docs/tests that re-run the generator on demand).
+you only need the knobs (e.g., docs/tests that re-run the generator on demand). Each export also
+captures the CJFR-style metrics (`n`, polygon-area `CV`, `μ_d`, `σ_d`) so downstream planning docs
+can quote the same statistics without recomputing the Voronoi diagram.
 
 ## Expected input shape
 

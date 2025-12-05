@@ -1187,7 +1187,11 @@ def synthesis_generate_seeds(  # noqa: B008
         raise typer.Exit(code=1) from exc
 
     exporters.export_seed_recipe(result, output, include_points=include_points)
-    console.print(f"[green]Seed recipe written[/green] {output}")
+    metrics = result.metrics
+    console.print(
+        "[green]Seed recipe written[/green] "
+        f"{output} (area CV={metrics.area_cv:.3f}, μ_d={metrics.vertex_degree_mean:.2f})"
+    )
 
 
 @app.command("ingest-faib")

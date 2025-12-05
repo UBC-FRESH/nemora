@@ -14,6 +14,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 
 import numpy as np
+from scipy.spatial import QhullError, Voronoi
 
 __all__ = [
     "ClusterConfig",
@@ -22,6 +23,7 @@ __all__ = [
     "PointProcessMix",
     "VoronoiEditConfig",
     "VoronoiSeedConfig",
+    "VoronoiMetrics",
     "VoronoiSeedResult",
     "generate_seed_points",
 ]
@@ -143,6 +145,26 @@ class VoronoiSeedConfig:
 
 
 @dataclass(slots=True)
+class VoronoiMetrics:
+    """Summary statistics matching the CJFR target controls."""
+
+    polygon_count: int
+    area_mean: float
+    area_cv: float
+    vertex_degree_mean: float
+    vertex_degree_std: float
+
+    def as_dict(self) -> dict[str, float]:
+        return {
+            "polygon_count": int(self.polygon_count),
+            "area_mean": self.area_mean,
+            "area_cv": self.area_cv,
+            "vertex_degree_mean": self.vertex_degree_mean,
+            "vertex_degree_std": self.vertex_degree_std,
+        }
+
+
+@dataclass(slots=True)
 class VoronoiSeedResult:
     """Container for the generated seeds plus bookkeeping metadata."""
 
@@ -151,6 +173,8 @@ class VoronoiSeedResult:
     process_counts: dict[str, int]
     hole_points: np.ndarray
     merge_pairs: np.ndarray
+    polygons: list[np.ndarray]
+    metrics: VoronoiMetrics
 
     def metadata(self) -> dict[str, object]:
         """Return a JSON-serialisable summary of the seed configuration."""
@@ -169,6 +193,7 @@ class VoronoiSeedResult:
                 "merge_fraction": self.config.edit.merge_fraction,
                 "merge_count": int(self.merge_pairs.shape[0]),
             },
+            "metrics": self.metrics.as_dict(),
         }
 
 
@@ -214,12 +239,16 @@ def generate_seed_points(config: VoronoiSeedConfig) -> VoronoiSeedResult:
             "Editing pipeline failed to honour target count "
             f"(expected {target_count}, found {edited_points.shape[0]})."
         )
+    polygons, degrees = _derive_voronoi_geometry(edited_points, config)
+    metrics = _build_voronoi_metrics(polygons, degrees)
     return VoronoiSeedResult(
         points=edited_points,
         config=config,
         process_counts=process_counts,
         hole_points=hole_points,
         merge_pairs=merge_pairs,
+        polygons=polygons,
+        metrics=metrics,
     )
 
 
@@ -363,3 +392,215 @@ def _apply_editing(
                 keep_mask[pair[1]] = False
             work = work[keep_mask]
     return work, hole_points, merge_pairs
+
+
+def _derive_voronoi_geometry(
+    points: np.ndarray,
+    config: VoronoiSeedConfig,
+) -> tuple[list[np.ndarray], np.ndarray]:
+    """Return clipped Voronoi polygons and per-seed vertex degrees."""
+
+    if points.shape[0] == 0:
+        return [], np.array([], dtype=float)
+    try:
+        vor = Voronoi(points)
+        polygons = _clip_voronoi_regions(vor, config.aspect_ratio)
+        degrees = _vertex_degrees_from_ridges(vor, points.shape[0])
+        return polygons, degrees
+    except (QhullError, ValueError):
+        return _fallback_geometry(points, config.aspect_ratio)
+
+
+def _clip_voronoi_regions(vor: Voronoi, aspect_ratio: float) -> list[np.ndarray]:
+    bounds = (0.0, 0.0, aspect_ratio, 1.0)
+    regions, vertices = _voronoi_finite_polygons_2d(vor)
+    polygons: list[np.ndarray] = []
+    for region in regions[: vor.points.shape[0]]:
+        polygon = vertices[region]
+        if polygon.size == 0:
+            polygons.append(np.zeros((0, 2)))
+            continue
+        center = polygon.mean(axis=0)
+        angles = np.arctan2(polygon[:, 1] - center[1], polygon[:, 0] - center[0])
+        order = np.argsort(angles)
+        polygon = polygon[order]
+        clipped = _clip_polygon_to_bounds(polygon, bounds)
+        if clipped.shape[0] < 3:
+            clipped = np.zeros((0, 2))
+        polygons.append(clipped)
+    return polygons
+
+
+def _vertex_degrees_from_ridges(vor: Voronoi, count: int) -> np.ndarray:
+    adjacency: list[set[int]] = [set() for _ in range(count)]
+    for p_a, p_b in vor.ridge_points:
+        if p_a < count and p_b < count:
+            adjacency[p_a].add(p_b)
+            adjacency[p_b].add(p_a)
+    return np.array([len(neighbors) for neighbors in adjacency], dtype=float)
+
+
+def _fallback_geometry(
+    points: np.ndarray, aspect_ratio: float
+) -> tuple[list[np.ndarray], np.ndarray]:
+    """Fallback partitioning when Qhull cannot build a Voronoi diagram (low counts, degeneracy)."""
+
+    n = points.shape[0]
+    if n == 0:
+        return [], np.array([], dtype=float)
+    order = np.argsort(points[:, 0], kind="mergesort")
+    x_edges = np.linspace(0.0, aspect_ratio, n + 1)
+    polygons: list[np.ndarray] = [np.zeros((0, 2)) for _ in range(n)]
+    degrees = np.zeros(n, dtype=float)
+    for idx, point_idx in enumerate(order):
+        polygon = np.array(
+            [
+                [x_edges[idx], 0.0],
+                [x_edges[idx + 1], 0.0],
+                [x_edges[idx + 1], 1.0],
+                [x_edges[idx], 1.0],
+            ]
+        )
+        polygons[point_idx] = polygon
+        if idx > 0:
+            degrees[point_idx] += 1
+        if idx < n - 1:
+            degrees[point_idx] += 1
+    return polygons, degrees
+
+
+def _build_voronoi_metrics(polygons: list[np.ndarray], degrees: np.ndarray) -> VoronoiMetrics:
+    if polygons:
+        areas = np.array([_polygon_area(poly) for poly in polygons], dtype=float)
+        area_mean = float(areas.mean()) if areas.size else 0.0
+        area_cv = float(areas.std(ddof=0) / area_mean) if area_mean > 0 else 0.0
+    else:
+        area_mean = 0.0
+        area_cv = 0.0
+    if degrees.size:
+        vertex_mean = float(degrees.mean())
+        vertex_std = float(degrees.std(ddof=0))
+    else:
+        vertex_mean = 0.0
+        vertex_std = 0.0
+    return VoronoiMetrics(
+        polygon_count=len(polygons),
+        area_mean=area_mean,
+        area_cv=area_cv,
+        vertex_degree_mean=vertex_mean,
+        vertex_degree_std=vertex_std,
+    )
+
+
+def _voronoi_finite_polygons_2d(
+    vor: Voronoi, radius: float | None = None
+) -> tuple[list[list[int]], np.ndarray]:
+    """Reconstruct infinite Voronoi regions to finite polygons (adapted from SciPy docs)."""
+
+    if vor.points.shape[1] != 2:
+        raise ValueError("Voronoi input must be 2-D.")
+    new_regions: list[list[int]] = []
+    new_vertices = vor.vertices.tolist()
+
+    center = vor.points.mean(axis=0)
+    if radius is None:
+        radius = float(np.ptp(vor.points, axis=0).max()) * 2
+
+    all_ridges: dict[int, list[tuple[int, int, int]]] = {}
+    for (p1, p2), (v1, v2) in zip(vor.ridge_points, vor.ridge_vertices, strict=True):
+        all_ridges.setdefault(p1, []).append((p2, v1, v2))
+        all_ridges.setdefault(p2, []).append((p1, v1, v2))
+
+    for p1, region_index in enumerate(vor.point_region):
+        vertices = vor.regions[region_index]
+        if all(v >= 0 for v in vertices):
+            new_regions.append(vertices)
+            continue
+
+        ridges = all_ridges.get(p1, [])
+        new_region = [v for v in vertices if v >= 0]
+        for p2, v1, v2 in ridges:
+            if v2 < 0:
+                v1, v2 = v2, v1
+            if v1 >= 0:
+                continue
+            tangent = vor.points[p2] - vor.points[p1]
+            tangent /= np.linalg.norm(tangent)
+            normal = np.array([-tangent[1], tangent[0]])
+            midpoint = (vor.points[p1] + vor.points[p2]) / 2
+            direction = np.sign(np.dot(midpoint - center, normal)) * normal
+            far_point = vor.vertices[v2] + direction * radius
+            new_vertices.append(far_point.tolist())
+            new_region.append(len(new_vertices) - 1)
+        new_regions.append(new_region)
+
+    return new_regions, np.asarray(new_vertices)
+
+
+def _clip_polygon_to_bounds(
+    polygon: np.ndarray,
+    bounds: tuple[float, float, float, float],
+) -> np.ndarray:
+    def _clip_halfspace(
+        pts: list[list[float]],
+        axis: int,
+        value: float,
+        keep_greater: bool,
+    ) -> list[list[float]]:
+        if not pts:
+            return []
+        result: list[list[float]] = []
+        prev = pts[-1]
+        prev_inside = (prev[axis] >= value) if keep_greater else (prev[axis] <= value)
+        for curr in pts:
+            curr_inside = (curr[axis] >= value) if keep_greater else (curr[axis] <= value)
+            if curr_inside:
+                if not prev_inside:
+                    result.append(_halfspace_intersection(prev, curr, axis, value))
+                result.append(curr)
+            elif prev_inside:
+                result.append(_halfspace_intersection(prev, curr, axis, value))
+            prev = curr
+            prev_inside = curr_inside
+        return result
+
+    def _halfspace_intersection(
+        start: list[float] | np.ndarray,
+        end: list[float] | np.ndarray,
+        axis: int,
+        value: float,
+    ) -> list[float]:
+        start_val = start[axis]
+        end_val = end[axis]
+        if start_val == end_val:
+            intersection = end.copy() if isinstance(end, list) else end.tolist()
+            intersection[axis] = value
+            return intersection
+        t = (value - start_val) / (end_val - start_val)
+        intersection = [
+            start[0] + (end[0] - start[0]) * t,
+            start[1] + (end[1] - start[1]) * t,
+        ]
+        intersection[axis] = value
+        return intersection
+
+    pts = polygon.tolist()
+    xmin, ymin, xmax, ymax = bounds
+    for axis, value, keep_greater in (
+        (0, xmin, True),
+        (0, xmax, False),
+        (1, ymin, True),
+        (1, ymax, False),
+    ):
+        pts = _clip_halfspace(pts, axis, value, keep_greater)
+        if not pts:
+            break
+    return np.asarray(pts, dtype=float)
+
+
+def _polygon_area(polygon: np.ndarray) -> float:
+    if polygon.shape[0] < 3:
+        return 0.0
+    x = polygon[:, 0]
+    y = polygon[:, 1]
+    return 0.5 * float(np.abs(np.dot(x, np.roll(y, -1)) - np.dot(y, np.roll(x, -1))))

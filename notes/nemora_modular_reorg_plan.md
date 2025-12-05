@@ -136,4 +136,4 @@ src/nemora/
 9. [ ] Synthesis Phase 1 — tessellation prototype
    - [x] Upgrade `tessellation.generate_seed_points` to emit a `VoronoiSeedResult` that tracks point-process mixes plus CJFR hole/merge selections, backed by docs/tests/changelog notes.
    - [x] Thread the metadata through `nemora.synthesis.exporters` (JSON + CLI wiring) so seed recipes can be persisted without bespoke glue.
-   - [ ] Add Voronoi boundary clipping + target metric computation (`n`, `CV`, `μ_d`, `σ_d`) wired to regression fixtures mirroring the CJFR reference runs.
+   - [x] Add Voronoi boundary clipping + target metric computation (`n`, `CV`, `μ_d`, `σ_d`) wired to regression fixtures mirroring the CJFR reference runs.

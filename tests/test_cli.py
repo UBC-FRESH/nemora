@@ -309,6 +309,9 @@ def test_synthesis_generate_seeds_cli(tmp_path: Path) -> None:
     assert payload["config"]["count"] == 10
     assert "points" not in payload
     assert payload["metadata"]["process_counts"]["cluster"] >= 0
+    metrics = payload["metadata"]["metrics"]
+    assert metrics["polygon_count"] == 10
+    assert metrics["area_mean"] > 0
 
 
 def test_ingest_faib_command(tmp_path: Path) -> None:

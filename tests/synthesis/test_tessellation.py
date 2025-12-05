@@ -53,8 +53,34 @@ def test_editing_knobs_respected() -> None:
     edit = cast(dict[str, object], metadata["edit"])
     assert cast(int, edit["hole_count"]) == hole_expected
     assert cast(int, edit["merge_count"]) == merge_expected
+    metrics = cast(dict[str, object], metadata["metrics"])
+    assert metrics["polygon_count"] == 20
 
 
 def test_invalid_edit_fraction_rejected() -> None:
     with pytest.raises(ValueError):
         tessellation.VoronoiEditConfig(hole_fraction=0.6, merge_fraction=0.5)
+
+
+def test_voronoi_metrics_cover_area_and_vertex_stats() -> None:
+    cfg = tessellation.VoronoiSeedConfig(
+        count=16,
+        aspect_ratio=1.5,
+        mix=tessellation.PointProcessMix(uniform=1.0),
+        rng=np.random.default_rng(2468),
+    )
+    result = tessellation.generate_seed_points(cfg)
+    metrics = result.metrics
+    assert metrics.polygon_count == 16
+    assert metrics.area_mean > 0
+    assert 0 <= metrics.area_cv < 1
+    assert metrics.vertex_degree_mean > 0
+    # Ensure polygons respect bounds.
+    assert len(result.polygons) == 16
+    for poly in result.polygons:
+        if poly.size == 0:
+            continue
+        assert np.all(poly[:, 0] >= -1e-9)
+        assert np.all(poly[:, 0] <= cfg.aspect_ratio + 1e-9)
+        assert np.all(poly[:, 1] >= -1e-9)
+        assert np.all(poly[:, 1] <= 1.0 + 1e-9)

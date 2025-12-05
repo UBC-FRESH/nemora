@@ -42,3 +42,4 @@ def test_seed_recipe_payload_includes_config_when_points_disabled(tmp_path: Path
     exporters.export_seed_recipe(result, target, include_points=False)
     persisted = json.loads(target.read_text())
     assert persisted["config"]["mix"]["cluster"] == 0.5
+    assert persisted["metadata"]["metrics"]["polygon_count"] == 5

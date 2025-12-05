@@ -39,7 +39,7 @@ Also have a look at the FLG project documentation under `reference-papers/flg`. 
   - [x] Deliver deterministic `VoronoiSeedResult` generation that mixes the four point processes and applies the CJFR hole/merge editing knobs, returning metadata for exporters/tests.
   - [x] Expose exporter/CLI plumbing so seed recipes (config + metadata) can be captured as JSON artifacts.
   - [ ] Deterministic seed/control of initial plot centers (random, hex-packed, or imported points).
-  - [ ] Boundary clipping + min/max polygon size constraints, including optional shapefile/GeoJSON masks.
+  - [x] Boundary clipping + min/max polygon size constraints (CJFR metrics tracked via Voronoi polygons); optional shapefile/physiographic masks remain TODO.
   - [ ] Optional slope/elevation raster support for physiographic modifiers.
 - [ ] Attach stand-level attributes (species mix, age class, site index, crown closure) using probability surfaces or user-specified distributions; expose hooks for ingesting real inventory summaries.
 - [ ] Write regression tests comparing polygon statistics vs. Rlandscape reference runs (small seeds stored under `tests/fixtures/synthesis`).
