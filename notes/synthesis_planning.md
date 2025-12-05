@@ -54,6 +54,8 @@ Also have a look at the FLG project documentation under `reference-papers/flg`. 
     and fills a requested area with vegetation/age-class assignments for downstream DBH sampling.
   - [x] CLI bridge: `nemora synthesis-sample-attributes` loads template JSON and emits stand manifests
     so docs/tests can sample attributes without bespoke scripts.
+  - [x] Tessellation integration: `nemora synthesis-generate-seeds --include-polygons` plus
+    `nemora synthesis-assign-stands` attach sampled attributes to Voronoi polygons and export GeoJSON.
 - [ ] Write regression tests comparing polygon statistics vs. Rlandscape reference runs (small seeds stored under `tests/fixtures/synthesis`).
 
 ### Phase 2 — Stand tree-list synthesis

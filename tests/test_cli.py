@@ -11,6 +11,7 @@ from typer.testing import CliRunner
 
 from nemora import __version__
 from nemora.cli import _check_datalad_results, app
+from nemora.synthesis import exporters, tessellation
 from nemora.workflows import fit_hps_inventory
 
 runner = CliRunner()
@@ -469,6 +470,47 @@ def test_synthesis_generate_seeds_cli_geojson_layout(tmp_path: Path) -> None:
     payload = json.loads(output.read_text())
     layout_meta = cast(dict[str, object], payload["metadata"]["layout"])
     assert layout_meta["geojson_features"] == 2
+
+
+def test_synthesis_assign_stands_cli(tmp_path: Path) -> None:
+    cfg = tessellation.VoronoiSeedConfig(
+        count=3,
+        rng=np.random.default_rng(11),
+    )
+    result = tessellation.generate_seed_points(cfg)
+    recipe_path = tmp_path / "recipe.json"
+    exporters.export_seed_recipe(
+        result,
+        recipe_path,
+        include_points=False,
+        include_polygons=True,
+    )
+    attributes_path = tmp_path / "attributes.json"
+    attributes_path.write_text(
+        json.dumps(
+            [
+                {"vegetation_type": "fir", "age_class": "30-60", "area": 3.0},
+                {"vegetation_type": "pine", "age_class": "20-40", "area": 2.5},
+            ]
+        ),
+        encoding="utf-8",
+    )
+    output = tmp_path / "stands.geojson"
+    result_cli = runner.invoke(
+        app,
+        [
+            "synthesis-assign-stands",
+            "--seed-recipe",
+            str(recipe_path),
+            "--attributes",
+            str(attributes_path),
+            "--output",
+            str(output),
+        ],
+    )
+    assert result_cli.exit_code == 0
+    payload = json.loads(output.read_text())
+    assert payload["features"]
 
 
 def test_synthesis_sample_attributes_cli(tmp_path: Path) -> None:

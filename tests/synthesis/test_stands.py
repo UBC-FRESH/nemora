@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import cast
 
 import numpy as np
 
@@ -39,3 +40,29 @@ def test_sample_stand_attributes_and_loader(tmp_path: Path) -> None:
     samples = stands.sample_stand_attributes(templates, total_area=5.0, rng=rng)
     assert samples
     assert sum(sample.area for sample in samples) <= 5.0 + 1e-6
+
+
+def test_load_stand_samples_from_json(tmp_path: Path) -> None:
+    json_path = tmp_path / "samples.json"
+    json_path.write_text(
+        '[{"vegetation_type":"fir","age_class":"20-40","area":3.4}]',
+        encoding="utf-8",
+    )
+    samples = stands.load_samples_from_json(json_path)
+    assert len(samples) == 1
+    assert samples[0].vegetation_type == "fir"
+
+
+def test_build_stand_features_pairs_polygons() -> None:
+    polygons = [
+        np.array([[0.0, 0.0], [0.2, 0.0], [0.2, 0.2], [0.0, 0.2]], dtype=float),
+        np.array([[0.5, 0.5], [0.7, 0.5], [0.6, 0.7]], dtype=float),
+    ]
+    samples = [
+        stands.StandAttributeSample("fir", "20-40", 3.0),
+        stands.StandAttributeSample("pine", "40-60", 2.0),
+    ]
+    features = stands.build_stand_features(polygons, samples)
+    assert len(features) == 2
+    props = cast(dict[str, object], features[0]["properties"])
+    assert props["veg_type"] == "fir"

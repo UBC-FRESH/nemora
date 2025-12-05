@@ -329,6 +329,42 @@ JSON list such as:
 Pass the manifest downstream to synthesis/exporter scripts or stash it alongside the Voronoi seed
 recipe so regression tests share the same attribute plan.
 
+### CLI helper — attach attributes to polygons
+
+1. Export a seed recipe that includes polygons:
+
+```bash
+nemora synthesis-generate-seeds \
+    --count 40 \
+    --include-polygons \
+    --metadata-only \
+    --output artifacts/seeds_with_polygons.json
+```
+
+2. Sample attributes as shown above:
+
+```bash
+nemora synthesis-sample-attributes \
+    --templates data/veg_templates.json \
+    --total-area 40 \
+    --seed 123 \
+    --output artifacts/stands_sampled.json
+```
+
+3. Assign the samples to polygons and emit GeoJSON:
+
+```bash
+nemora synthesis-assign-stands \
+    --seed-recipe artifacts/seeds_with_polygons.json \
+    --attributes artifacts/stands_sampled.json \
+    --output artifacts/stands.geojson
+```
+
+Use `--strict-count` when you expect the number of non-empty polygons to match the sampled stands
+exactly; otherwise, the command truncates whichever list is longer and prints a warning. The output
+GeoJSON stores both the sampled template area and the actual polygon area so downstream workflows
+can reconcile differences.
+
 ## Helper module (`nemora.synthesis.helpers`)
 
 Nemora exposes helper utilities that convert bootstrap results into synthesis-ready payloads:

@@ -16,6 +16,8 @@ __all__ = [
     "build_templates",
     "sample_stand_attributes",
     "load_templates_from_json",
+    "load_samples_from_json",
+    "build_stand_features",
 ]
 
 
@@ -156,3 +158,67 @@ def load_templates_from_json(path: Path) -> list[StandAttributeTemplate]:
     if not isinstance(payload, list):
         raise ValueError("Template JSON must be a list of records.")
     return build_templates(cast(Iterable[Mapping[str, object]], payload))
+
+
+def load_samples_from_json(path: Path) -> list[StandAttributeSample]:
+    """Load stand attribute samples (vegetation/age/area) from JSON."""
+
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, list):
+        raise ValueError("Stand attributes JSON must be a list of records.")
+    samples: list[StandAttributeSample] = []
+    for record in payload:
+        if not isinstance(record, Mapping):
+            raise ValueError("Each stand attribute entry must be a mapping.")
+        vegetation_type = str(record.get("vegetation_type", ""))
+        age_class = str(record.get("age_class", ""))
+        area = float(record.get("area", 0.0))
+        samples.append(
+            StandAttributeSample(
+                vegetation_type=vegetation_type,
+                age_class=age_class,
+                area=area,
+            )
+        )
+    return samples
+
+
+def build_stand_features(
+    polygons: Sequence[np.ndarray],
+    samples: Sequence[StandAttributeSample],
+) -> list[dict[str, object]]:
+    """Pair Voronoi polygons with sampled attributes and return GeoJSON features."""
+
+    valid_polygons = [poly for poly in polygons if poly.size > 0]
+    if not valid_polygons or not samples:
+        return []
+    count = min(len(valid_polygons), len(samples))
+    features: list[dict[str, object]] = []
+    for idx in range(count):
+        polygon = valid_polygons[idx]
+        sample = samples[idx]
+        area = _polygon_area(polygon)
+        features.append(
+            {
+                "type": "Feature",
+                "properties": {
+                    "veg_type": sample.vegetation_type,
+                    "age_class": sample.age_class,
+                    "area_template": sample.area,
+                    "polygon_area": area,
+                },
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [polygon.tolist()],
+                },
+            }
+        )
+    return features
+
+
+def _polygon_area(polygon: np.ndarray) -> float:
+    if polygon.shape[0] < 3:
+        return 0.0
+    x = polygon[:, 0]
+    y = polygon[:, 1]
+    return 0.5 * float(abs(np.dot(x, np.roll(y, -1)) - np.dot(y, np.roll(x, -1))))

@@ -329,6 +329,34 @@ SEED_RECIPE_OUTPUT_OPTION = typer.Option(
     show_default=True,
 )
 
+SEED_RECIPE_INPUT_OPTION = typer.Option(
+    ...,
+    "--seed-recipe",
+    exists=True,
+    file_okay=True,
+    dir_okay=False,
+    readable=True,
+    help="Seed recipe JSON (exported via synthesis-generate-seeds with --include-polygons).",
+)
+
+STAND_ATTRIBUTES_INPUT_OPTION = typer.Option(
+    ...,
+    "--attributes",
+    exists=True,
+    file_okay=True,
+    dir_okay=False,
+    readable=True,
+    help="Stand attribute JSON produced by synthesis-sample-attributes.",
+)
+
+STAND_GEOJSON_OUTPUT_OPTION = typer.Option(
+    Path("synthesis_stands.geojson"),
+    "--output",
+    "-o",
+    help="Destination GeoJSON path for stand polygons + attributes.",
+    show_default=True,
+)
+
 MASK_GEOJSON_OPTION = cast(
     Any,
     typer.Option(
@@ -1329,6 +1357,12 @@ def synthesis_generate_seeds(  # noqa: B008
         help="Toggle writing raw coordinates alongside metadata.",
         show_default=True,
     ),
+    include_polygons: bool = typer.Option(
+        False,
+        "--include-polygons/--no-polygons",
+        help="Toggle writing Voronoi polygons to the seed recipe JSON.",
+        show_default=True,
+    ),
     mask_geojson: list[Path] | None = MASK_GEOJSON_OPTION,
     mask_modes: list[str] | None = MASK_MODE_OPTION,
     mask_names: list[str] | None = MASK_NAME_OPTION,
@@ -1477,7 +1511,12 @@ def synthesis_generate_seeds(  # noqa: B008
         console.print(f"[red]Failed to generate seeds:[/red] {exc}")
         raise typer.Exit(code=1) from exc
 
-    exporters.export_seed_recipe(result, output, include_points=include_points)
+    exporters.export_seed_recipe(
+        result,
+        output,
+        include_points=include_points,
+        include_polygons=include_polygons,
+    )
     metrics = result.metrics
     mask_suffix = ""
     mask_bits: list[str] = []
@@ -1530,6 +1569,85 @@ def synthesis_sample_attributes_cli(  # noqa: B008
     console.print(
         "[green]Stand attributes sampled[/green] "
         f"{len(samples)} patches (~{sum(p.area for p in samples):.2f} ha) → {output}"
+    )
+
+
+@app.command("synthesis-assign-stands")
+def synthesis_assign_stands_cli(  # noqa: B008
+    seed_recipe_path: Path = SEED_RECIPE_INPUT_OPTION,
+    attributes_path: Path = STAND_ATTRIBUTES_INPUT_OPTION,
+    output: Path = STAND_GEOJSON_OUTPUT_OPTION,
+    crs: str | None = typer.Option(
+        None,
+        "--crs",
+        help="Optional CRS identifier to record in the GeoJSON.",
+        show_default=False,
+    ),
+    strict: bool = typer.Option(
+        False,
+        "--strict-count/--allow-truncate",
+        help="Require attribute/sample counts to match non-empty polygons.",
+        show_default=True,
+    ),
+) -> None:
+    """Attach stand attributes to Voronoi polygons and export GeoJSON."""
+
+    try:
+        recipe = json.loads(seed_recipe_path.read_text(encoding="utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        console.print(f"[red]Failed to read seed recipe:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+    raw_polygons = recipe.get("polygons")
+    if not isinstance(raw_polygons, list):
+        console.print(
+            "[red]Seed recipe is missing polygons. Re-export with --include-polygons enabled.[/red]"
+        )
+        raise typer.Exit(code=1)
+    polygons: list[np.ndarray] = []
+    try:
+        for coords in raw_polygons:
+            array = np.asarray(coords, dtype=float)
+            polygons.append(array)
+    except Exception as exc:  # noqa: BLE001
+        console.print(f"[red]Invalid polygon coordinates in recipe:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+
+    try:
+        samples = stands.load_samples_from_json(attributes_path)
+    except Exception as exc:  # noqa: BLE001
+        console.print(f"[red]Failed to read stand attributes:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+
+    valid_polygon_count = sum(1 for poly in polygons if poly.size > 0)
+    if not valid_polygon_count or not samples:
+        console.print("[red]No polygons or stand samples available for assignment.[/red]")
+        raise typer.Exit(code=1)
+    if strict and valid_polygon_count != len(samples):
+        console.print(
+            "[red]Strict mode requires polygon and sample counts to match "
+            f"(polygons={valid_polygon_count}, samples={len(samples)}).[/red]"
+        )
+        raise typer.Exit(code=1)
+
+    features = stands.build_stand_features(polygons, samples)
+    if not features:
+        console.print("[red]Failed to build stand features from the provided inputs.[/red]")
+        raise typer.Exit(code=1)
+    exporters.export_geojson(features, output, crs=crs)
+    assigned = len(features)
+    if assigned < len(samples):
+        console.print(
+            "[yellow]Warning:[/yellow] unused samples "
+            f"(assigned {assigned} / provided {len(samples)})."
+        )
+    if assigned < valid_polygon_count:
+        console.print(
+            "[yellow]Warning:[/yellow] only "
+            f"{assigned} of {valid_polygon_count} polygons received attributes."
+        )
+    console.print(
+        "[green]Stand GeoJSON written[/green] "
+        f"{output} (stands={assigned}, crs={crs or 'unspecified'})"
     )
 
 

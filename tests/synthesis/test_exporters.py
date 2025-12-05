@@ -58,3 +58,22 @@ def test_seed_recipe_payload_includes_config_when_points_disabled(tmp_path: Path
     mask_metadata = cast(dict[str, object], persisted["metadata"]["mask"])
     primary = cast(dict[str, object], mask_metadata["primary"])
     assert primary["name"] == "unit-square"
+
+
+def test_seed_recipe_payload_can_include_polygons(tmp_path: Path) -> None:
+    cfg = tessellation.VoronoiSeedConfig(
+        count=3,
+        rng=np.random.default_rng(7),
+    )
+    result = tessellation.generate_seed_points(cfg)
+    target = tmp_path / "recipe_polygons.json"
+    exporters.export_seed_recipe(
+        result,
+        target,
+        include_points=False,
+        include_polygons=True,
+    )
+    payload = json.loads(target.read_text())
+    polygons = cast(list[list[list[float]]], payload["polygons"])
+    assert len(polygons) == 3
+    assert isinstance(polygons[0][0][0], float)

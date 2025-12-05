@@ -133,10 +133,11 @@ src/nemora/
    - [x] Draft shim strategy (`nemora.distfit`/`nemora.synthforest` re-export with deprecation warnings) and update CLI command prefixes to avoid breaking existing tutorials.
    - [x] Execute the package/layout rename on this branch, run the full validation suite, and record the breaking change in CHANGE_LOG once ready to merge to `main`.
    - [x] Repo sweep (2025-12-04) confirmed no lingering `nemora.distfit`/`nemora.synthforest` references outside the shims, roadmap note, and CHANGE_LOG history.
-9. [ ] Synthesis Phase 1 — tessellation prototype
+9. [x] Synthesis Phase 1 — tessellation prototype
    - [x] Upgrade `tessellation.generate_seed_points` to emit a `VoronoiSeedResult` that tracks point-process mixes plus CJFR hole/merge selections, backed by docs/tests/changelog notes.
    - [x] Thread the metadata through `nemora.synthesis.exporters` (JSON + CLI wiring) so seed recipes can be persisted without bespoke glue.
    - [x] Add Voronoi boundary clipping + target metric computation (`n`, `CV`, `μ_d`, `σ_d`) wired to regression fixtures mirroring the CJFR reference runs.
    - [x] Introduce `SeedLayoutConfig` + CLI helpers for deterministic layouts (hex grids, imported CSV/JSON coordinates) so docs/tests can reuse the same seed recipes.
    - [x] Follow up with physiographic modifiers (raster-informed masks, multiple convex clips) and deterministic seed imports from external GIS layers once layout plumbing is exercised.
    - [x] Start wiring stand-level attribute sampling via reusable templates and a helper that fills target areas with vegetation/age-class assignments.
+   - [x] Provide CLI/exporters (`synthesis-sample-attributes`, `synthesis-assign-stands`, GeoJSON helpers) so Voronoi polygons + attributes can be emitted as ready-to-plot artifacts.

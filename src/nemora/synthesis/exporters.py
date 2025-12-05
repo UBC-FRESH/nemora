@@ -50,6 +50,7 @@ def seed_recipe_payload(
     result: VoronoiSeedResult,
     *,
     include_points: bool = True,
+    include_polygons: bool = False,
 ) -> dict[str, Any]:
     """Return a JSON-ready payload describing the seed configuration + metadata."""
 
@@ -61,6 +62,8 @@ def seed_recipe_payload(
         payload["points"] = result.points.tolist()
         payload["hole_points"] = result.hole_points.tolist()
         payload["merge_pairs"] = result.merge_pairs.tolist()
+    if include_polygons:
+        payload["polygons"] = [polygon.tolist() for polygon in result.polygons]
     return payload
 
 
@@ -69,10 +72,15 @@ def export_seed_recipe(
     path: Path,
     *,
     include_points: bool = True,
+    include_polygons: bool = False,
 ) -> None:
     """Persist a seed recipe JSON (config + metadata, optionally raw coordinates)."""
 
-    payload = seed_recipe_payload(result, include_points=include_points)
+    payload = seed_recipe_payload(
+        result,
+        include_points=include_points,
+        include_polygons=include_polygons,
+    )
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 

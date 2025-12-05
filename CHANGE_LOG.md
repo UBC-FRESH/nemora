@@ -330,3 +330,15 @@
 - `docs/howto/synthesis.md` now documents the CLI workflow, including example output.
 - Regression coverage expanded via a new CLI test; roadmap and planning notes now mark the Phase 1
   stand-attribute deliverable complete.
+
+## 2025-12-07 — Stand assignment GeoJSON helper
+
+- `nemora synthesis-generate-seeds` gained `--include-polygons`, allowing seed recipe JSON exports to
+  store Voronoi polygons when downstream tools need geometry without recomputing the tessellation.
+- Introduced `nemora synthesis-assign-stands`, a Typer command that combines a polygon-rich seed
+  recipe with a sampled attribute manifest and emits a ready-to-plot GeoJSON FeatureCollection; the
+  command warns about mismatched counts and offers a `--strict-count` guardrail when a 1:1 mapping is
+  required.
+- Extended `nemora.synthesis.stands` with helpers to load sampled attributes and build GeoJSON
+  features, updated `docs/howto/synthesis.md` with the full CLI pipeline, and expanded exporter/CLI
+  regression tests to cover the new flows.
