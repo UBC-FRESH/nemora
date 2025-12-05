@@ -17,18 +17,22 @@ Also have a look at the FLG project documentation under `reference-papers/flg`. 
 ## Multi-phase implementation plan
 
 ### Phase 0 — Research & design scaffolding
-- [ ] Catalogue requirements from the CJFR paper (`reference-papers/2012-a-voronoi-tessellation-based-approach-to-generate-hypothetical-forest-landscapes.pdf`) and the legacy R source (rpubs link) into this document (algorithms, inputs, stochastic controls, outputs).
-  - [ ] Summarise core algorithm steps (seed point generation, Voronoi clipping, stand attribute assignment) with page references so implementation tasks can cite them directly.
-  - [ ] Extract data requirements (input rasters, stand tables, configuration parameters) and note optional vs mandatory fields.
-  - [ ] Capture stochastic controls (seed handling, distribution choices) and document how reproducibility is achieved in the Rlandscape reference.
-- [ ] Review the FLG documentation (`reference-papers/flg/*`) to capture complementary insights (stand attribute templates, historical assumptions) and flag what, if anything, we will reuse.
-  - [ ] List reusable artefacts (e.g., stand attribute schema, growth assumptions) and explicitly log any decisions to drop FLG-era behaviour.
-  - [ ] Identify calibration/validation data mentioned in FLG docs that we can repurpose for regression tests or gallery notebooks.
-- [ ] Define the Python module skeleton in `src/nemora/synthesis/` (submodules for tessellation, canopy assignment, stand population, exporters) plus matching `tests/` scaffolding and doc stubs.
-  - [ ] Create placeholder modules (`tessellation.py`, `stands.py`, `exporters.py`) with docstrings describing their eventual responsibilities.
-  - [ ] Add `tests/synthesis/` scaffolding (fixtures directory, smoke-test placeholders) so future PRs have a landing spot.
-  - [ ] Draft documentation stubs (`docs/howto/synthesis.md`, `docs/reference/synthesis.md`) with section headings linked to the roadmap phases.
-- [ ] When the Phase 0 checklist is complete, update ROADMAP Phase 2 (`nemora.synthesis`) and the modular reorg plan to mark research scaffolding done and unblock Phase 1 implementation tasks.
+- [ ] **CJFR + Rlandscape requirements dump**
+  Catalogue requirements from the CJFR paper (`reference-papers/2012-a-voronoi-tessellation-based-approach-to-generate-hypothetical-forest-landscapes.pdf`) and the legacy R source (rpubs link) into this document (algorithms, inputs, stochastic controls, outputs).
+  - [ ] Summarise core algorithm steps (seed point generation, Voronoi clipping, stand attribute assignment) with explicit page references for each mechanism.
+  - [ ] Extract data requirements (input rasters, stand tables, configuration parameters), calling out which inputs are optional vs. mandatory.
+  - [ ] Capture stochastic controls (seed handling, distribution selection, reproducibility guarantees) and cite how Rlandscape handles them today.
+- [ ] **FLG documentation review**
+  Review the FLG documentation (`reference-papers/flg/*`) to capture complementary insights (stand attribute templates, historical assumptions) and flag what, if anything, we will reuse.
+  - [ ] List reusable artefacts (attribute schemas, calibration datasets) and explicitly log any FLG features we intend to drop or modernise.
+  - [ ] Identify calibration/validation data mentioned in FLG docs that can seed regression tests or gallery notebooks.
+- [ ] **Module/test/doc scaffolding**
+  Define the Python module skeleton in `src/nemora/synthesis/` (submodules for tessellation, canopy assignment, stand population, exporters) plus matching `tests/` scaffolding and doc stubs.
+  - [ ] Create placeholder modules (`tessellation.py`, `stands.py`, `exporters.py`) with TODO docstrings outlining responsibilities + dependencies.
+  - [ ] Add `tests/synthesis/` scaffolding (fixtures directory, smoke-test placeholders) plus sample seed data for future Voronoi tests.
+  - [ ] Expand `docs/howto/synthesis.md` + `docs/reference/synthesis.md` with section headings aligned to Phases 1‑3 so we know where upcoming content lands.
+- [ ] **Roadmap alignment**
+  When the Phase 0 checklist is complete, update ROADMAP Phase 2 (`nemora.synthesis`) and `notes/nemora_modular_reorg_plan.md` to mark the research groundwork done and unblock Phase 1 implementation.
 
 ### Phase 1 — Landscape geometry & metadata
 - [ ] Implement Voronoi-based tiling mirroring Rlandscape behaviour:
