@@ -281,6 +281,36 @@ def test_sampling_export_bootstrap_dbh_cli(tmp_path: Path) -> None:
     assert {"stand_id", "dbh", "weight"} <= set(frame.columns)
 
 
+def test_synthesis_generate_seeds_cli(tmp_path: Path) -> None:
+    output = tmp_path / "seeds.json"
+    result = runner.invoke(
+        app,
+        [
+            "synthesis-generate-seeds",
+            "--count",
+            "10",
+            "--mix-uniform",
+            "0.7",
+            "--mix-cluster",
+            "0.3",
+            "--hole-fraction",
+            "0.1",
+            "--merge-fraction",
+            "0.1",
+            "--seed",
+            "7",
+            "--metadata-only",
+            "--output",
+            str(output),
+        ],
+    )
+    assert result.exit_code == 0
+    payload = json.loads(output.read_text())
+    assert payload["config"]["count"] == 10
+    assert "points" not in payload
+    assert payload["metadata"]["process_counts"]["cluster"] >= 0
+
+
 def test_ingest_faib_command(tmp_path: Path) -> None:
     fixtures = Path("tests/fixtures/faib")
     output = tmp_path / "stand_table.csv"

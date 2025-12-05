@@ -78,7 +78,7 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
    - [x] Announce the breaking rename in README/CHANGE_LOG once the shims/tests/CLI wiring are proven on the `rename-modules-plan` branch (ready to merge into `main`).
 5. **Synthesis Phase 1 — tessellation prototype**
    - [x] Upgrade `tessellation.generate_seed_points` so it produces a `VoronoiSeedResult` with process-mix counts plus CJFR hole/merge bookkeeping, wired into docs/tests.
-   - [ ] Persist the metadata via exporters + CLI plumbing so seed recipes become first-class artifacts.
+   - [x] Persist the metadata via exporters + CLI plumbing so seed recipes become first-class artifacts.
    - [ ] Extend Phase 1 with Voronoi clipping + target metric reporting (`n`, `CV`, `μ_d`, `σ_d`) benchmarked against CJFR/rlandscape fixtures.
 
 ## Backlog & Ideas

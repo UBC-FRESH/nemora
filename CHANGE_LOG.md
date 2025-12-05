@@ -278,5 +278,6 @@
 
 - Upgraded `nemora.synthesis.tessellation.generate_seed_points` to return a `VoronoiSeedResult` object that captures process-mix counts plus CJFR hole/merge selections, ensuring the resulting coordinates always honour the requested polygon count.
 - Added deterministic editing logic (hole deletions + random merge midpoints) and exposed a `metadata()` helper so exporters/CLI tooling can persist the control knobs without bespoke glue.
-- Expanded synthesis how-to docs, roadmap entries, and planning notes to mark Phase 0 as complete and outline the Phase 1 tessellation follow-ups; added regression tests covering cluster-only mixes, editing fractions, and invalid configs.
+- Added `nemora.synthesis.exporters.export_seed_recipe` + CLI plumbing (`nemora synthesis-generate-seeds`) so Voronoi seed recipes (config + metadata, optionally coordinates) can be exported as JSON artifacts; updated docs/tests/planning notes to cover the workflow.
+- Expanded synthesis how-to docs, roadmap entries, and planning notes to mark Phase 0 as complete and outline the Phase 1 tessellation follow-ups; added regression tests covering cluster-only mixes, editing fractions, exporter payloads, and invalid configs.
 - Tests / validation: `ruff format src tests`, `ruff check src tests`, `mypy src` *(fails on pre-existing typing gaps in `src/nemora/dataprep/hps.py` and `src/nemora/ingest/{fia,faib}.py`)*, `pytest`, `sphinx-build -b html docs _build/html -W`, `pre-commit run --all-files`.

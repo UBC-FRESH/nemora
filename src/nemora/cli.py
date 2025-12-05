@@ -59,6 +59,7 @@ from .ingest.hps import (
     load_plot_selections as load_hps_plot_selections,
 )
 from .sampling import BootstrapResult, bootstrap_dbh_vectors, bootstrap_inventory
+from .synthesis import exporters, tessellation
 from .synthesis.helpers import bootstrap_payload
 from .workflows.hps import fit_hps_inventory
 
@@ -317,6 +318,14 @@ STAND_TABLE_ARGUMENT = typer.Argument(
     exists=True,
     readable=True,
     help="CSV/Parquet stand table with bin/tally columns.",
+)
+
+SEED_RECIPE_OUTPUT_OPTION = typer.Option(
+    Path("synthesis_seed_recipe.json"),
+    "--output",
+    "-o",
+    help="Destination JSON path for Voronoi seed recipes.",
+    show_default=True,
 )
 
 BOOTSTRAP_DBH_OUTPUT_OPTION = typer.Option(
@@ -1016,6 +1025,169 @@ def sampling_export_bootstrap_dbh(  # noqa: B008
             else:
                 frame.to_csv(table_output, index=False)
             console.print(f"[green]Bootstrap DBH table written[/green] {table_output}")
+
+
+@app.command("synthesis-generate-seeds")
+def synthesis_generate_seeds(  # noqa: B008
+    count: int = typer.Option(200, "--count", "-c", min=1, help="Target polygon/seed count."),
+    aspect_ratio: float = typer.Option(
+        1.0,
+        "--aspect-ratio",
+        "-a",
+        min=0.01,
+        help="Width/height ratio for the bounding rectangle.",
+        show_default=True,
+    ),
+    mix_uniform: float = typer.Option(
+        1.0,
+        "--mix-uniform",
+        help="Weight for the uniform (CSR) point process.",
+        show_default=True,
+    ),
+    mix_cluster: float = typer.Option(
+        0.0,
+        "--mix-cluster",
+        help="Weight for the clustered process.",
+        show_default=True,
+    ),
+    mix_inhibition: float = typer.Option(
+        0.0,
+        "--mix-inhibition",
+        help="Weight for the inhibition (SSI) process.",
+        show_default=True,
+    ),
+    mix_lattice: float = typer.Option(
+        0.0,
+        "--mix-lattice",
+        help="Weight for the lattice/grid process.",
+        show_default=True,
+    ),
+    cluster_size: int = typer.Option(
+        6,
+        "--cluster-size",
+        min=1,
+        help="Approximate number of points per cluster.",
+        show_default=True,
+    ),
+    cluster_spread: float = typer.Option(
+        0.05,
+        "--cluster-spread",
+        min=0.0,
+        help="Cluster spread expressed as a fraction of the unit square.",
+        show_default=True,
+    ),
+    inhibition_min_distance: float | None = typer.Option(
+        None,
+        "--inhibition-min-distance",
+        help="Optional SSI minimum distance (defaults to aspect-ratio dependent heuristic).",
+        show_default=False,
+    ),
+    inhibition_attempts: int = typer.Option(
+        500,
+        "--inhibition-attempts",
+        min=1,
+        help="Maximum SSI placement attempts per point when no deterministic layout exists.",
+        show_default=True,
+    ),
+    lattice_nx: int | None = typer.Option(
+        None,
+        "--lattice-nx",
+        min=1,
+        help="Optional fixed lattice resolution (columns). Provide with --lattice-ny.",
+        show_default=False,
+    ),
+    lattice_ny: int | None = typer.Option(
+        None,
+        "--lattice-ny",
+        min=1,
+        help="Optional fixed lattice resolution (rows). Provide with --lattice-nx.",
+        show_default=False,
+    ),
+    lattice_jitter: float = typer.Option(
+        0.0,
+        "--lattice-jitter",
+        min=0.0,
+        help="Standard deviation (fraction of cell size) for lattice jitter.",
+        show_default=True,
+    ),
+    hole_fraction: float = typer.Option(
+        0.0,
+        "--hole-fraction",
+        min=0.0,
+        help="CJFR hole fraction (p_H) applied after tessellation.",
+        show_default=True,
+    ),
+    merge_fraction: float = typer.Option(
+        0.0,
+        "--merge-fraction",
+        min=0.0,
+        help="CJFR merge fraction (p_M) applied after tessellation.",
+        show_default=True,
+    ),
+    seed: int | None = typer.Option(
+        None,
+        "--seed",
+        help="Optional RNG seed for reproducible seed placement.",
+        show_default=False,
+    ),
+    include_points: bool = typer.Option(
+        True,
+        "--include-points/--metadata-only",
+        help="Toggle writing raw coordinates alongside metadata.",
+        show_default=True,
+    ),
+    output: Path = SEED_RECIPE_OUTPUT_OPTION,
+) -> None:
+    """Generate Voronoi seed recipes and export them as JSON."""
+
+    if (lattice_nx is None) ^ (lattice_ny is None):
+        console.print(
+            "[red]Provide both --lattice-nx and --lattice-ny when fixing resolution.[/red]"
+        )
+        raise typer.Exit(code=1)
+
+    lattice_resolution = None
+    if lattice_nx is not None and lattice_ny is not None:
+        lattice_resolution = (lattice_nx, lattice_ny)
+
+    rng = np.random.default_rng(seed) if seed is not None else None
+    try:
+        config = tessellation.VoronoiSeedConfig(
+            count=count,
+            aspect_ratio=aspect_ratio,
+            mix=tessellation.PointProcessMix(
+                uniform=mix_uniform,
+                cluster=mix_cluster,
+                inhibition=mix_inhibition,
+                lattice=mix_lattice,
+            ),
+            cluster=tessellation.ClusterConfig(size=cluster_size, spread=cluster_spread),
+            inhibition=tessellation.InhibitionConfig(
+                min_distance=inhibition_min_distance,
+                max_attempts_per_point=inhibition_attempts,
+            ),
+            lattice=tessellation.LatticeConfig(
+                resolution=lattice_resolution,
+                jitter=lattice_jitter,
+            ),
+            edit=tessellation.VoronoiEditConfig(
+                hole_fraction=hole_fraction,
+                merge_fraction=merge_fraction,
+            ),
+            rng=rng,
+        )
+    except ValueError as exc:  # noqa: BLE001
+        console.print(f"[red]Invalid seed configuration:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+
+    try:
+        result = tessellation.generate_seed_points(config)
+    except Exception as exc:  # noqa: BLE001
+        console.print(f"[red]Failed to generate seeds:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+
+    exporters.export_seed_recipe(result, output, include_points=include_points)
+    console.print(f"[green]Seed recipe written[/green] {output}")
 
 
 @app.command("ingest-faib")

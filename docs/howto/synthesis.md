@@ -41,6 +41,27 @@ internally produces `count + n_hole + n_merge` points, deletes the requested hol
 collapses random merge pairs into shared midpoints. Fractions must sum to < 1 (mirroring the CJFR
 constraints) to guarantee a feasible configuration.
 
+### CLI export
+
+You can also export seed recipes directly from the CLI without writing Python scaffolding:
+
+```bash
+nemora synthesis-generate-seeds \
+    --count 150 \
+    --aspect-ratio 1.5 \
+    --mix-uniform 0.5 \
+    --mix-cluster 0.3 \
+    --mix-inhibition 0.2 \
+    --hole-fraction 0.05 \
+    --merge-fraction 0.1 \
+    --seed 20251205 \
+    --output artifacts/seed_recipe.json
+```
+
+The resulting JSON contains the full configuration metadata (point-process mix, cluster/SSI/lattice
+parameters, edit fractions) and, by default, the raw coordinate arrays. Add `--metadata-only` when
+you only need the knobs (e.g., docs/tests that re-run the generator on demand).
+
 ## Expected input shape
 
 ```python
