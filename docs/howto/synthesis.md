@@ -66,6 +66,33 @@ can quote the same statistics without recomputing the Voronoi diagram. When a co
 available, add `--mask-geojson path/to/polygon.geojson` (plus optional `--mask-name`) to clip the
 Voronoi polygons/metrics to physiographic boundaries.
 
+### Deterministic layouts
+
+`VoronoiSeedConfig` now accepts a `SeedLayoutConfig`, enabling deterministic seed placement without
+relying on the stochastic point-process mix. Set `layout=SeedLayoutConfig(mode="hex")` for a hex
+packed grid or `layout=SeedLayoutConfig(mode="imported", points=array)` when upstream workflows
+provide explicit `(x, y)` coordinates. Hex layouts derive spacing from the requested `count` and
+`aspect_ratio`, ensuring repeatable coverage across doc/tests/CLI exports.
+
+The CLI exposes the same controls:
+
+```bash
+# Hex-packed arrangement (ignores mix knobs)
+nemora synthesis-generate-seeds --count 80 --layout hex --metadata-only --output seeds_hex.json
+
+# Imported coordinates from CSV (x,y headers) or JSON points
+nemora synthesis-generate-seeds \
+    --count 50 \
+    --layout imported \
+    --layout-points fixtures/seed_points.csv \
+    --output fixtures/imported_layout.json
+```
+
+Imported layouts expect coordinates in the unit box (x ∈ [0, aspect_ratio], y ∈ [0, 1]). CSV inputs
+must expose `x` and `y` headers; JSON inputs can be a raw list of `[x, y]` pairs or an object with a
+`points` list. Metadata emitted by `export_seed_recipe` reports the chosen layout mode plus the
+number of coordinates provided so downstream docs/tests can cite the provenance.
+
 ## Expected input shape
 
 ```python

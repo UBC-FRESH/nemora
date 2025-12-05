@@ -283,3 +283,11 @@
 - Added optional mask support: convex GeoJSON polygons (or multipolygons) can clip the Voronoi polygons via both the Python API (`MaskGeometry`) and CLI (`--mask-geojson/--mask-name`), ensuring metrics respect physiographic boundaries; docs/tests/planning notes were updated accordingly.
 - Expanded synthesis how-to docs, roadmap entries, and planning notes to mark Phase 0 as complete and outline the Phase 1 tessellation follow-ups; added regression tests covering cluster-only mixes, editing fractions, exporter payloads, Voronoi metrics, and invalid configs.
 - Tests / validation: `ruff format src tests`, `ruff check src tests`, `mypy src` *(fails on pre-existing typing gaps in `src/nemora/dataprep/hps.py` and `src/nemora/ingest/{fia,faib}.py`)*, `pytest`, `sphinx-build -b html docs _build/html -W`, `pre-commit run --all-files`.
+
+## 2025-12-06 — Deterministic tessellation layouts
+
+- Added `SeedLayoutMode`/`SeedLayoutConfig` to `nemora.synthesis.tessellation` so Voronoi seeds can be generated from hex-packed grids or imported coordinate sets in addition to the stochastic process mix; metadata now records the layout mode/source for downstream exporters/tests.
+- Exposed the layout controls via `nemora synthesis-generate-seeds --layout {random,hex,imported}` plus `--layout-points` for CSV/JSON coordinate files, including validation helpers that ingest `x,y` tables and ensure the bounding box constraints hold.
+- Updated docs (`docs/howto/synthesis.md`) and planning notes (roadmap + synthesis plan + modular reorg outline) to mark the Phase 1 deterministic layout checklist complete and describe how the CLI/API consume the new knobs.
+- Expanded regression coverage: new tessellation tests assert deterministic hex grids/imported coordinates, and CLI tests verify the new options/metadata plumbing.
+- Tests / validation: `ruff format src tests`, `ruff check src tests`, `mypy src` *(fails on existing typing issues in `src/nemora/dataprep/hps.py` and `src/nemora/ingest/{fia,faib}.py`)*, `pytest`, `sphinx-build -b html docs _build/html -W`, `pre-commit run --all-files`.

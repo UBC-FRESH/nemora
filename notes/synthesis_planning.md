@@ -38,7 +38,11 @@ Also have a look at the FLG project documentation under `reference-papers/flg`. 
 - [ ] Implement Voronoi-based tiling mirroring Rlandscape behaviour:
   - [x] Deliver deterministic `VoronoiSeedResult` generation that mixes the four point processes and applies the CJFR hole/merge editing knobs, returning metadata for exporters/tests.
   - [x] Expose exporter/CLI plumbing so seed recipes (config + metadata) can be captured as JSON artifacts.
-  - [ ] Deterministic seed/control of initial plot centers (random, hex-packed, or imported points).
+  - [x] Deterministic seed/control of initial plot centers (random, hex-packed, or imported points).
+    - `SeedLayoutConfig` + `SeedLayoutMode` drive reproducible grids; CLI exposes `--layout hex`
+      and `--layout imported --layout-points path/to/points.csv|json`.
+    - Imported layouts require coordinates inside the unit box so Voronoi clipping remains stable;
+      metadata records the layout type/source for downstream recipes/tests.
   - [x] Boundary clipping + min/max polygon size constraints (CJFR metrics tracked via Voronoi polygons); convex GeoJSON mask clipping plumbs through CLI/exporters (physiographic rasters remain TODO).
   - [ ] Optional slope/elevation raster support for physiographic modifiers.
 - [ ] Attach stand-level attributes (species mix, age class, site index, crown closure) using probability surfaces or user-specified distributions; expose hooks for ingesting real inventory summaries.

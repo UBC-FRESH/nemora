@@ -13,6 +13,7 @@ import json
 import math
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from enum import Enum
 from pathlib import Path
 
 import numpy as np
@@ -26,6 +27,8 @@ __all__ = [
     "VoronoiEditConfig",
     "MaskGeometry",
     "VoronoiSeedConfig",
+    "SeedLayoutMode",
+    "SeedLayoutConfig",
     "VoronoiMetrics",
     "VoronoiSeedResult",
     "load_mask_from_geojson",
@@ -136,6 +139,23 @@ class MaskGeometry:
     name: str | None = None
 
 
+class SeedLayoutMode(str, Enum):
+    """Seed placement strategies available to callers/CLI."""
+
+    RANDOM = "random"
+    HEX = "hex"
+    IMPORTED = "imported"
+
+
+@dataclass(slots=True)
+class SeedLayoutConfig:
+    """Deterministic layout configuration (hex grid or imported points)."""
+
+    mode: SeedLayoutMode = SeedLayoutMode.RANDOM
+    points: np.ndarray | None = None
+    source: str | None = None
+
+
 @dataclass(slots=True)
 class VoronoiSeedConfig:
     """Input knobs for the (future) Voronoi generator."""
@@ -148,6 +168,7 @@ class VoronoiSeedConfig:
     lattice: LatticeConfig = field(default_factory=LatticeConfig)
     edit: VoronoiEditConfig = field(default_factory=VoronoiEditConfig)
     mask: MaskGeometry | None = None
+    layout: SeedLayoutConfig = field(default_factory=SeedLayoutConfig)
     rng: np.random.Generator | None = None
 
     def __post_init__(self) -> None:
@@ -215,6 +236,15 @@ class VoronoiSeedResult:
                     "name": self.config.mask.name,
                 }
             ),
+            "layout": {
+                "mode": self.config.layout.mode.value,
+                "points_provided": (
+                    None
+                    if self.config.layout.points is None
+                    else int(self.config.layout.points.shape[0])
+                ),
+                "source": self.config.layout.source,
+            },
         }
 
 
@@ -226,6 +256,68 @@ def generate_seed_points(config: VoronoiSeedConfig) -> VoronoiSeedResult:
     hole_target = _resolve_edit_count(config.edit.hole_fraction, target_count)
     merge_target = _resolve_edit_count(config.edit.merge_fraction, target_count)
     seed_count = target_count + hole_target + merge_target
+    base_points, process_counts = _generate_base_points(seed_count, config, rng)
+    (
+        edited_points,
+        hole_points,
+        merge_pairs,
+    ) = _apply_editing(base_points, rng, hole_target, merge_target)
+    if edited_points.shape[0] != target_count:
+        raise RuntimeError(
+            "Editing pipeline failed to honour target count "
+            f"(expected {target_count}, found {edited_points.shape[0]})."
+        )
+    polygons, degrees = _derive_voronoi_geometry(edited_points, config)
+    if config.mask is not None:
+        polygons = _clip_polygons_to_mask(polygons, config.mask, edited_points)
+    metrics = _build_voronoi_metrics(polygons, degrees)
+    return VoronoiSeedResult(
+        points=edited_points,
+        config=config,
+        process_counts=process_counts,
+        hole_points=hole_points,
+        merge_pairs=merge_pairs,
+        polygons=polygons,
+        metrics=metrics,
+    )
+
+
+def _generate_base_points(
+    seed_count: int,
+    config: VoronoiSeedConfig,
+    rng: np.random.Generator,
+) -> tuple[np.ndarray, dict[str, int]]:
+    layout_mode = config.layout.mode
+    if layout_mode == SeedLayoutMode.RANDOM:
+        return _generate_random_mix(seed_count, config, rng)
+    if layout_mode == SeedLayoutMode.HEX:
+        hex_points = _generate_hex_packed(seed_count, config)
+        counts = {
+            "uniform": 0,
+            "cluster": 0,
+            "inhibition": 0,
+            "lattice": 0,
+            "layout_hex": hex_points.shape[0],
+        }
+        return hex_points, counts
+    if layout_mode == SeedLayoutMode.IMPORTED:
+        imported = _prepare_imported_layout(seed_count, config)
+        counts = {
+            "uniform": 0,
+            "cluster": 0,
+            "inhibition": 0,
+            "lattice": 0,
+            "layout_imported": imported.shape[0],
+        }
+        return imported, counts
+    raise ValueError(f"Unsupported layout mode: {layout_mode}")
+
+
+def _generate_random_mix(
+    seed_count: int,
+    config: VoronoiSeedConfig,
+    rng: np.random.Generator,
+) -> tuple[np.ndarray, dict[str, int]]:
     mix_array = config.mix.as_array()
     counts = rng.multinomial(seed_count, mix_array)
     generators: list[Callable[[int], np.ndarray]] = [
@@ -245,34 +337,80 @@ def generate_seed_points(config: VoronoiSeedConfig) -> VoronoiSeedResult:
         process_counts[name] = samples.shape[0]
         points.append(samples)
     if not points:
-        # Should not happen because seed_count > 0, but keep the uniform fallback handy.
         fallback = _generate_uniform(seed_count, config, rng)
-        points.append(fallback)
         process_counts = {"uniform": fallback.shape[0], "cluster": 0, "inhibition": 0, "lattice": 0}
+        return fallback, process_counts
     stacked = np.vstack(points)
-    (
-        edited_points,
-        hole_points,
-        merge_pairs,
-    ) = _apply_editing(stacked, rng, hole_target, merge_target)
-    if edited_points.shape[0] != target_count:
+    return stacked, process_counts
+
+
+def _generate_hex_packed(
+    seed_count: int,
+    config: VoronoiSeedConfig,
+) -> np.ndarray:
+    if seed_count <= 0:
+        return np.zeros((0, 2))
+    width = config.aspect_ratio
+    area = width * 1.0
+    spacing = math.sqrt((2.0 / math.sqrt(3.0)) * area / seed_count)
+    dx = spacing
+    dy = spacing * math.sqrt(3.0) / 2.0
+    attempt = 0
+    points: np.ndarray | None = None
+    while attempt < 8:
+        points = _hex_grid_points(width, 1.0, dx, dy)
+        if points.shape[0] >= seed_count:
+            break
+        dx *= 0.9
+        dy *= 0.9
+        attempt += 1
+    if points is None or points.shape[0] < seed_count:
         raise RuntimeError(
-            "Editing pipeline failed to honour target count "
-            f"(expected {target_count}, found {edited_points.shape[0]})."
+            "Hex layout could not generate enough seeds; consider lowering count "
+            "or adjusting aspect ratio."
         )
-    polygons, degrees = _derive_voronoi_geometry(edited_points, config)
-    if config.mask is not None:
-        polygons = _clip_polygons_to_mask(polygons, config.mask, edited_points)
-    metrics = _build_voronoi_metrics(polygons, degrees)
-    return VoronoiSeedResult(
-        points=edited_points,
-        config=config,
-        process_counts=process_counts,
-        hole_points=hole_points,
-        merge_pairs=merge_pairs,
-        polygons=polygons,
-        metrics=metrics,
-    )
+    return points[:seed_count]
+
+
+def _hex_grid_points(width: float, height: float, dx: float, dy: float) -> np.ndarray:
+    if dx <= 0 or dy <= 0:
+        raise ValueError("Hex grid spacing must be positive.")
+    points: list[list[float]] = []
+    row = 0
+    y = 0.0
+    while y <= height + dy:
+        offset = 0.0 if row % 2 == 0 else dx / 2.0
+        col = 0
+        x = offset
+        while x <= width + 1e-9:
+            if 0.0 <= x <= width and 0.0 <= y <= height:
+                points.append([x, y])
+            col += 1
+            x = offset + col * dx
+        row += 1
+        y = row * dy
+    return np.asarray(points, dtype=float)
+
+
+def _prepare_imported_layout(
+    seed_count: int,
+    config: VoronoiSeedConfig,
+) -> np.ndarray:
+    points = config.layout.points
+    if points is None:
+        raise ValueError("Imported layout requires explicit coordinates.")
+    if points.ndim != 2 or points.shape[1] != 2:
+        raise ValueError("Layout point array must be shaped (n, 2).")
+    if points.shape[0] < seed_count:
+        raise ValueError(
+            f"Imported layout provides {points.shape[0]} points but {seed_count} are required."
+        )
+    subset = np.array(points[:seed_count], dtype=float)
+    if np.any(subset[:, 0] < -1e-9) or np.any(subset[:, 0] > config.aspect_ratio + 1e-9):
+        raise ValueError("Imported layout contains x coordinates outside the bounding box.")
+    if np.any(subset[:, 1] < -1e-9) or np.any(subset[:, 1] > 1.0 + 1e-9):
+        raise ValueError("Imported layout contains y coordinates outside the bounding box.")
+    return subset
 
 
 def _generate_uniform(

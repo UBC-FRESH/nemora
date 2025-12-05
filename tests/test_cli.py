@@ -346,6 +346,54 @@ def test_synthesis_generate_seeds_cli_with_mask(tmp_path: Path) -> None:
     assert polygons == 6
 
 
+def test_synthesis_generate_seeds_cli_hex_layout(tmp_path: Path) -> None:
+    output = tmp_path / "hex.json"
+    result = runner.invoke(
+        app,
+        [
+            "synthesis-generate-seeds",
+            "--count",
+            "8",
+            "--layout",
+            "hex",
+            "--metadata-only",
+            "--output",
+            str(output),
+        ],
+    )
+    assert result.exit_code == 0
+    payload = json.loads(output.read_text())
+    layout_meta = cast(dict[str, object], payload["metadata"]["layout"])
+    assert layout_meta["mode"] == "hex"
+    assert payload["metadata"]["process_counts"]["layout_hex"] == 8
+
+
+def test_synthesis_generate_seeds_cli_imported_layout(tmp_path: Path) -> None:
+    output = tmp_path / "imported.json"
+    points_path = tmp_path / "points.csv"
+    points_path.write_text("x,y\n0.1,0.1\n0.2,0.2\n0.3,0.3\n", encoding="utf-8")
+    result = runner.invoke(
+        app,
+        [
+            "synthesis-generate-seeds",
+            "--count",
+            "3",
+            "--layout",
+            "imported",
+            "--layout-points",
+            str(points_path),
+            "--output",
+            str(output),
+        ],
+    )
+    assert result.exit_code == 0
+    payload = json.loads(output.read_text())
+    layout_meta = cast(dict[str, object], payload["metadata"]["layout"])
+    assert layout_meta["mode"] == "imported"
+    assert layout_meta["points_provided"] == 3
+    assert payload["metadata"]["metrics"]["polygon_count"] == 3
+
+
 def test_ingest_faib_command(tmp_path: Path) -> None:
     fixtures = Path("tests/fixtures/faib")
     output = tmp_path / "stand_table.csv"

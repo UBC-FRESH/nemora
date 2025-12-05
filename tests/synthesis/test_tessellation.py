@@ -114,3 +114,59 @@ def test_mask_geometry_clips_polygons() -> None:
         assert np.all(poly[:, 0] <= 0.8 + 1e-9)
         assert np.all(poly[:, 1] >= 0.2 - 1e-9)
         assert np.all(poly[:, 1] <= 0.8 + 1e-9)
+
+
+def test_hex_layout_generates_deterministic_points() -> None:
+    cfg = tessellation.VoronoiSeedConfig(
+        count=12,
+        layout=tessellation.SeedLayoutConfig(mode=tessellation.SeedLayoutMode.HEX),
+    )
+    result_a = tessellation.generate_seed_points(cfg)
+    result_b = tessellation.generate_seed_points(
+        tessellation.VoronoiSeedConfig(
+            count=12,
+            layout=tessellation.SeedLayoutConfig(mode=tessellation.SeedLayoutMode.HEX),
+        )
+    )
+    assert np.allclose(result_a.points, result_b.points)
+    metadata = result_a.metadata()
+    layout_meta = cast(dict[str, object], metadata["layout"])
+    assert layout_meta["mode"] == "hex"
+    assert "layout_hex" in result_a.process_counts
+    assert result_a.process_counts["layout_hex"] == 12
+
+
+def test_imported_layout_uses_provided_points() -> None:
+    provided = np.array(
+        [
+            [0.1, 0.1],
+            [0.2, 0.2],
+            [0.3, 0.3],
+            [0.4, 0.4],
+        ],
+        dtype=float,
+    )
+    cfg = tessellation.VoronoiSeedConfig(
+        count=3,
+        layout=tessellation.SeedLayoutConfig(
+            mode=tessellation.SeedLayoutMode.IMPORTED,
+            points=provided,
+            source="fixture",
+        ),
+    )
+    result = tessellation.generate_seed_points(cfg)
+    assert np.allclose(result.points, provided[:3])
+    metadata = result.metadata()
+    layout_meta = cast(dict[str, object], metadata["layout"])
+    assert layout_meta["mode"] == "imported"
+    assert layout_meta["points_provided"] == provided.shape[0]
+    with pytest.raises(ValueError):
+        tessellation.generate_seed_points(
+            tessellation.VoronoiSeedConfig(
+                count=5,
+                layout=tessellation.SeedLayoutConfig(
+                    mode=tessellation.SeedLayoutMode.IMPORTED,
+                    points=provided,
+                ),
+            )
+        )

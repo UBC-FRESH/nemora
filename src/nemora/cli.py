@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import csv
 import json
 import math
 import numbers
@@ -341,6 +342,23 @@ MASK_NAME_OPTION = typer.Option(
     None,
     "--mask-name",
     help="Override the mask label stored in metadata (defaults to file stem).",
+    show_default=False,
+)
+
+LAYOUT_MODE_OPTION = typer.Option(
+    tessellation.SeedLayoutMode.RANDOM,
+    "--layout",
+    help="Seed layout strategy: random mix, hex grid, or imported coordinates.",
+    case_sensitive=False,
+    show_default=True,
+)
+
+LAYOUT_POINTS_OPTION = typer.Option(
+    None,
+    "--layout-points",
+    exists=True,
+    readable=True,
+    help="Path to CSV/JSON file containing imported seed coordinates (x,y).",
     show_default=False,
 )
 
@@ -1043,6 +1061,36 @@ def sampling_export_bootstrap_dbh(  # noqa: B008
             console.print(f"[green]Bootstrap DBH table written[/green] {table_output}")
 
 
+def _load_layout_points(path: Path) -> np.ndarray:
+    """Load imported seed coordinates from CSV/JSON."""
+
+    suffix = path.suffix.lower()
+    if suffix == ".csv":
+        with path.open("r", encoding="utf-8") as handle:
+            reader = csv.DictReader(handle)
+            if reader.fieldnames is None or {"x", "y"} - set(reader.fieldnames):
+                raise ValueError("Layout CSV must include 'x' and 'y' headers.")
+            coords = [[float(row["x"]), float(row["y"])] for row in reader]
+    elif suffix in {".json", ".geojson"}:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        if isinstance(payload, list):
+            coords = payload
+        elif isinstance(payload, dict) and "points" in payload:
+            coords = payload["points"]
+        else:
+            raise ValueError(
+                "Layout JSON must be a list of [x, y] pairs or contain a 'points' key."
+            )
+    else:
+        raise ValueError("Unsupported layout file extension; use .csv or .json/.geojson.")
+    array = np.asarray(coords, dtype=float)
+    if array.ndim != 2 or array.shape[1] != 2:
+        raise ValueError("Layout coordinates must form an (n, 2) array.")
+    if array.size == 0:
+        raise ValueError("Layout file did not contain any coordinates.")
+    return array
+
+
 @app.command("synthesis-generate-seeds")
 def synthesis_generate_seeds(  # noqa: B008
     count: int = typer.Option(200, "--count", "-c", min=1, help="Target polygon/seed count."),
@@ -1146,6 +1194,8 @@ def synthesis_generate_seeds(  # noqa: B008
         help="Optional RNG seed for reproducible seed placement.",
         show_default=False,
     ),
+    layout_mode: tessellation.SeedLayoutMode = LAYOUT_MODE_OPTION,
+    layout_points_path: Path | None = LAYOUT_POINTS_OPTION,
     include_points: bool = typer.Option(
         True,
         "--include-points/--metadata-only",
@@ -1168,6 +1218,13 @@ def synthesis_generate_seeds(  # noqa: B008
     if lattice_nx is not None and lattice_ny is not None:
         lattice_resolution = (lattice_nx, lattice_ny)
 
+    if layout_mode == tessellation.SeedLayoutMode.IMPORTED and layout_points_path is None:
+        console.print("[red]--layout imported requires --layout-points.[/red]")
+        raise typer.Exit(code=1)
+    if layout_mode != tessellation.SeedLayoutMode.IMPORTED and layout_points_path is not None:
+        console.print("[red]--layout-points is only valid with --layout imported.[/red]")
+        raise typer.Exit(code=1)
+
     rng = np.random.default_rng(seed) if seed is not None else None
     mask_geom = None
     if mask_geojson is not None:
@@ -1175,6 +1232,16 @@ def synthesis_generate_seeds(  # noqa: B008
             mask_geom = tessellation.load_mask_from_geojson(mask_geojson, name=mask_name)
         except Exception as exc:  # noqa: BLE001
             console.print(f"[red]Failed to parse mask geojson:[/red] {exc}")
+            raise typer.Exit(code=1) from exc
+
+    layout_points = None
+    layout_source = None
+    if layout_points_path is not None:
+        try:
+            layout_points = _load_layout_points(layout_points_path)
+            layout_source = layout_points_path.name
+        except Exception as exc:  # noqa: BLE001
+            console.print(f"[red]Failed to read layout points:[/red] {exc}")
             raise typer.Exit(code=1) from exc
 
     try:
@@ -1201,6 +1268,11 @@ def synthesis_generate_seeds(  # noqa: B008
                 merge_fraction=merge_fraction,
             ),
             mask=mask_geom,
+            layout=tessellation.SeedLayoutConfig(
+                mode=layout_mode,
+                points=layout_points,
+                source=layout_source,
+            ),
             rng=rng,
         )
     except ValueError as exc:  # noqa: BLE001
