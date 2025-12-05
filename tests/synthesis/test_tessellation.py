@@ -84,3 +84,33 @@ def test_voronoi_metrics_cover_area_and_vertex_stats() -> None:
         assert np.all(poly[:, 0] <= cfg.aspect_ratio + 1e-9)
         assert np.all(poly[:, 1] >= -1e-9)
         assert np.all(poly[:, 1] <= 1.0 + 1e-9)
+
+
+def test_mask_geometry_clips_polygons() -> None:
+    mask_polygon = np.array(
+        [
+            [0.2, 0.2],
+            [0.8, 0.2],
+            [0.8, 0.8],
+            [0.2, 0.8],
+        ],
+        dtype=float,
+    )
+    mask = tessellation.MaskGeometry(polygons=[mask_polygon], name="test-mask")
+    cfg = tessellation.VoronoiSeedConfig(
+        count=8,
+        aspect_ratio=1.0,
+        mask=mask,
+        rng=np.random.default_rng(13579),
+    )
+    result = tessellation.generate_seed_points(cfg)
+    metadata = result.metadata()
+    mask_meta = cast(dict[str, object], metadata["mask"])
+    assert mask_meta["name"] == "test-mask"
+    for poly in result.polygons:
+        if poly.size == 0:
+            continue
+        assert np.all(poly[:, 0] >= 0.2 - 1e-9)
+        assert np.all(poly[:, 0] <= 0.8 + 1e-9)
+        assert np.all(poly[:, 1] >= 0.2 - 1e-9)
+        assert np.all(poly[:, 1] <= 0.8 + 1e-9)

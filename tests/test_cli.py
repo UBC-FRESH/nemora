@@ -314,6 +314,38 @@ def test_synthesis_generate_seeds_cli(tmp_path: Path) -> None:
     assert metrics["area_mean"] > 0
 
 
+def test_synthesis_generate_seeds_cli_with_mask(tmp_path: Path) -> None:
+    output = tmp_path / "seeds_mask.json"
+    mask_path = tmp_path / "mask.geojson"
+    mask_payload = {
+        "type": "Polygon",
+        "coordinates": [[[0.0, 0.0], [1.0, 0.0], [1.0, 0.5], [0.0, 0.5], [0.0, 0.0]]],
+    }
+    mask_path.write_text(json.dumps(mask_payload), encoding="utf-8")
+    result = runner.invoke(
+        app,
+        [
+            "synthesis-generate-seeds",
+            "--count",
+            "6",
+            "--seed",
+            "5",
+            "--mask-geojson",
+            str(mask_path),
+            "--mask-name",
+            "half-extent",
+            "--output",
+            str(output),
+        ],
+    )
+    assert result.exit_code == 0
+    payload = json.loads(output.read_text())
+    mask_meta = cast(dict[str, object], payload["metadata"]["mask"])
+    assert mask_meta["name"] == "half-extent"
+    polygons = payload["metadata"]["metrics"]["polygon_count"]
+    assert polygons == 6
+
+
 def test_ingest_faib_command(tmp_path: Path) -> None:
     fixtures = Path("tests/fixtures/faib")
     output = tmp_path / "stand_table.csv"

@@ -62,7 +62,9 @@ The resulting JSON contains the full configuration metadata (point-process mix, 
 parameters, edit fractions) and, by default, the raw coordinate arrays. Add `--metadata-only` when
 you only need the knobs (e.g., docs/tests that re-run the generator on demand). Each export also
 captures the CJFR-style metrics (`n`, polygon-area `CV`, `μ_d`, `σ_d`) so downstream planning docs
-can quote the same statistics without recomputing the Voronoi diagram.
+can quote the same statistics without recomputing the Voronoi diagram. When a convex GeoJSON mask is
+available, add `--mask-geojson path/to/polygon.geojson` (plus optional `--mask-name`) to clip the
+Voronoi polygons/metrics to physiographic boundaries.
 
 ## Expected input shape
 

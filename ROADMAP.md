@@ -35,7 +35,7 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 - `nemora.synthesis`
   - [x] Phase 0 research + scaffolding (CJFR/rlandscape + FLG requirements, module/tests/docs landing zones).
   - [x] Phase 1 kickoff: deterministic seed generator covering all four point processes plus CJFR hole/merge editing with exporter-friendly metadata.
-  - [x] Phase 1 continuation: Voronoi clipping + target metric reporting (n, CV, μ_d, σ_d) wired into exporters/CLI; physiographic modifiers queued next.
+  - [x] Phase 1 continuation: Voronoi clipping + target metric reporting (n, CV, μ_d, σ_d) wired into exporters/CLI, including optional convex GeoJSON masks; raster-based physiographic modifiers remain queued.
   - [ ] Implement stand attribute sampling, stem population generation.
   - [ ] Provide export & visualisation helpers (GeoJSON, rasters).
 - `nemora.simulation`

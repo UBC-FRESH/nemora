@@ -9,9 +9,11 @@ can generate repeatable seed sets and share the configuration with docs/tests.
 
 from __future__ import annotations
 
+import json
 import math
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import numpy as np
 from scipy.spatial import QhullError, Voronoi
@@ -22,9 +24,11 @@ __all__ = [
     "LatticeConfig",
     "PointProcessMix",
     "VoronoiEditConfig",
+    "MaskGeometry",
     "VoronoiSeedConfig",
     "VoronoiMetrics",
     "VoronoiSeedResult",
+    "load_mask_from_geojson",
     "generate_seed_points",
 ]
 
@@ -125,6 +129,14 @@ class VoronoiEditConfig:
 
 
 @dataclass(slots=True)
+class MaskGeometry:
+    """Optional clipping geometry for Voronoi polygons."""
+
+    polygons: list[np.ndarray]
+    name: str | None = None
+
+
+@dataclass(slots=True)
 class VoronoiSeedConfig:
     """Input knobs for the (future) Voronoi generator."""
 
@@ -135,6 +147,7 @@ class VoronoiSeedConfig:
     inhibition: InhibitionConfig = field(default_factory=InhibitionConfig)
     lattice: LatticeConfig = field(default_factory=LatticeConfig)
     edit: VoronoiEditConfig = field(default_factory=VoronoiEditConfig)
+    mask: MaskGeometry | None = None
     rng: np.random.Generator | None = None
 
     def __post_init__(self) -> None:
@@ -194,6 +207,14 @@ class VoronoiSeedResult:
                 "merge_count": int(self.merge_pairs.shape[0]),
             },
             "metrics": self.metrics.as_dict(),
+            "mask": (
+                None
+                if self.config.mask is None
+                else {
+                    "polygons": len(self.config.mask.polygons),
+                    "name": self.config.mask.name,
+                }
+            ),
         }
 
 
@@ -240,6 +261,8 @@ def generate_seed_points(config: VoronoiSeedConfig) -> VoronoiSeedResult:
             f"(expected {target_count}, found {edited_points.shape[0]})."
         )
     polygons, degrees = _derive_voronoi_geometry(edited_points, config)
+    if config.mask is not None:
+        polygons = _clip_polygons_to_mask(polygons, config.mask, edited_points)
     metrics = _build_voronoi_metrics(polygons, degrees)
     return VoronoiSeedResult(
         points=edited_points,
@@ -601,6 +624,174 @@ def _clip_polygon_to_bounds(
 def _polygon_area(polygon: np.ndarray) -> float:
     if polygon.shape[0] < 3:
         return 0.0
+    return abs(_signed_polygon_area(polygon))
+
+
+def _signed_polygon_area(polygon: np.ndarray) -> float:
+    if polygon.shape[0] < 3:
+        return 0.0
     x = polygon[:, 0]
     y = polygon[:, 1]
-    return 0.5 * float(np.abs(np.dot(x, np.roll(y, -1)) - np.dot(y, np.roll(x, -1))))
+    return 0.5 * float(np.dot(x, np.roll(y, -1)) - np.dot(y, np.roll(x, -1)))
+
+
+def load_mask_from_geojson(path: Path, *, name: str | None = None) -> MaskGeometry:
+    """Load a simple polygon or multipolygon mask from GeoJSON."""
+
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    polygons = _extract_polygons_from_geojson(payload)
+    if not polygons:
+        raise ValueError(f"No Polygon/MultiPolygon geometries found in {path}")
+    mask_name = name or payload.get("name") or path.stem
+    return MaskGeometry(polygons=polygons, name=mask_name)
+
+
+def _extract_polygons_from_geojson(payload: dict[str, object]) -> list[np.ndarray]:
+    geo_type = payload.get("type")
+    if geo_type == "FeatureCollection":
+        feature_polygons: list[np.ndarray] = []
+        features = payload.get("features", [])
+        if isinstance(features, list):
+            for feature in features:
+                if isinstance(feature, dict):
+                    geometry = feature.get("geometry", {})
+                    if isinstance(geometry, dict):
+                        feature_polygons.extend(_extract_polygons_from_geojson(geometry))
+        return feature_polygons
+    if geo_type == "Feature":
+        geometry = payload.get("geometry", {})
+        if isinstance(geometry, dict):
+            return _extract_polygons_from_geojson(geometry)
+        return []
+    coords = payload.get("coordinates")
+    polygons: list[np.ndarray] = []
+    if geo_type == "Polygon":
+        if isinstance(coords, list) and coords and isinstance(coords[0], list):
+            polygon = _coords_to_array(coords[0])
+            if polygon.size >= 6:
+                polygons.append(polygon)
+    elif geo_type == "MultiPolygon":
+        if isinstance(coords, list):
+            for poly in coords:
+                if isinstance(poly, list) and poly and isinstance(poly[0], list):
+                    polygon = _coords_to_array(poly[0])
+                    if polygon.size >= 6:
+                        polygons.append(polygon)
+    return polygons
+
+
+def _coords_to_array(ring: list[list[float]]) -> np.ndarray:
+    if not ring:
+        return np.zeros((0, 2))
+    points = np.array(ring, dtype=float)
+    if points.shape[0] > 1 and np.allclose(points[0], points[-1]):
+        points = points[:-1]
+    return _ensure_ccw(points)
+
+
+def _ensure_ccw(points: np.ndarray) -> np.ndarray:
+    if _signed_polygon_area(points) < 0:
+        return np.flip(points, axis=0)
+    return points
+
+
+def _clip_polygons_to_mask(
+    polygons: list[np.ndarray],
+    mask: MaskGeometry,
+    points: np.ndarray,
+) -> list[np.ndarray]:
+    if not mask.polygons:
+        return polygons
+    clipped: list[np.ndarray] = []
+    for idx, polygon in enumerate(polygons):
+        mask_polygon = _select_mask_polygon(mask.polygons, points[idx])
+        if mask_polygon is None or mask_polygon.size < 6:
+            clipped.append(np.zeros((0, 2)))
+            continue
+        clipped_polygon = _sutherland_hodgman_clip(polygon, mask_polygon)
+        clipped.append(clipped_polygon)
+    return clipped
+
+
+def _select_mask_polygon(polygons: list[np.ndarray], point: np.ndarray) -> np.ndarray | None:
+    for poly in polygons:
+        if _point_in_polygon(point, poly):
+            return poly
+    return polygons[0] if polygons else None
+
+
+def _point_in_polygon(point: np.ndarray, polygon: np.ndarray) -> bool:
+    if polygon.shape[0] < 3:
+        return False
+    x, y = point
+    inside = False
+    x_coords = polygon[:, 0]
+    y_coords = polygon[:, 1]
+    j = polygon.shape[0] - 1
+    for i in range(polygon.shape[0]):
+        xi = x_coords[i]
+        yi = y_coords[i]
+        xj = x_coords[j]
+        yj = y_coords[j]
+        intersect = ((yi > y) != (yj > y)) and (x < (xj - xi) * (y - yi) / (yj - yi + 1e-12) + xi)
+        if intersect:
+            inside = not inside
+        j = i
+    return inside
+
+
+def _sutherland_hodgman_clip(subject: np.ndarray, clip_polygon: np.ndarray) -> np.ndarray:
+    if subject.size == 0 or clip_polygon.size == 0:
+        return np.zeros((0, 2))
+    output = subject.tolist()
+    clip_points = clip_polygon.tolist()
+    clip_points.append(clip_points[0])
+    for i in range(len(clip_points) - 1):
+        input_list = output
+        output = []
+        if not input_list:
+            break
+        edge_start = clip_points[i]
+        edge_end = clip_points[i + 1]
+        prev_point = input_list[-1]
+        prev_inside = _is_inside(prev_point, edge_start, edge_end)
+        for curr_point in input_list:
+            curr_inside = _is_inside(curr_point, edge_start, edge_end)
+            if curr_inside:
+                if not prev_inside:
+                    output.append(
+                        _compute_intersection(prev_point, curr_point, edge_start, edge_end)
+                    )
+                output.append(curr_point)
+            elif prev_inside:
+                output.append(_compute_intersection(prev_point, curr_point, edge_start, edge_end))
+            prev_point = curr_point
+            prev_inside = curr_inside
+    if not output:
+        return np.zeros((0, 2))
+    return np.asarray(output, dtype=float)
+
+
+def _is_inside(point: list[float], edge_start: list[float], edge_end: list[float]) -> bool:
+    cross = (edge_end[0] - edge_start[0]) * (point[1] - edge_start[1]) - (
+        edge_end[1] - edge_start[1]
+    ) * (point[0] - edge_start[0])
+    return cross >= 0
+
+
+def _compute_intersection(
+    start: list[float],
+    end: list[float],
+    edge_start: list[float],
+    edge_end: list[float],
+) -> list[float]:
+    x1, y1 = start
+    x2, y2 = end
+    x3, y3 = edge_start
+    x4, y4 = edge_end
+    denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+    if abs(denom) < 1e-12:
+        return end
+    px = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / denom
+    py = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / denom
+    return [px, py]

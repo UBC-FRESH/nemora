@@ -328,6 +328,22 @@ SEED_RECIPE_OUTPUT_OPTION = typer.Option(
     show_default=True,
 )
 
+MASK_GEOJSON_OPTION = typer.Option(
+    None,
+    "--mask-geojson",
+    help=(
+        "Optional GeoJSON Polygon/MultiPolygon used to clip polygons (convex masks recommended)."
+    ),
+    show_default=False,
+)
+
+MASK_NAME_OPTION = typer.Option(
+    None,
+    "--mask-name",
+    help="Override the mask label stored in metadata (defaults to file stem).",
+    show_default=False,
+)
+
 BOOTSTRAP_DBH_OUTPUT_OPTION = typer.Option(
     Path("bootstrap_dbh.json"),
     "--output",
@@ -1136,6 +1152,8 @@ def synthesis_generate_seeds(  # noqa: B008
         help="Toggle writing raw coordinates alongside metadata.",
         show_default=True,
     ),
+    mask_geojson: Path | None = MASK_GEOJSON_OPTION,
+    mask_name: str | None = MASK_NAME_OPTION,
     output: Path = SEED_RECIPE_OUTPUT_OPTION,
 ) -> None:
     """Generate Voronoi seed recipes and export them as JSON."""
@@ -1151,6 +1169,14 @@ def synthesis_generate_seeds(  # noqa: B008
         lattice_resolution = (lattice_nx, lattice_ny)
 
     rng = np.random.default_rng(seed) if seed is not None else None
+    mask_geom = None
+    if mask_geojson is not None:
+        try:
+            mask_geom = tessellation.load_mask_from_geojson(mask_geojson, name=mask_name)
+        except Exception as exc:  # noqa: BLE001
+            console.print(f"[red]Failed to parse mask geojson:[/red] {exc}")
+            raise typer.Exit(code=1) from exc
+
     try:
         config = tessellation.VoronoiSeedConfig(
             count=count,
@@ -1174,6 +1200,7 @@ def synthesis_generate_seeds(  # noqa: B008
                 hole_fraction=hole_fraction,
                 merge_fraction=merge_fraction,
             ),
+            mask=mask_geom,
             rng=rng,
         )
     except ValueError as exc:  # noqa: BLE001
@@ -1188,9 +1215,14 @@ def synthesis_generate_seeds(  # noqa: B008
 
     exporters.export_seed_recipe(result, output, include_points=include_points)
     metrics = result.metrics
+    mask_suffix = ""
+    if mask_geom is not None:
+        source_name = mask_geom.name or (mask_geojson.stem if mask_geojson is not None else "mask")
+        mask_suffix = f", mask={source_name}"
     console.print(
         "[green]Seed recipe written[/green] "
-        f"{output} (area CV={metrics.area_cv:.3f}, μ_d={metrics.vertex_degree_mean:.2f})"
+        f"{output} (area CV={metrics.area_cv:.3f}, μ_d={metrics.vertex_degree_mean:.2f}"
+        f"{mask_suffix})"
     )
 
 

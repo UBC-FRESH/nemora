@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import cast
 
 import numpy as np
 
@@ -29,10 +30,21 @@ def test_export_geojson(tmp_path: Path) -> None:
 
 
 def test_seed_recipe_payload_includes_config_when_points_disabled(tmp_path: Path) -> None:
+    mask_polygon = np.array(
+        [
+            [0.0, 0.0],
+            [1.0, 0.0],
+            [1.0, 1.0],
+            [0.0, 1.0],
+        ],
+        dtype=float,
+    )
+    mask = tessellation.MaskGeometry(polygons=[mask_polygon], name="unit-square")
     cfg = tessellation.VoronoiSeedConfig(
         count=5,
         mix=tessellation.PointProcessMix(uniform=0.5, cluster=0.5),
         rng=np.random.default_rng(42),
+        mask=mask,
     )
     result = tessellation.generate_seed_points(cfg)
     payload = exporters.seed_recipe_payload(result, include_points=False)
@@ -43,3 +55,5 @@ def test_seed_recipe_payload_includes_config_when_points_disabled(tmp_path: Path
     persisted = json.loads(target.read_text())
     assert persisted["config"]["mix"]["cluster"] == 0.5
     assert persisted["metadata"]["metrics"]["polygon_count"] == 5
+    mask_metadata = cast(dict[str, object], persisted["metadata"]["mask"])
+    assert mask_metadata["name"] == "unit-square"
