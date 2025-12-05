@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import cast
 
@@ -66,3 +67,59 @@ def test_build_stand_features_pairs_polygons() -> None:
     assert len(features) == 2
     props = cast(dict[str, object], features[0]["properties"])
     assert props["veg_type"] == "fir"
+
+
+def test_load_bootstrap_plan_and_assignments(tmp_path: Path) -> None:
+    bootstrap_a = tmp_path / "bootstrap_a.json"
+    bootstrap_a.write_text(
+        json.dumps(
+            {
+                "metadata": {"distribution": "weibull", "resamples": 2},
+                "dbh_vectors": {"0": [10.0, 12.0], "1": [11.0]},
+            }
+        ),
+        encoding="utf-8",
+    )
+    bootstrap_b = tmp_path / "bootstrap_b.json"
+    bootstrap_b.write_text(
+        json.dumps(
+            {
+                "metadata": {"distribution": "lognormal", "resamples": 1},
+                "dbh_vectors": {"0": [15.0]},
+            }
+        ),
+        encoding="utf-8",
+    )
+    plan_path = tmp_path / "plan.json"
+    plan_path.write_text(
+        json.dumps(
+            {
+                "rules": [
+                    {
+                        "name": "fir-old",
+                        "vegetation_type": "fir",
+                        "bootstrap": bootstrap_a.name,
+                    }
+                ],
+                "default_bootstrap": bootstrap_b.name,
+            }
+        ),
+        encoding="utf-8",
+    )
+    plan = stands.load_bootstrap_plan(plan_path)
+    samples = [
+        stands.StandAttributeSample("fir", "60-80", 3.0),
+        stands.StandAttributeSample("pine", "20-40", 2.0),
+    ]
+    assignments, library = stands.build_bootstrap_assignments(
+        samples,
+        plan,
+        id_prefix="unit",
+    )
+    assert len(assignments) == 2
+    assert assignments[0].bootstrap_id == "fir-old"
+    assert assignments[1].bootstrap_id != assignments[0].bootstrap_id
+    assert set(library.keys()) == {assignments[0].bootstrap_id, assignments[1].bootstrap_id}
+    fir_payload = library[assignments[0].bootstrap_id]
+    assert fir_payload.metadata["distribution"] == "weibull"
+    assert "0" in fir_payload.dbh_vectors

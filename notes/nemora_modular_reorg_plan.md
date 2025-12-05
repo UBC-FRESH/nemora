@@ -57,6 +57,7 @@ src/nemora/
 6. **Synthesis (`nemora.synthesis`)**
    - [ ] Define landscape/stem data models, leveraging `distributions` + `sampling`.
    - [x] Implement stand attribute sampling (template helper + CLI manifest export); stem population generation and high-resolution detail remain TODO.
+   - [x] Provide a stand→bootstrap manifest helper + CLI (`synthesis-link-bootstraps`) so sampled attributes can reference DBH payloads exported by the sampling module (plan parser, docs/tests).
    - [ ] Deliver visualization/export tools and robust unit tests.
 
 7. **Inventory simulation (`nemora.simulation`)**
@@ -141,3 +142,7 @@ src/nemora/
    - [x] Follow up with physiographic modifiers (raster-informed masks, multiple convex clips) and deterministic seed imports from external GIS layers once layout plumbing is exercised.
    - [x] Start wiring stand-level attribute sampling via reusable templates and a helper that fills target areas with vegetation/age-class assignments.
    - [x] Provide CLI/exporters (`synthesis-sample-attributes`, `synthesis-assign-stands`, GeoJSON helpers) so Voronoi polygons + attributes can be emitted as ready-to-plot artifacts.
+10. [ ] Synthesis Phase 2 — bootstrap integration
+    - [x] Ship the stand→bootstrap manifest helper + CLI (`synthesis-link-bootstraps`), including plan parser, manifest writer, docs, and regression coverage.
+    - [ ] Thread the manifest into `synthesis-assign-stands`/exporters so polygons carry `bootstrap_id`/metadata for downstream tree generation.
+    - [ ] Add the analytic-mode pathway (parameter-based payloads) and document the end-to-end workflow (seed recipe → stand templates → bootstrap manifest → tree synthesis).

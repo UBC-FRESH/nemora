@@ -350,3 +350,20 @@
 - New regression test (`tests/synthesis/test_tessellation.py::test_voronoi_metrics_match_reference_fixture`)
   loads the fixture, regenerates the seeds, and asserts polygon counts/area CV/vertex-degree stats
   stay within tight tolerances.
+
+## 2025-12-08 — Stand bootstrap manifest helper + CLI
+
+- Added stand→bootstrap planning helpers to `nemora.synthesis.stands`: plan parser, payload loader,
+  and `build_bootstrap_assignments` so sampled stand attributes can be linked to DBH payloads exported
+  by `nemora sampling-export-bootstrap-dbh`.
+- Introduced `nemora synthesis-link-bootstraps`, a Typer command that consumes a plan JSON +
+  attribute manifest and emits a manifest containing generated stand IDs, bootstrap IDs, and the
+  unique DBH payloads; regression coverage now exercises both the helper and CLI paths.
+- Expanded `docs/howto/synthesis.md` with a walkthrough covering the new plan format, CLI usage, and
+  resulting manifest structure so downstream modules can adopt the workflow without spelunking code.
+- Updated planning artifacts (ROADMAP detailed next steps, `notes/synthesis_planning.md`,
+  `notes/nemora_modular_reorg_plan.md`) to mark Phase 1 synthesis work complete and queue the Phase 2
+  follow-ups (hook manifest into exporters + analytic-mode pathway).
+- Tests / validation: `ruff format src tests`, `ruff check src tests`, `mypy src`
+  *(known failures: `src/nemora/dataprep/hps.py`, `src/nemora/ingest/{faib,fia}.py`)*,
+  `pytest`, `sphinx-build -b html docs _build/html -W`, `pre-commit run --all-files`.

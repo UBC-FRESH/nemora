@@ -35,7 +35,7 @@ Also have a look at the FLG project documentation under `reference-papers/flg`. 
   When the Phase 0 checklist is complete, update ROADMAP Phase 2 (`nemora.synthesis`) and `notes/nemora_modular_reorg_plan.md` to mark the research groundwork done and unblock Phase 1 implementation.
 
 ### Phase 1 — Landscape geometry & metadata
-- [ ] Implement Voronoi-based tiling mirroring Rlandscape behaviour:
+- [x] Implement Voronoi-based tiling mirroring Rlandscape behaviour:
   - [x] Deliver deterministic `VoronoiSeedResult` generation that mixes the four point processes and applies the CJFR hole/merge editing knobs, returning metadata for exporters/tests.
   - [x] Expose exporter/CLI plumbing so seed recipes (config + metadata) can be captured as JSON artifacts.
   - [x] Deterministic seed/control of initial plot centers (random, hex-packed, or imported points).
@@ -60,8 +60,9 @@ Also have a look at the FLG project documentation under `reference-papers/flg`. 
 
 ### Phase 2 — Stand tree-list synthesis
 - [ ] Integrate the sampling stack so each synthesized stand can draw DBH vectors via bootstrap or analytic sampling:
-  - [ ] Support both “synthetic from parameters” and “bootstrap from empirical tallies” modes.
-  - [ ] Ensure outputs align with existing `BootstrapResult` metadata contracts.
+  - [x] Provide a stand→bootstrap manifest helper + CLI so sampled attributes can reference DBH payloads exported by `sampling-export-bootstrap-dbh` (plan JSON + Typer command + regression tests).
+  - [ ] Support both “synthetic from parameters” and “bootstrap from empirical tallies” modes (analytic payload plumbing still TODO).
+  - [ ] Ensure outputs align with existing `BootstrapResult` metadata contracts by threading the manifest into polygon exporters + upcoming tree generators.
 - [ ] Build composable pipelines to attach per-tree metadata:
   - [ ] Spatial placement within polygons (Poisson, stratified by canopy layer, optional clustering).
   - [ ] Crown metrics, biomass factors, bark thickness, etc., using ingest/sampling configs for consistent units.

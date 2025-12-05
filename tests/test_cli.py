@@ -548,6 +548,75 @@ def test_synthesis_sample_attributes_cli(tmp_path: Path) -> None:
     assert payload[0]["vegetation_type"] == "fir"
 
 
+def test_synthesis_link_bootstraps_cli(tmp_path: Path) -> None:
+    attributes_path = tmp_path / "attributes.json"
+    attributes_path.write_text(
+        json.dumps(
+            [
+                {"vegetation_type": "fir", "age_class": "60-80", "area": 3.0},
+                {"vegetation_type": "pine", "age_class": "20-40", "area": 2.5},
+            ]
+        ),
+        encoding="utf-8",
+    )
+    bootstrap_a = tmp_path / "bootstrap_a.json"
+    bootstrap_a.write_text(
+        json.dumps(
+            {
+                "metadata": {"distribution": "weibull", "resamples": 2},
+                "dbh_vectors": {"0": [12.0], "1": [13.0]},
+            }
+        ),
+        encoding="utf-8",
+    )
+    bootstrap_b = tmp_path / "bootstrap_b.json"
+    bootstrap_b.write_text(
+        json.dumps(
+            {
+                "metadata": {"distribution": "lognormal", "resamples": 1},
+                "dbh_vectors": {"0": [10.0]},
+            }
+        ),
+        encoding="utf-8",
+    )
+    plan_path = tmp_path / "plan.json"
+    plan_path.write_text(
+        json.dumps(
+            {
+                "rules": [
+                    {
+                        "name": "fir-old",
+                        "vegetation_type": "fir",
+                        "bootstrap": bootstrap_a.name,
+                    }
+                ],
+                "default_bootstrap": bootstrap_b.name,
+            }
+        ),
+        encoding="utf-8",
+    )
+    output = tmp_path / "stand_bootstrap_manifest.json"
+    result = runner.invoke(
+        app,
+        [
+            "synthesis-link-bootstraps",
+            "--attributes",
+            str(attributes_path),
+            "--plan",
+            str(plan_path),
+            "--output",
+            str(output),
+            "--id-prefix",
+            "plot",
+        ],
+    )
+    assert result.exit_code == 0
+    payload = json.loads(output.read_text())
+    assert len(payload["assignments"]) == 2
+    assert "fir-old" in payload["bootstraps"]
+    assert payload["assignments"][0]["stand_id"].startswith("plot-")
+
+
 def test_ingest_faib_command(tmp_path: Path) -> None:
     fixtures = Path("tests/fixtures/faib")
     output = tmp_path / "stand_table.csv"

@@ -369,6 +369,67 @@ Behind the scenes the CLI calls `nemora.synthesis.exporters.export_stand_geojson
 which you can also import directly if you want to stitch polygons + samples inside a notebook or
 custom workflow.
 
+## Link stand manifests to bootstrap DBH payloads
+
+Once you have sampled stand attributes and exported bootstrap DBH payloads (via
+`nemora sampling-export-bootstrap-dbh`), use `nemora synthesis-link-bootstraps` to connect each stand
+to a concrete payload. The command consumes a *plan* file that maps vegetation/age-class pairs to
+bootstrap JSON artifacts:
+
+```json
+{
+  "rules": [
+    {"name": "cedar-old", "vegetation_type": "CedarHemlock", "age_class": "60-90",
+     "bootstrap": "bootstrap/cedar_60_90.json"},
+    {"name": "cedar", "vegetation_type": "CedarHemlock", "bootstrap": "bootstrap/cedar.json"},
+    {"name": "fir", "vegetation_type": "DouglasFir", "bootstrap": "bootstrap/dfir.json"}
+  ],
+  "default_bootstrap": "bootstrap/default.json"
+}
+```
+
+Paths are resolved relative to the plan file, so you can keep the JSON alongside its referenced
+payloads (the files are just the JSON produced by `sampling-export-bootstrap-dbh`). Run the linker:
+
+```bash
+nemora synthesis-link-bootstraps \
+    --attributes artifacts/stands_sampled.json \
+    --plan artifacts/bootstrap_plan.json \
+    --id-prefix stand \
+    --output artifacts/stand_bootstrap_manifest.json
+```
+
+The resulting manifest captures the attribute source, plan, bootstraps, and generated stand IDs:
+
+```json
+{
+  "attributes_source": "artifacts/stands_sampled.json",
+  "plan_source": "artifacts/bootstrap_plan.json",
+  "bootstraps": {
+    "cedar-old": {
+      "source": "bootstrap/cedar_60_90.json",
+      "metadata": {"distribution": "weibull", "resamples": 5, "...": "..."},
+      "dbh_vectors": {"0": [22.4, 23.1], "1": [21.0]}
+    }
+  },
+  "assignments": [
+    {
+      "stand_id": "stand-0001",
+      "vegetation_type": "CedarHemlock",
+      "age_class": "60-90",
+      "area": 4.2,
+      "bootstrap_id": "cedar-old"
+    }
+  ]
+}
+```
+
+Share `bootstraps` across multiple stands by pointing multiple rules at the same JSON artifact. The
+manifest will only embed each payload once, and downstream workflows can look up payload metadata by
+the `bootstrap_id` field stored on every assignment. Future synthesis steps will merge this manifest
+with the polygon GeoJSON so each stand polygon has both attribute defaults and DBH vectors ready for
+tree-list generation.
+
 ## Helper module (`nemora.synthesis.helpers`)
 
 Nemora exposes helper utilities that convert bootstrap results into synthesis-ready payloads:

@@ -489,6 +489,33 @@ STAND_SEED_OPTION = typer.Option(
     show_default=False,
 )
 
+STAND_BOOTSTRAP_PLAN_OPTION = typer.Option(
+    None,
+    "--plan",
+    "-p",
+    help="JSON file describing stand→bootstrap rules (see docs/howto/synthesis.md).",
+    exists=True,
+    file_okay=True,
+    dir_okay=False,
+    readable=True,
+    show_default=False,
+)
+
+STAND_BOOTSTRAP_OUTPUT_OPTION = typer.Option(
+    Path("stand_bootstrap_manifest.json"),
+    "--output",
+    "-o",
+    help="Destination JSON for stand→bootstrap assignments.",
+    show_default=True,
+)
+
+STAND_ID_PREFIX_OPTION = typer.Option(
+    "stand",
+    "--id-prefix",
+    help="Prefix for generated stand identifiers (stand-ID).",
+    show_default=True,
+)
+
 BOOTSTRAP_DBH_OUTPUT_OPTION = typer.Option(
     Path("bootstrap_dbh.json"),
     "--output",
@@ -1655,6 +1682,70 @@ def synthesis_assign_stands_cli(  # noqa: B008
     console.print(
         "[green]Stand GeoJSON written[/green] "
         f"{output} (stands={assigned}, crs={crs or 'unspecified'})"
+    )
+
+
+@app.command("synthesis-link-bootstraps")
+def synthesis_link_bootstraps_cli(  # noqa: B008
+    attributes_path: Path = STAND_ATTRIBUTES_INPUT_OPTION,
+    plan_path: Path = STAND_BOOTSTRAP_PLAN_OPTION,
+    output: Path = STAND_BOOTSTRAP_OUTPUT_OPTION,
+    id_prefix: str = STAND_ID_PREFIX_OPTION,
+) -> None:
+    """Attach bootstrap DBH payloads to sampled stand attributes."""
+
+    if plan_path is None:
+        console.print("[red]--plan is required.[/red]")
+        raise typer.Exit(code=1)
+    try:
+        samples = stands.load_samples_from_json(attributes_path)
+    except Exception as exc:  # noqa: BLE001
+        console.print(f"[red]Failed to read stand attributes:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+    if not samples:
+        console.print("[red]No stand attributes available for linking.[/red]")
+        raise typer.Exit(code=1)
+    try:
+        plan = stands.load_bootstrap_plan(plan_path)
+    except Exception as exc:  # noqa: BLE001
+        console.print(f"[red]Failed to load bootstrap plan:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+    try:
+        assignments, library = stands.build_bootstrap_assignments(
+            samples,
+            plan,
+            id_prefix=id_prefix,
+        )
+    except Exception as exc:  # noqa: BLE001
+        console.print(f"[red]Failed to link bootstrap payloads:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+    manifest = {
+        "attributes_source": str(attributes_path),
+        "plan_source": str(plan_path),
+        "bootstraps": {
+            identifier: {
+                "source": entry.source,
+                "metadata": entry.metadata,
+                "dbh_vectors": entry.dbh_vectors,
+            }
+            for identifier, entry in sorted(library.items())
+        },
+        "assignments": [
+            {
+                "stand_id": assignment.stand_id,
+                "vegetation_type": assignment.vegetation_type,
+                "age_class": assignment.age_class,
+                "area": assignment.area,
+                "bootstrap_id": assignment.bootstrap_id,
+            }
+            for assignment in assignments
+        ],
+    }
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    console.print(
+        "[green]Linked stand attributes to bootstrap payloads[/green] "
+        f"(stands={len(assignments)}, bootstraps={len(library)}) → {output}"
     )
 
 

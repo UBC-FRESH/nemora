@@ -13,11 +13,17 @@ import numpy as np
 __all__ = [
     "StandAttributeTemplate",
     "StandAttributeSample",
-    "build_templates",
-    "sample_stand_attributes",
-    "load_templates_from_json",
-    "load_samples_from_json",
+    "StandBootstrapAssignment",
+    "StandBootstrapLibraryEntry",
+    "StandBootstrapPlan",
+    "StandBootstrapRule",
+    "build_bootstrap_assignments",
     "build_stand_features",
+    "build_templates",
+    "load_bootstrap_plan",
+    "load_samples_from_json",
+    "load_templates_from_json",
+    "sample_stand_attributes",
 ]
 
 
@@ -222,3 +228,191 @@ def _polygon_area(polygon: np.ndarray) -> float:
     x = polygon[:, 0]
     y = polygon[:, 1]
     return 0.5 * float(abs(np.dot(x, np.roll(y, -1)) - np.dot(y, np.roll(x, -1))))
+
+
+@dataclass(slots=True)
+class StandBootstrapRule:
+    """Rule describing how to attach a bootstrap payload to a stand sample."""
+
+    identifier: str
+    bootstrap_path: Path
+    source: str
+    vegetation_type: str | None = None
+    age_class: str | None = None
+
+    def matches(self, sample: StandAttributeSample) -> bool:
+        if self.vegetation_type is not None and sample.vegetation_type != self.vegetation_type:
+            return False
+        if self.age_class is not None and sample.age_class != self.age_class:
+            return False
+        return True
+
+
+@dataclass(slots=True)
+class StandBootstrapPlan:
+    """Parsed bootstrap plan describing stand-to-payload rules."""
+
+    rules: Sequence[StandBootstrapRule]
+    default_rule: StandBootstrapRule | None = None
+
+    def select_rule(self, sample: StandAttributeSample) -> StandBootstrapRule:
+        for rule in self.rules:
+            if rule.matches(sample):
+                return rule
+        if self.default_rule is not None:
+            return self.default_rule
+        raise ValueError(
+            "No bootstrap rule matched stand "
+            f"(vegetation_type={sample.vegetation_type}, age_class={sample.age_class})."
+        )
+
+
+@dataclass(slots=True)
+class StandBootstrapAssignment:
+    """Resolved bootstrap reference for a stand attribute sample."""
+
+    stand_id: str
+    vegetation_type: str
+    age_class: str
+    area: float
+    bootstrap_id: str
+
+
+@dataclass(slots=True)
+class StandBootstrapLibraryEntry:
+    """Loaded bootstrap payload (metadata + DBH vectors)."""
+
+    identifier: str
+    source: str
+    metadata: dict[str, object]
+    dbh_vectors: dict[str, list[float]]
+
+
+def load_bootstrap_plan(path: Path) -> StandBootstrapPlan:
+    """Load a bootstrap assignment plan describing stand → payload rules."""
+
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, Mapping):
+        raise ValueError("Bootstrap plan must be a mapping.")
+    raw_rules = payload.get("rules")
+    if not isinstance(raw_rules, list) or not raw_rules:
+        raise ValueError("Bootstrap plan must include a non-empty 'rules' list.")
+    base_dir = path.parent
+    used_names: set[str] = set()
+    rules: list[StandBootstrapRule] = []
+    for index, record in enumerate(raw_rules):
+        if not isinstance(record, Mapping):
+            raise ValueError("Each bootstrap rule must be a mapping.")
+        bootstrap_ref = record.get("bootstrap")
+        if not isinstance(bootstrap_ref, str) or not bootstrap_ref:
+            raise ValueError("Each bootstrap rule must supply a 'bootstrap' path.")
+        bootstrap_path = _resolve_plan_path(base_dir, bootstrap_ref)
+        name_value = record.get("name")
+        derived_name = (
+            str(name_value)
+            if name_value
+            else (Path(bootstrap_ref).stem or f"bootstrap-{index + 1}")
+        )
+        identifier = _ensure_unique_name(derived_name, used_names)
+        raw_veg = record.get("vegetation_type")
+        vegetation_type = str(raw_veg) if raw_veg is not None else None
+        raw_age = record.get("age_class")
+        age_class = str(raw_age) if raw_age is not None else None
+        rules.append(
+            StandBootstrapRule(
+                identifier=identifier,
+                bootstrap_path=bootstrap_path,
+                source=bootstrap_ref,
+                vegetation_type=vegetation_type,
+                age_class=age_class,
+            )
+        )
+    default_rule = None
+    if "default_bootstrap" in payload:
+        default_ref = payload["default_bootstrap"]
+        if not isinstance(default_ref, str) or not default_ref:
+            raise ValueError("default_bootstrap must be a string path when provided.")
+        default_name = str(payload.get("default_name") or "default")
+        identifier = _ensure_unique_name(default_name, used_names)
+        default_rule = StandBootstrapRule(
+            identifier=identifier,
+            bootstrap_path=_resolve_plan_path(base_dir, default_ref),
+            source=default_ref,
+        )
+    return StandBootstrapPlan(rules=tuple(rules), default_rule=default_rule)
+
+
+def build_bootstrap_assignments(
+    samples: Sequence[StandAttributeSample],
+    plan: StandBootstrapPlan,
+    *,
+    id_prefix: str = "stand",
+    start_index: int = 1,
+) -> tuple[list[StandBootstrapAssignment], dict[str, StandBootstrapLibraryEntry]]:
+    """Resolve bootstrap payloads for each stand sample."""
+
+    if start_index < 0:
+        raise ValueError("start_index must be non-negative.")
+    prefix = id_prefix.strip()
+    assignments: list[StandBootstrapAssignment] = []
+    library: dict[str, StandBootstrapLibraryEntry] = {}
+    counter = start_index
+    for sample in samples:
+        rule = plan.select_rule(sample)
+        if rule.identifier not in library:
+            metadata, dbh_vectors = _load_bootstrap_payload(rule.bootstrap_path)
+            library[rule.identifier] = StandBootstrapLibraryEntry(
+                identifier=rule.identifier,
+                source=rule.source,
+                metadata=metadata,
+                dbh_vectors=dbh_vectors,
+            )
+        stand_id = f"{prefix}-{counter:04d}" if prefix else f"{counter:04d}"
+        counter += 1
+        assignments.append(
+            StandBootstrapAssignment(
+                stand_id=stand_id,
+                vegetation_type=sample.vegetation_type,
+                age_class=sample.age_class,
+                area=sample.area,
+                bootstrap_id=rule.identifier,
+            )
+        )
+    return assignments, library
+
+
+def _load_bootstrap_payload(path: Path) -> tuple[dict[str, object], dict[str, list[float]]]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    metadata = payload.get("metadata")
+    if not isinstance(metadata, Mapping):
+        raise ValueError(f"Bootstrap payload {path} is missing metadata.")
+    dbh_vectors = payload.get("dbh_vectors")
+    if not isinstance(dbh_vectors, Mapping):
+        raise ValueError(f"Bootstrap payload {path} is missing dbh_vectors.")
+    metadata_dict = dict(metadata)
+    vector_map: dict[str, list[float]] = {}
+    for key, values in dbh_vectors.items():
+        if not isinstance(values, Sequence):
+            raise ValueError("Each dbh_vectors entry must be a sequence.")
+        vector_map[str(key)] = [float(value) for value in values]
+    return metadata_dict, vector_map
+
+
+def _ensure_unique_name(candidate: str, used: set[str]) -> str:
+    name = candidate or "bootstrap"
+    result = name
+    suffix = 1
+    while result in used:
+        result = f"{name}-{suffix}"
+        suffix += 1
+    used.add(result)
+    return result
+
+
+def _resolve_plan_path(base_dir: Path, reference: str) -> Path:
+    path = Path(reference)
+    if not path.is_absolute():
+        path = (base_dir / path).resolve()
+    if not path.exists():
+        raise ValueError(f"Bootstrap payload not found: {path}")
+    return path
