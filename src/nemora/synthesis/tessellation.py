@@ -26,12 +26,17 @@ __all__ = [
     "PointProcessMix",
     "VoronoiEditConfig",
     "MaskGeometry",
+    "MaskMode",
+    "RasterMask",
+    "RasterMode",
     "VoronoiSeedConfig",
     "SeedLayoutMode",
     "SeedLayoutConfig",
     "VoronoiMetrics",
     "VoronoiSeedResult",
     "load_mask_from_geojson",
+    "load_polygons_from_geojson",
+    "load_raster_mask",
     "generate_seed_points",
 ]
 
@@ -131,11 +136,36 @@ class VoronoiEditConfig:
             raise ValueError("Hole + merge fractions must sum to < 1.")
 
 
+class MaskMode(str, Enum):
+    """Mask behaviour for polygon overlays."""
+
+    CLIP = "clip"
+    EXCLUDE = "exclude"
+
+
+class RasterMode(str, Enum):
+    """Raster modifier behaviour."""
+
+    KEEP = "keep"
+    EXCLUDE = "exclude"
+
+
 @dataclass(slots=True)
 class MaskGeometry:
     """Optional clipping geometry for Voronoi polygons."""
 
     polygons: list[np.ndarray]
+    name: str | None = None
+    mode: MaskMode = MaskMode.CLIP
+
+
+@dataclass(slots=True)
+class RasterMask:
+    """Raster-based modifier that keeps or excludes polygons."""
+
+    values: np.ndarray
+    threshold: float = 0.0
+    mode: RasterMode = RasterMode.KEEP
     name: str | None = None
 
 
@@ -145,6 +175,7 @@ class SeedLayoutMode(str, Enum):
     RANDOM = "random"
     HEX = "hex"
     IMPORTED = "imported"
+    GEOJSON = "geojson"
 
 
 @dataclass(slots=True)
@@ -154,6 +185,7 @@ class SeedLayoutConfig:
     mode: SeedLayoutMode = SeedLayoutMode.RANDOM
     points: np.ndarray | None = None
     source: str | None = None
+    geojson_polygons: list[np.ndarray] | None = None
 
 
 @dataclass(slots=True)
@@ -168,6 +200,8 @@ class VoronoiSeedConfig:
     lattice: LatticeConfig = field(default_factory=LatticeConfig)
     edit: VoronoiEditConfig = field(default_factory=VoronoiEditConfig)
     mask: MaskGeometry | None = None
+    mask_overlays: list[MaskGeometry] = field(default_factory=list)
+    raster_masks: list[RasterMask] = field(default_factory=list)
     layout: SeedLayoutConfig = field(default_factory=SeedLayoutConfig)
     rng: np.random.Generator | None = None
 
@@ -228,14 +262,8 @@ class VoronoiSeedResult:
                 "merge_count": int(self.merge_pairs.shape[0]),
             },
             "metrics": self.metrics.as_dict(),
-            "mask": (
-                None
-                if self.config.mask is None
-                else {
-                    "polygons": len(self.config.mask.polygons),
-                    "name": self.config.mask.name,
-                }
-            ),
+            "mask": self._mask_metadata(),
+            "rasters": self._raster_metadata(),
             "layout": {
                 "mode": self.config.layout.mode.value,
                 "points_provided": (
@@ -244,8 +272,46 @@ class VoronoiSeedResult:
                     else int(self.config.layout.points.shape[0])
                 ),
                 "source": self.config.layout.source,
+                "geojson_features": (
+                    None
+                    if not self.config.layout.geojson_polygons
+                    else len(self.config.layout.geojson_polygons)
+                ),
             },
         }
+
+    def _mask_metadata(self) -> dict[str, object] | None:
+        if self.config.mask is None and not self.config.mask_overlays:
+            return None
+        primary = None
+        if self.config.mask is not None:
+            primary = {
+                "polygons": len(self.config.mask.polygons),
+                "name": self.config.mask.name,
+                "mode": self.config.mask.mode.value,
+            }
+        overlays = [
+            {
+                "polygons": len(mask.polygons),
+                "name": mask.name,
+                "mode": mask.mode.value,
+            }
+            for mask in self.config.mask_overlays
+        ]
+        return {"primary": primary, "overlays": overlays}
+
+    def _raster_metadata(self) -> list[dict[str, object]] | None:
+        if not self.config.raster_masks:
+            return None
+        return [
+            {
+                "name": raster.name,
+                "threshold": raster.threshold,
+                "mode": raster.mode.value,
+                "shape": list(raster.values.shape),
+            }
+            for raster in self.config.raster_masks
+        ]
 
 
 def generate_seed_points(config: VoronoiSeedConfig) -> VoronoiSeedResult:
@@ -268,8 +334,7 @@ def generate_seed_points(config: VoronoiSeedConfig) -> VoronoiSeedResult:
             f"(expected {target_count}, found {edited_points.shape[0]})."
         )
     polygons, degrees = _derive_voronoi_geometry(edited_points, config)
-    if config.mask is not None:
-        polygons = _clip_polygons_to_mask(polygons, config.mask, edited_points)
+    polygons = _apply_mask_modifiers(polygons, config, edited_points)
     metrics = _build_voronoi_metrics(polygons, degrees)
     return VoronoiSeedResult(
         points=edited_points,
@@ -310,6 +375,16 @@ def _generate_base_points(
             "layout_imported": imported.shape[0],
         }
         return imported, counts
+    if layout_mode == SeedLayoutMode.GEOJSON:
+        geojson_points = _generate_geojson_layout(seed_count, config)
+        counts = {
+            "uniform": 0,
+            "cluster": 0,
+            "inhibition": 0,
+            "lattice": 0,
+            "layout_geojson": geojson_points.shape[0],
+        }
+        return geojson_points, counts
     raise ValueError(f"Unsupported layout mode: {layout_mode}")
 
 
@@ -411,6 +486,36 @@ def _prepare_imported_layout(
     if np.any(subset[:, 1] < -1e-9) or np.any(subset[:, 1] > 1.0 + 1e-9):
         raise ValueError("Imported layout contains y coordinates outside the bounding box.")
     return subset
+
+
+def _generate_geojson_layout(
+    seed_count: int,
+    config: VoronoiSeedConfig,
+) -> np.ndarray:
+    polygons = config.layout.geojson_polygons
+    if not polygons:
+        raise ValueError("GeoJSON layout mode requires polygons via layout.geojson_polygons.")
+    centroids = np.array([_polygon_centroid(poly) for poly in polygons], dtype=float)
+    if centroids.shape[0] < seed_count:
+        repeats = int(math.ceil(seed_count / centroids.shape[0]))
+        centroids = np.vstack([centroids] * repeats)
+    bounded = np.clip(centroids[:seed_count], [0.0, 0.0], [config.aspect_ratio, 1.0])
+    return bounded
+
+
+def _polygon_centroid(polygon: np.ndarray) -> np.ndarray:
+    if polygon.shape[0] < 3:
+        return polygon.mean(axis=0) if polygon.size else np.zeros(2)
+    x = polygon[:, 0]
+    y = polygon[:, 1]
+    cross = x * np.roll(y, -1) - np.roll(x, -1) * y
+    area = cross.sum() / 2.0
+    if abs(area) < 1e-12:
+        return polygon.mean(axis=0)
+    factor = cross / (6.0 * area)
+    cx = np.sum((x + np.roll(x, -1)) * factor)
+    cy = np.sum((y + np.roll(y, -1)) * factor)
+    return np.array([cx, cy], dtype=float)
 
 
 def _generate_uniform(
@@ -570,6 +675,95 @@ def _derive_voronoi_geometry(
         return polygons, degrees
     except (QhullError, ValueError):
         return _fallback_geometry(points, config.aspect_ratio)
+
+
+def _apply_mask_modifiers(
+    polygons: list[np.ndarray],
+    config: VoronoiSeedConfig,
+    points: np.ndarray,
+) -> list[np.ndarray]:
+    masks: list[MaskGeometry] = []
+    if config.mask is not None:
+        masks.append(config.mask)
+    if config.mask_overlays:
+        masks.extend(config.mask_overlays)
+    working = polygons
+    for mask in masks:
+        working = _apply_single_mask(working, mask, points)
+    if config.raster_masks:
+        working = _apply_raster_masks(working, config.raster_masks, points, config.aspect_ratio)
+    return working
+
+
+def _apply_single_mask(
+    polygons: list[np.ndarray],
+    mask: MaskGeometry,
+    points: np.ndarray,
+) -> list[np.ndarray]:
+    if mask.mode == MaskMode.EXCLUDE:
+        return _exclude_polygons_with_mask(polygons, mask, points)
+    return _clip_polygons_to_mask(polygons, mask, points)
+
+
+def _exclude_polygons_with_mask(
+    polygons: list[np.ndarray],
+    mask: MaskGeometry,
+    points: np.ndarray,
+) -> list[np.ndarray]:
+    if not mask.polygons:
+        return polygons
+    output: list[np.ndarray] = []
+    for idx, polygon in enumerate(polygons):
+        if polygon.size == 0:
+            output.append(polygon)
+            continue
+        point = points[idx]
+        inside = any(_point_in_polygon(point, poly) for poly in mask.polygons)
+        output.append(np.zeros((0, 2)) if inside else polygon)
+    return output
+
+
+def _apply_raster_masks(
+    polygons: list[np.ndarray],
+    rasters: list[RasterMask],
+    points: np.ndarray,
+    aspect_ratio: float,
+) -> list[np.ndarray]:
+    if not rasters:
+        return polygons
+    working = list(polygons)
+    for idx, polygon in enumerate(working):
+        if polygon.size == 0:
+            continue
+        sample_point = points[idx]
+        for raster in rasters:
+            value = _sample_raster_value(raster.values, sample_point, aspect_ratio)
+            if raster.mode == RasterMode.KEEP and value < raster.threshold:
+                working[idx] = np.zeros((0, 2))
+                break
+            if raster.mode == RasterMode.EXCLUDE and value >= raster.threshold:
+                working[idx] = np.zeros((0, 2))
+                break
+    return working
+
+
+def _sample_raster_value(
+    values: np.ndarray,
+    point: np.ndarray,
+    aspect_ratio: float,
+) -> float:
+    rows, cols = values.shape
+    if rows == 0 or cols == 0:
+        return 0.0
+    x = float(np.clip(point[0], 0.0, aspect_ratio if aspect_ratio > 0 else 1.0))
+    y = float(np.clip(point[1], 0.0, 1.0))
+    if aspect_ratio <= 0:
+        aspect_ratio = 1.0
+    rel_x = x / aspect_ratio
+    rel_y = 1.0 - y  # raster row 0 at top
+    col = min(cols - 1, max(0, int(round(rel_x * (cols - 1)))))
+    row = min(rows - 1, max(0, int(round(rel_y * (rows - 1)))))
+    return float(values[row, col])
 
 
 def _clip_voronoi_regions(vor: Voronoi, aspect_ratio: float) -> list[np.ndarray]:
@@ -773,7 +967,12 @@ def _signed_polygon_area(polygon: np.ndarray) -> float:
     return 0.5 * float(np.dot(x, np.roll(y, -1)) - np.dot(y, np.roll(x, -1)))
 
 
-def load_mask_from_geojson(path: Path, *, name: str | None = None) -> MaskGeometry:
+def load_mask_from_geojson(
+    path: Path,
+    *,
+    name: str | None = None,
+    mode: MaskMode = MaskMode.CLIP,
+) -> MaskGeometry:
     """Load a simple polygon or multipolygon mask from GeoJSON."""
 
     payload = json.loads(path.read_text(encoding="utf-8"))
@@ -781,7 +980,42 @@ def load_mask_from_geojson(path: Path, *, name: str | None = None) -> MaskGeomet
     if not polygons:
         raise ValueError(f"No Polygon/MultiPolygon geometries found in {path}")
     mask_name = name or payload.get("name") or path.stem
-    return MaskGeometry(polygons=polygons, name=mask_name)
+    return MaskGeometry(polygons=polygons, name=mask_name, mode=mode)
+
+
+def load_polygons_from_geojson(path: Path) -> list[np.ndarray]:
+    """Return polygon coordinates from a GeoJSON file."""
+
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    polygons = _extract_polygons_from_geojson(payload)
+    if not polygons:
+        raise ValueError(f"No Polygon/MultiPolygon geometries found in {path}")
+    return polygons
+
+
+def load_raster_mask(
+    path: Path,
+    *,
+    threshold: float = 0.0,
+    mode: RasterMode = RasterMode.KEEP,
+    name: str | None = None,
+) -> RasterMask:
+    """Load a raster (NumPy .npy/.npz or CSV/txt) used to keep/exclude polygons."""
+
+    suffix = path.suffix.lower()
+    if suffix in {".npy", ".npz"}:
+        loaded = np.load(path)
+        values = loaded if isinstance(loaded, np.ndarray) else loaded[list(loaded.files)[0]]
+    elif suffix in {".csv", ".txt"}:
+        values = np.loadtxt(path, delimiter="," if suffix == ".csv" else None)
+    else:
+        raise ValueError(f"Unsupported raster format for {path}; use .npy, .npz, .csv, or .txt.")
+    if values.ndim != 2:
+        raise ValueError(f"Raster mask {path} must be two-dimensional.")
+    raster_name = name or path.stem
+    return RasterMask(
+        values=np.asarray(values, dtype=float), threshold=threshold, mode=mode, name=raster_name
+    )
 
 
 def _extract_polygons_from_geojson(payload: dict[str, object]) -> list[np.ndarray]:

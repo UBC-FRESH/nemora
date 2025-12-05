@@ -2,13 +2,21 @@
 
 from __future__ import annotations
 
+import json
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, cast
 
 import numpy as np
 
-__all__ = ["StandAttributeTemplate", "build_templates"]
+__all__ = [
+    "StandAttributeTemplate",
+    "StandAttributeSample",
+    "build_templates",
+    "sample_stand_attributes",
+    "load_templates_from_json",
+]
 
 
 @dataclass(slots=True)
@@ -40,6 +48,68 @@ class StandAttributeTemplate:
         shape, scale, shift = self.patch_weibull
         samples = rng.weibull(shape, size=size) * scale + shift
         return samples
+
+
+@dataclass(slots=True)
+class StandAttributeSample:
+    """Concrete stand attribute sampled from a template."""
+
+    vegetation_type: str
+    age_class: str
+    area: float
+
+
+def sample_stand_attributes(
+    templates: Sequence[StandAttributeTemplate],
+    *,
+    total_area: float,
+    rng: np.random.Generator | None = None,
+    weights: Sequence[float] | None = None,
+) -> list[StandAttributeSample]:
+    """Fill ``total_area`` with sampled stand attributes."""
+
+    if total_area <= 0:
+        raise ValueError("total_area must be positive.")
+    if not templates:
+        raise ValueError("At least one template is required.")
+    if weights is not None and len(weights) != len(templates):
+        raise ValueError("Length of weights must match the length of templates.")
+    rng = rng or np.random.default_rng()
+    if weights is not None:
+        probs = np.asarray(weights, dtype=float)
+        if np.any(probs < 0):
+            raise ValueError("Weights must be non-negative.")
+        if probs.sum() == 0:
+            raise ValueError("At least one weight must be positive.")
+        probs = probs / probs.sum()
+    else:
+        probs = None
+    remaining = float(total_area)
+    samples: list[StandAttributeSample] = []
+    iterations = 0
+    max_iterations = 10000
+    while remaining > 1e-6 and iterations < max_iterations:
+        if probs is None:
+            index = int(rng.integers(0, len(templates)))
+        else:
+            index = int(rng.choice(len(templates), p=probs))
+        template = templates[index]
+        patch_area = float(template.sample_patch_size(rng, size=1)[0])
+        if patch_area <= 0:
+            iterations += 1
+            continue
+        age_class = template.sample_age_class(rng)
+        area = min(patch_area, remaining)
+        samples.append(
+            StandAttributeSample(
+                vegetation_type=template.vegetation_type,
+                age_class=age_class,
+                area=area,
+            )
+        )
+        remaining -= area
+        iterations += 1
+    return samples
 
 
 def build_templates(
@@ -77,3 +147,12 @@ def build_templates(
             )
         )
     return templates
+
+
+def load_templates_from_json(path: Path) -> list[StandAttributeTemplate]:
+    """Load stand templates from a JSON file (list of record dictionaries)."""
+
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, list):
+        raise ValueError("Template JSON must be a list of records.")
+    return build_templates(cast(Iterable[Mapping[str, object]], payload))

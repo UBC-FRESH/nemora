@@ -4,6 +4,7 @@ from pathlib import Path
 from types import ModuleType, SimpleNamespace
 from typing import Any, cast
 
+import numpy as np
 import pandas as pd
 import pytest
 from typer.testing import CliRunner
@@ -341,7 +342,8 @@ def test_synthesis_generate_seeds_cli_with_mask(tmp_path: Path) -> None:
     assert result.exit_code == 0
     payload = json.loads(output.read_text())
     mask_meta = cast(dict[str, object], payload["metadata"]["mask"])
-    assert mask_meta["name"] == "half-extent"
+    primary = cast(dict[str, object], mask_meta["primary"])
+    assert primary["name"] == "half-extent"
     polygons = payload["metadata"]["metrics"]["polygon_count"]
     assert polygons == 6
 
@@ -392,6 +394,81 @@ def test_synthesis_generate_seeds_cli_imported_layout(tmp_path: Path) -> None:
     assert layout_meta["mode"] == "imported"
     assert layout_meta["points_provided"] == 3
     assert payload["metadata"]["metrics"]["polygon_count"] == 3
+
+
+def test_synthesis_generate_seeds_cli_with_raster(tmp_path: Path) -> None:
+    output = tmp_path / "seeds_raster.json"
+    raster_path = tmp_path / "mask.npy"
+    np.save(raster_path, np.array([[1.0, 1.0], [0.0, 0.0]], dtype=float))
+    result = runner.invoke(
+        app,
+        [
+            "synthesis-generate-seeds",
+            "--count",
+            "4",
+            "--layout",
+            "hex",
+            "--mask-raster",
+            str(raster_path),
+            "--mask-raster-threshold",
+            "0.5",
+            "--mask-raster-mode",
+            "keep",
+            "--output",
+            str(output),
+        ],
+    )
+    assert result.exit_code == 0
+    payload = json.loads(output.read_text())
+    rasters = cast(list[dict[str, object]], payload["metadata"]["rasters"])
+    assert len(rasters) == 1
+
+
+def test_synthesis_generate_seeds_cli_geojson_layout(tmp_path: Path) -> None:
+    geojson_path = tmp_path / "layout.geojson"
+    geojson_path.write_text(
+        json.dumps(
+            {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [[[0.0, 0.0], [0.2, 0.0], [0.2, 0.2], [0.0, 0.0]]],
+                        },
+                    },
+                    {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [[[0.8, 0.8], [0.9, 0.6], [0.7, 0.6], [0.8, 0.8]]],
+                        },
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    output = tmp_path / "geo_layout.json"
+    result = runner.invoke(
+        app,
+        [
+            "synthesis-generate-seeds",
+            "--count",
+            "2",
+            "--layout",
+            "geojson",
+            "--layout-geojson",
+            str(geojson_path),
+            "--output",
+            str(output),
+        ],
+    )
+    assert result.exit_code == 0
+    payload = json.loads(output.read_text())
+    layout_meta = cast(dict[str, object], payload["metadata"]["layout"])
+    assert layout_meta["geojson_features"] == 2
 
 
 def test_ingest_faib_command(tmp_path: Path) -> None:

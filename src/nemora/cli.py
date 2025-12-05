@@ -11,7 +11,7 @@ import numbers
 import statistics
 import subprocess
 import time
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, cast
@@ -329,26 +329,80 @@ SEED_RECIPE_OUTPUT_OPTION = typer.Option(
     show_default=True,
 )
 
-MASK_GEOJSON_OPTION = typer.Option(
-    None,
-    "--mask-geojson",
-    help=(
-        "Optional GeoJSON Polygon/MultiPolygon used to clip polygons (convex masks recommended)."
-    ),
-    show_default=False,
+MASK_GEOJSON_OPTION = cast(
+    Any,
+    typer.Option(
+        None,
+        "--mask-geojson",
+        help="GeoJSON files for mask overlays (repeat: defaults to clip mode).",
+        show_default=False,
+    ),  # type: ignore[misc, call-overload]
 )
 
-MASK_NAME_OPTION = typer.Option(
-    None,
-    "--mask-name",
-    help="Override the mask label stored in metadata (defaults to file stem).",
-    show_default=False,
+MASK_MODE_OPTION = cast(
+    Any,
+    typer.Option(
+        None,
+        "--mask-mode",
+        help="Mode per --mask-geojson (clip/exclude). Matches option order; defaults to clip.",
+        show_default=False,
+    ),  # type: ignore[misc, call-overload]
+)
+
+MASK_NAME_OPTION = cast(
+    Any,
+    typer.Option(
+        None,
+        "--mask-name",
+        help="Optional label per --mask-geojson entry (matches order).",
+        show_default=False,
+    ),  # type: ignore[misc, call-overload]
+)
+
+MASK_RASTER_OPTION = cast(
+    Any,
+    typer.Option(
+        None,
+        "--mask-raster",
+        help="Raster masks (.npy/.npz/.csv/.txt) spanning the seed bounding box (repeatable).",
+        show_default=False,
+    ),  # type: ignore[misc, call-overload]
+)
+
+MASK_RASTER_THRESHOLD_OPTION = cast(
+    Any,
+    typer.Option(
+        None,
+        "--mask-raster-threshold",
+        help="Threshold per --mask-raster (matches order; defaults to 0.0).",
+        show_default=False,
+    ),  # type: ignore[misc, call-overload]
+)
+
+MASK_RASTER_MODE_OPTION = cast(
+    Any,
+    typer.Option(
+        None,
+        "--mask-raster-mode",
+        help="Mode per --mask-raster (keep/exclude); matches option order, defaults to keep.",
+        show_default=False,
+    ),  # type: ignore[misc, call-overload]
+)
+
+MASK_RASTER_NAME_OPTION = cast(
+    Any,
+    typer.Option(
+        None,
+        "--mask-raster-name",
+        help="Optional label per --mask-raster entry (matches order).",
+        show_default=False,
+    ),  # type: ignore[misc, call-overload]
 )
 
 LAYOUT_MODE_OPTION = typer.Option(
     tessellation.SeedLayoutMode.RANDOM,
     "--layout",
-    help="Seed layout strategy: random mix, hex grid, or imported coordinates.",
+    help="Seed layout strategy: random mix, hex grid, imported points, or geojson centroids.",
     case_sensitive=False,
     show_default=True,
 )
@@ -360,6 +414,16 @@ LAYOUT_POINTS_OPTION = typer.Option(
     readable=True,
     help="Path to CSV/JSON file containing imported seed coordinates (x,y).",
     show_default=False,
+)
+
+LAYOUT_GEOJSON_OPTION = cast(
+    Any,
+    typer.Option(
+        None,
+        "--layout-geojson",
+        help="GeoJSON polygons used for deterministic centroid layouts (repeatable).",
+        show_default=False,
+    ),  # type: ignore[misc, call-overload]
 )
 
 BOOTSTRAP_DBH_OUTPUT_OPTION = typer.Option(
@@ -1091,6 +1155,33 @@ def _load_layout_points(path: Path) -> np.ndarray:
     return array
 
 
+def _ensure_parallel_length(label: str, values: Sequence[object], expected: int) -> None:
+    if values and len(values) != expected:
+        console.print(
+            "[red]"
+            f"{label} expects {expected} entries to match the paired option "
+            f"(received {len(values)})."
+            "[/red]"
+        )
+        raise typer.Exit(code=1)
+
+
+def _parse_mask_mode_option(value: str) -> tessellation.MaskMode:
+    normalized = value.strip().lower()
+    try:
+        return tessellation.MaskMode(normalized)
+    except ValueError as exc:  # noqa: PERF203
+        raise ValueError("Mask mode must be 'clip' or 'exclude'.") from exc
+
+
+def _parse_raster_mode_option(value: str) -> tessellation.RasterMode:
+    normalized = value.strip().lower()
+    try:
+        return tessellation.RasterMode(normalized)
+    except ValueError as exc:
+        raise ValueError("Raster mode must be 'keep' or 'exclude'.") from exc
+
+
 @app.command("synthesis-generate-seeds")
 def synthesis_generate_seeds(  # noqa: B008
     count: int = typer.Option(200, "--count", "-c", min=1, help="Target polygon/seed count."),
@@ -1196,14 +1287,20 @@ def synthesis_generate_seeds(  # noqa: B008
     ),
     layout_mode: tessellation.SeedLayoutMode = LAYOUT_MODE_OPTION,
     layout_points_path: Path | None = LAYOUT_POINTS_OPTION,
+    layout_geojson: list[Path] | None = LAYOUT_GEOJSON_OPTION,
     include_points: bool = typer.Option(
         True,
         "--include-points/--metadata-only",
         help="Toggle writing raw coordinates alongside metadata.",
         show_default=True,
     ),
-    mask_geojson: Path | None = MASK_GEOJSON_OPTION,
-    mask_name: str | None = MASK_NAME_OPTION,
+    mask_geojson: list[Path] | None = MASK_GEOJSON_OPTION,
+    mask_modes: list[str] | None = MASK_MODE_OPTION,
+    mask_names: list[str] | None = MASK_NAME_OPTION,
+    mask_rasters: list[Path] | None = MASK_RASTER_OPTION,
+    mask_raster_thresholds: list[float] | None = MASK_RASTER_THRESHOLD_OPTION,
+    mask_raster_modes: list[str] | None = MASK_RASTER_MODE_OPTION,
+    mask_raster_names: list[str] | None = MASK_RASTER_NAME_OPTION,
     output: Path = SEED_RECIPE_OUTPUT_OPTION,
 ) -> None:
     """Generate Voronoi seed recipes and export them as JSON."""
@@ -1218,20 +1315,67 @@ def synthesis_generate_seeds(  # noqa: B008
     if lattice_nx is not None and lattice_ny is not None:
         lattice_resolution = (lattice_nx, lattice_ny)
 
+    mask_geojson = mask_geojson or []
+    mask_modes = mask_modes or []
+    mask_names = mask_names or []
+    mask_rasters = mask_rasters or []
+    mask_raster_thresholds = mask_raster_thresholds or []
+    mask_raster_modes = mask_raster_modes or []
+    mask_raster_names = mask_raster_names or []
+    layout_geojson = layout_geojson or []
+
     if layout_mode == tessellation.SeedLayoutMode.IMPORTED and layout_points_path is None:
         console.print("[red]--layout imported requires --layout-points.[/red]")
         raise typer.Exit(code=1)
     if layout_mode != tessellation.SeedLayoutMode.IMPORTED and layout_points_path is not None:
         console.print("[red]--layout-points is only valid with --layout imported.[/red]")
         raise typer.Exit(code=1)
+    if layout_mode == tessellation.SeedLayoutMode.GEOJSON and not layout_geojson:
+        console.print("[red]--layout geojson requires at least one --layout-geojson file.[/red]")
+        raise typer.Exit(code=1)
+    if layout_mode != tessellation.SeedLayoutMode.GEOJSON and layout_geojson:
+        console.print("[red]--layout-geojson is only valid with --layout geojson.[/red]")
+        raise typer.Exit(code=1)
 
     rng = np.random.default_rng(seed) if seed is not None else None
-    mask_geom = None
-    if mask_geojson is not None:
+    mask_geometries: list[tessellation.MaskGeometry] = []
+    if mask_geojson:
+        _ensure_parallel_length("--mask-mode", mask_modes, len(mask_geojson))
+        _ensure_parallel_length("--mask-name", mask_names, len(mask_geojson))
+        for idx, geo_path in enumerate(mask_geojson):
+            name_value = mask_names[idx] if idx < len(mask_names) else None
+            mode_value = mask_modes[idx] if idx < len(mask_modes) else "clip"
+            try:
+                mask_geometries.append(
+                    tessellation.load_mask_from_geojson(
+                        geo_path,
+                        name=name_value,
+                        mode=_parse_mask_mode_option(mode_value),
+                    )
+                )
+            except Exception as exc:  # noqa: BLE001
+                console.print(f"[red]Failed to parse mask geojson:[/red] {exc}")
+                raise typer.Exit(code=1) from exc
+
+    _ensure_parallel_length("--mask-raster-threshold", mask_raster_thresholds, len(mask_rasters))
+    _ensure_parallel_length("--mask-raster-mode", mask_raster_modes, len(mask_rasters))
+    _ensure_parallel_length("--mask-raster-name", mask_raster_names, len(mask_rasters))
+    raster_masks: list[tessellation.RasterMask] = []
+    for idx, raster_path in enumerate(mask_rasters):
+        threshold = mask_raster_thresholds[idx] if idx < len(mask_raster_thresholds) else 0.0
+        mode_value = mask_raster_modes[idx] if idx < len(mask_raster_modes) else "keep"
+        raster_name = mask_raster_names[idx] if idx < len(mask_raster_names) else None
         try:
-            mask_geom = tessellation.load_mask_from_geojson(mask_geojson, name=mask_name)
+            raster_masks.append(
+                tessellation.load_raster_mask(
+                    raster_path,
+                    threshold=threshold,
+                    mode=_parse_raster_mode_option(mode_value),
+                    name=raster_name,
+                )
+            )
         except Exception as exc:  # noqa: BLE001
-            console.print(f"[red]Failed to parse mask geojson:[/red] {exc}")
+            console.print(f"[red]Failed to parse raster mask:[/red] {exc}")
             raise typer.Exit(code=1) from exc
 
     layout_points = None
@@ -1242,6 +1386,16 @@ def synthesis_generate_seeds(  # noqa: B008
             layout_source = layout_points_path.name
         except Exception as exc:  # noqa: BLE001
             console.print(f"[red]Failed to read layout points:[/red] {exc}")
+            raise typer.Exit(code=1) from exc
+
+    layout_polygons: list[np.ndarray] | None = None
+    if layout_geojson:
+        layout_polygons = []
+        try:
+            for geo_path in layout_geojson:
+                layout_polygons.extend(tessellation.load_polygons_from_geojson(geo_path))
+        except Exception as exc:  # noqa: BLE001
+            console.print(f"[red]Failed to parse layout geojson:[/red] {exc}")
             raise typer.Exit(code=1) from exc
 
     try:
@@ -1267,11 +1421,14 @@ def synthesis_generate_seeds(  # noqa: B008
                 hole_fraction=hole_fraction,
                 merge_fraction=merge_fraction,
             ),
-            mask=mask_geom,
+            mask=mask_geometries[0] if mask_geometries else None,
+            mask_overlays=mask_geometries[1:] if len(mask_geometries) > 1 else [],
+            raster_masks=raster_masks,
             layout=tessellation.SeedLayoutConfig(
                 mode=layout_mode,
                 points=layout_points,
                 source=layout_source,
+                geojson_polygons=layout_polygons,
             ),
             rng=rng,
         )
@@ -1288,9 +1445,13 @@ def synthesis_generate_seeds(  # noqa: B008
     exporters.export_seed_recipe(result, output, include_points=include_points)
     metrics = result.metrics
     mask_suffix = ""
-    if mask_geom is not None:
-        source_name = mask_geom.name or (mask_geojson.stem if mask_geojson is not None else "mask")
-        mask_suffix = f", mask={source_name}"
+    mask_bits: list[str] = []
+    if mask_geometries:
+        mask_bits.append(f"vector_masks={len(mask_geometries)}")
+    if raster_masks:
+        mask_bits.append(f"raster_masks={len(raster_masks)}")
+    if mask_bits:
+        mask_suffix = ", " + "; ".join(mask_bits)
     console.print(
         "[green]Seed recipe written[/green] "
         f"{output} (area CV={metrics.area_cv:.3f}, μ_d={metrics.vertex_degree_mean:.2f}"

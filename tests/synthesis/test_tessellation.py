@@ -106,7 +106,8 @@ def test_mask_geometry_clips_polygons() -> None:
     result = tessellation.generate_seed_points(cfg)
     metadata = result.metadata()
     mask_meta = cast(dict[str, object], metadata["mask"])
-    assert mask_meta["name"] == "test-mask"
+    primary = cast(dict[str, object], mask_meta["primary"])
+    assert primary["name"] == "test-mask"
     for poly in result.polygons:
         if poly.size == 0:
             continue
@@ -170,3 +171,84 @@ def test_imported_layout_uses_provided_points() -> None:
                 ),
             )
         )
+
+
+def test_exclude_mask_removes_polygons() -> None:
+    clip_mask = tessellation.MaskGeometry(
+        polygons=[
+            np.array(
+                [
+                    [0.0, 0.0],
+                    [1.0, 0.0],
+                    [1.0, 1.0],
+                    [0.0, 1.0],
+                ],
+                dtype=float,
+            )
+        ],
+        name="clip",
+        mode=tessellation.MaskMode.CLIP,
+    )
+    exclude_mask = tessellation.MaskGeometry(
+        polygons=[
+            np.array(
+                [
+                    [0.5, 0.0],
+                    [1.0, 0.0],
+                    [1.0, 1.0],
+                    [0.5, 1.0],
+                ],
+                dtype=float,
+            )
+        ],
+        name="exclude",
+        mode=tessellation.MaskMode.EXCLUDE,
+    )
+    layout_points = np.array([[0.25, 0.5], [0.75, 0.5]], dtype=float)
+    cfg = tessellation.VoronoiSeedConfig(
+        count=2,
+        layout=tessellation.SeedLayoutConfig(
+            mode=tessellation.SeedLayoutMode.IMPORTED,
+            points=layout_points,
+        ),
+        mask=clip_mask,
+        mask_overlays=[exclude_mask],
+    )
+    result = tessellation.generate_seed_points(cfg)
+    assert result.polygons[1].size == 0
+
+
+def test_raster_mask_filters_polygons() -> None:
+    layout_points = np.array([[0.25, 0.75], [0.75, 0.25]], dtype=float)
+    raster = tessellation.RasterMask(
+        values=np.array([[1.0, 1.0], [0.0, 0.0]], dtype=float),
+        threshold=0.5,
+        mode=tessellation.RasterMode.KEEP,
+        name="slope",
+    )
+    cfg = tessellation.VoronoiSeedConfig(
+        count=2,
+        layout=tessellation.SeedLayoutConfig(
+            mode=tessellation.SeedLayoutMode.IMPORTED,
+            points=layout_points,
+        ),
+        raster_masks=[raster],
+    )
+    result = tessellation.generate_seed_points(cfg)
+    assert result.polygons[0].size > 0
+    assert result.polygons[1].size == 0
+
+
+def test_geojson_layout_centroids_respected() -> None:
+    square = np.array([[0.0, 0.0], [0.2, 0.0], [0.2, 0.2], [0.0, 0.2]], dtype=float)
+    triangle = np.array([[0.8, 0.8], [0.9, 0.6], [0.7, 0.6]], dtype=float)
+    cfg = tessellation.VoronoiSeedConfig(
+        count=2,
+        layout=tessellation.SeedLayoutConfig(
+            mode=tessellation.SeedLayoutMode.GEOJSON,
+            geojson_polygons=[square, triangle],
+        ),
+    )
+    result = tessellation.generate_seed_points(cfg)
+    expected = np.array([[0.1, 0.1], [triangle[:, 0].mean(), triangle[:, 1].mean()]])
+    assert np.allclose(result.points, expected)

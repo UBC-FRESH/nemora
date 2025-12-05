@@ -56,4 +56,5 @@ def test_seed_recipe_payload_includes_config_when_points_disabled(tmp_path: Path
     assert persisted["config"]["mix"]["cluster"] == 0.5
     assert persisted["metadata"]["metrics"]["polygon_count"] == 5
     mask_metadata = cast(dict[str, object], persisted["metadata"]["mask"])
-    assert mask_metadata["name"] == "unit-square"
+    primary = cast(dict[str, object], mask_metadata["primary"])
+    assert primary["name"] == "unit-square"
