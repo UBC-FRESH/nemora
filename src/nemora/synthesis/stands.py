@@ -273,10 +273,11 @@ class StandBootstrapRule:
     """Rule describing how to attach a bootstrap payload to a stand sample."""
 
     identifier: str
-    bootstrap_path: Path
     source: str
-    vegetation_type: str | None = None
-    age_class: str | None = None
+    vegetation_type: str | None
+    age_class: str | None
+    bootstrap_path: Path | None = None
+    analytic_metadata: Mapping[str, object] | None = None
 
     def matches(self, sample: StandAttributeSample) -> bool:
         if self.vegetation_type is not None and sample.vegetation_type != self.vegetation_type:
@@ -349,43 +350,29 @@ def load_bootstrap_plan(path: Path) -> StandBootstrapPlan:
     used_names: set[str] = set()
     rules: list[StandBootstrapRule] = []
     for index, record in enumerate(raw_rules):
-        if not isinstance(record, Mapping):
-            raise ValueError("Each bootstrap rule must be a mapping.")
-        bootstrap_ref = record.get("bootstrap")
-        if not isinstance(bootstrap_ref, str) or not bootstrap_ref:
-            raise ValueError("Each bootstrap rule must supply a 'bootstrap' path.")
-        bootstrap_path = _resolve_plan_path(base_dir, bootstrap_ref)
-        name_value = record.get("name")
-        derived_name = (
-            str(name_value)
-            if name_value
-            else (Path(bootstrap_ref).stem or f"bootstrap-{index + 1}")
+        rule = _parse_rule_spec(
+            record,
+            base_dir=base_dir,
+            used_names=used_names,
+            fallback_name=f"bootstrap-{index + 1}",
         )
-        identifier = _ensure_unique_name(derived_name, used_names)
-        raw_veg = record.get("vegetation_type")
-        vegetation_type = str(raw_veg) if raw_veg is not None else None
-        raw_age = record.get("age_class")
-        age_class = str(raw_age) if raw_age is not None else None
-        rules.append(
-            StandBootstrapRule(
-                identifier=identifier,
-                bootstrap_path=bootstrap_path,
-                source=bootstrap_ref,
-                vegetation_type=vegetation_type,
-                age_class=age_class,
-            )
-        )
+        rules.append(rule)
     default_rule = None
     if "default_bootstrap" in payload:
-        default_ref = payload["default_bootstrap"]
-        if not isinstance(default_ref, str) or not default_ref:
-            raise ValueError("default_bootstrap must be a string path when provided.")
+        default_spec = payload["default_bootstrap"]
         default_name = str(payload.get("default_name") or "default")
-        identifier = _ensure_unique_name(default_name, used_names)
-        default_rule = StandBootstrapRule(
-            identifier=identifier,
-            bootstrap_path=_resolve_plan_path(base_dir, default_ref),
-            source=default_ref,
+        if isinstance(default_spec, str):
+            record = {"bootstrap": default_spec, "name": default_name}
+        elif isinstance(default_spec, Mapping):
+            record = dict(default_spec)
+            record.setdefault("name", default_name)
+        else:
+            raise ValueError("default_bootstrap must be a string or mapping.")
+        default_rule = _parse_rule_spec(
+            record,
+            base_dir=base_dir,
+            used_names=used_names,
+            fallback_name=default_name,
         )
     return StandBootstrapPlan(rules=tuple(rules), default_rule=default_rule)
 
@@ -470,7 +457,15 @@ def build_bootstrap_assignments(
     for sample in samples:
         rule = plan.select_rule(sample)
         if rule.identifier not in library:
-            metadata, dbh_vectors = _load_bootstrap_payload(rule.bootstrap_path)
+            if rule.bootstrap_path is not None:
+                metadata, dbh_vectors = _load_bootstrap_payload_from_file(rule.bootstrap_path)
+            elif rule.analytic_metadata is not None:
+                metadata, dbh_vectors = _build_analytic_payload(rule.analytic_metadata)
+            else:
+                raise ValueError(
+                    f"Rule '{rule.identifier}' is missing both bootstrap path "
+                    "and analytic metadata."
+                )
             library[rule.identifier] = StandBootstrapLibraryEntry(
                 identifier=rule.identifier,
                 source=rule.source,
@@ -491,7 +486,9 @@ def build_bootstrap_assignments(
     return assignments, library
 
 
-def _load_bootstrap_payload(path: Path) -> tuple[dict[str, object], dict[str, list[float]]]:
+def _load_bootstrap_payload_from_file(
+    path: Path,
+) -> tuple[dict[str, object], dict[str, list[float]]]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     metadata = payload.get("metadata")
     if not isinstance(metadata, Mapping):
@@ -506,6 +503,13 @@ def _load_bootstrap_payload(path: Path) -> tuple[dict[str, object], dict[str, li
             raise ValueError("Each dbh_vectors entry must be a sequence.")
         vector_map[str(key)] = [float(value) for value in values]
     return metadata_dict, vector_map
+
+
+def _build_analytic_payload(
+    metadata: Mapping[str, object],
+) -> tuple[dict[str, object], dict[str, list[float]]]:
+    metadata_dict = dict(metadata)
+    return metadata_dict, {}
 
 
 def _ensure_unique_name(candidate: str, used: set[str]) -> str:
@@ -526,3 +530,72 @@ def _resolve_plan_path(base_dir: Path, reference: str) -> Path:
     if not path.exists():
         raise ValueError(f"Bootstrap payload not found: {path}")
     return path
+
+
+def _parse_rule_spec(
+    record: Mapping[str, object],
+    *,
+    base_dir: Path,
+    used_names: set[str],
+    fallback_name: str,
+) -> StandBootstrapRule:
+    if not isinstance(record, Mapping):
+        raise ValueError("Each bootstrap rule must be a mapping.")
+    bootstrap_ref = record.get("bootstrap")
+    analytic_spec = record.get("analytic")
+    if bootstrap_ref and analytic_spec:
+        raise ValueError("Specify only one of 'bootstrap' or 'analytic' per rule.")
+    if not bootstrap_ref and not analytic_spec:
+        raise ValueError("Rule must provide either a 'bootstrap' path or an 'analytic' block.")
+    name_value = record.get("name")
+    derived_name = str(name_value) if name_value else fallback_name
+    identifier = _ensure_unique_name(derived_name, used_names)
+    raw_veg = record.get("vegetation_type")
+    vegetation_type = str(raw_veg) if raw_veg is not None else None
+    raw_age = record.get("age_class")
+    age_class = str(raw_age) if raw_age is not None else None
+    if bootstrap_ref:
+        if not isinstance(bootstrap_ref, str) or not bootstrap_ref:
+            raise ValueError("'bootstrap' must be a non-empty string path.")
+        bootstrap_path = _resolve_plan_path(base_dir, bootstrap_ref)
+        return StandBootstrapRule(
+            identifier=identifier,
+            source=bootstrap_ref,
+            vegetation_type=vegetation_type,
+            age_class=age_class,
+            bootstrap_path=bootstrap_path,
+        )
+    if not isinstance(analytic_spec, Mapping):
+        raise ValueError("'analytic' must be a mapping describing the payload.")
+    analytic_metadata = _parse_analytic_metadata(analytic_spec, identifier)
+    return StandBootstrapRule(
+        identifier=identifier,
+        source=f"analytic:{identifier}",
+        vegetation_type=vegetation_type,
+        age_class=age_class,
+        analytic_metadata=analytic_metadata,
+    )
+
+
+def _parse_analytic_metadata(
+    config: Mapping[str, object],
+    identifier: str,
+) -> dict[str, object]:
+    distribution_raw = config.get("distribution")
+    if not isinstance(distribution_raw, str) or not distribution_raw.strip():
+        raise ValueError(f"Analytic payload '{identifier}' requires a 'distribution' string.")
+    params = config.get("parameters")
+    if not isinstance(params, Mapping):
+        raise ValueError(f"Analytic payload '{identifier}' requires a 'parameters' mapping.")
+    metadata: dict[str, object] = {
+        "distribution": distribution_raw.strip(),
+        "parameters": dict(params),
+        "mode": "analytic",
+    }
+    for field in ("resamples", "sample_size", "notes"):
+        if field in config:
+            metadata[field] = config[field]
+    extras = config.get("metadata")
+    if isinstance(extras, Mapping):
+        metadata.update(dict(extras))
+    return metadata

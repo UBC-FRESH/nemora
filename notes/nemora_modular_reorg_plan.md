@@ -145,4 +145,4 @@ src/nemora/
 10. [ ] Synthesis Phase 2 — bootstrap integration
     - [x] Ship the stand→bootstrap manifest helper + CLI (`synthesis-link-bootstraps`), including plan parser, manifest writer, docs, and regression coverage.
     - [x] Thread the manifest into `synthesis-assign-stands`/exporters so polygons carry `stand_id`/`bootstrap_id` plus metadata for downstream tree generation.
-    - [ ] Add the analytic-mode pathway (parameter-based payloads) and document the end-to-end workflow (seed recipe → stand templates → bootstrap manifest → tree synthesis).
+    - [x] Add the analytic-mode pathway (parameter-based payloads) and document the end-to-end workflow (seed recipe → stand templates → bootstrap manifest → tree synthesis).

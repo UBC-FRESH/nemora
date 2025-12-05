@@ -569,16 +569,6 @@ def test_synthesis_link_bootstraps_cli(tmp_path: Path) -> None:
         ),
         encoding="utf-8",
     )
-    bootstrap_b = tmp_path / "bootstrap_b.json"
-    bootstrap_b.write_text(
-        json.dumps(
-            {
-                "metadata": {"distribution": "lognormal", "resamples": 1},
-                "dbh_vectors": {"0": [10.0]},
-            }
-        ),
-        encoding="utf-8",
-    )
     plan_path = tmp_path / "plan.json"
     plan_path.write_text(
         json.dumps(
@@ -590,7 +580,14 @@ def test_synthesis_link_bootstraps_cli(tmp_path: Path) -> None:
                         "bootstrap": bootstrap_a.name,
                     }
                 ],
-                "default_bootstrap": bootstrap_b.name,
+                "default_bootstrap": {
+                    "analytic": {
+                        "distribution": "lognormal",
+                        "parameters": {"mean": 2.0, "sigma": 0.5},
+                        "sample_size": 0,
+                    },
+                    "name": "analytic-default",
+                },
             }
         ),
         encoding="utf-8",
@@ -614,6 +611,8 @@ def test_synthesis_link_bootstraps_cli(tmp_path: Path) -> None:
     payload = json.loads(output.read_text())
     assert len(payload["assignments"]) == 2
     assert "fir-old" in payload["bootstraps"]
+    assert "analytic-default" in payload["bootstraps"]
+    assert payload["bootstraps"]["analytic-default"]["dbh_vectors"] == {}
     assert payload["assignments"][0]["stand_id"].startswith("plot-")
 
 
@@ -646,16 +645,6 @@ def test_synthesis_assign_stands_with_bootstrap_manifest(tmp_path: Path) -> None
         ),
         encoding="utf-8",
     )
-    bootstrap_b = tmp_path / "bootstrap_b.json"
-    bootstrap_b.write_text(
-        json.dumps(
-            {
-                "metadata": {"distribution": "lognormal", "resamples": 1},
-                "dbh_vectors": {"0": [9.0]},
-            }
-        ),
-        encoding="utf-8",
-    )
     plan_path = tmp_path / "plan.json"
     plan_path.write_text(
         json.dumps(
@@ -667,7 +656,13 @@ def test_synthesis_assign_stands_with_bootstrap_manifest(tmp_path: Path) -> None
                         "bootstrap": bootstrap_a.name,
                     }
                 ],
-                "default_bootstrap": bootstrap_b.name,
+                "default_bootstrap": {
+                    "analytic": {
+                        "distribution": "lognormal",
+                        "parameters": {"mean": 2.2, "sigma": 0.4},
+                    },
+                    "name": "analytic-default",
+                },
             }
         ),
         encoding="utf-8",

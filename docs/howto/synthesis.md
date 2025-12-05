@@ -384,7 +384,14 @@ bootstrap JSON artifacts:
     {"name": "cedar", "vegetation_type": "CedarHemlock", "bootstrap": "bootstrap/cedar.json"},
     {"name": "fir", "vegetation_type": "DouglasFir", "bootstrap": "bootstrap/dfir.json"}
   ],
-  "default_bootstrap": "bootstrap/default.json"
+  "default_bootstrap": {
+    "name": "analytic-default",
+    "analytic": {
+      "distribution": "lognormal",
+      "parameters": {"mean": 2.2, "sigma": 0.45},
+      "sample_size": 0
+    }
+  }
 }
 ```
 
@@ -430,6 +437,14 @@ the `bootstrap_id` field stored on every assignment. Future synthesis steps will
 with the polygon GeoJSON so each stand polygon has both attribute defaults and DBH vectors ready for
 tree-list generation.
 
+### Analytic payloads (no bootstrap files)
+
+When real DBH bootstrap files are unavailable, provide an `analytic` block in the plan (as shown in
+the `default_bootstrap` example above). The analytic payload advertises a distribution name plus
+parameters/sizing metadata so downstream tree generators know how to draw DBH values on demand. The
+linker embeds the metadata and sets `mode: "analytic"` with empty `dbh_vectors` so consumers can
+branch between empirical (bootstrap) and analytic sampling at runtime.
+
 ### Embed bootstrap metadata in the stand GeoJSON
 
 Pass the manifest into `synthesis-assign-stands` to propagate the generated stand IDs and bootstrap
@@ -452,6 +467,15 @@ Each feature now includes the sampled vegetation/age attributes plus:
 
 Downstream tools can read the GeoJSON directly to discover which DBH payload to use for each polygon,
 removing the need to join manifests manually.
+
+End-to-end workflow recap:
+
+1. `synthesis-generate-seeds --include-polygons` → Voronoi polygons + metadata.
+2. `synthesis-sample-attributes` → sampled vegetation/age manifest.
+3. `sampling-export-bootstrap-dbh` (as needed) → bootstrap JSON payloads for empirical stands.
+4. `synthesis-link-bootstraps` → stand manifest + plan (bootstrap + analytic) → stand→payload manifest.
+5. `synthesis-assign-stands --bootstrap-manifest ...` → GeoJSON with polygons, attributes, stand IDs,
+   and bootstrap metadata ready for tree synthesis/exporters.
 
 ## Helper module (`nemora.synthesis.helpers`)
 

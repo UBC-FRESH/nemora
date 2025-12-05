@@ -80,16 +80,6 @@ def test_load_bootstrap_plan_and_assignments(tmp_path: Path) -> None:
         ),
         encoding="utf-8",
     )
-    bootstrap_b = tmp_path / "bootstrap_b.json"
-    bootstrap_b.write_text(
-        json.dumps(
-            {
-                "metadata": {"distribution": "lognormal", "resamples": 1},
-                "dbh_vectors": {"0": [15.0]},
-            }
-        ),
-        encoding="utf-8",
-    )
     plan_path = tmp_path / "plan.json"
     plan_path.write_text(
         json.dumps(
@@ -101,7 +91,14 @@ def test_load_bootstrap_plan_and_assignments(tmp_path: Path) -> None:
                         "bootstrap": bootstrap_a.name,
                     }
                 ],
-                "default_bootstrap": bootstrap_b.name,
+                "default_bootstrap": {
+                    "name": "analytic-default",
+                    "analytic": {
+                        "distribution": "lognormal",
+                        "parameters": {"shape": 1.5, "scale": 18.0},
+                        "resamples": 0,
+                    },
+                },
             }
         ),
         encoding="utf-8",
@@ -123,6 +120,10 @@ def test_load_bootstrap_plan_and_assignments(tmp_path: Path) -> None:
     fir_payload = library[assignments[0].bootstrap_id]
     assert fir_payload.metadata["distribution"] == "weibull"
     assert "0" in fir_payload.dbh_vectors
+    analytic_payload = library[assignments[1].bootstrap_id]
+    assert analytic_payload.metadata["distribution"] == "lognormal"
+    assert analytic_payload.dbh_vectors == {}
+    assert analytic_payload.metadata.get("mode") == "analytic"
 
 
 def test_build_stand_features_includes_bootstrap_metadata(tmp_path: Path) -> None:

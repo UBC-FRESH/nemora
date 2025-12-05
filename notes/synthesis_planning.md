@@ -62,7 +62,7 @@ Also have a look at the FLG project documentation under `reference-papers/flg`. 
 - [ ] Integrate the sampling stack so each synthesized stand can draw DBH vectors via bootstrap or analytic sampling:
   - [x] Provide a stand→bootstrap manifest helper + CLI so sampled attributes can reference DBH payloads exported by `sampling-export-bootstrap-dbh` (plan JSON + Typer command + regression tests).
   - [x] Thread the manifest into stand exporters/CLI so GeoJSON features carry `stand_id`, `bootstrap_id`, and a metadata preview for downstream tree generators.
-  - [ ] Support both “synthetic from parameters” and “bootstrap from empirical tallies” modes (analytic payload plumbing still TODO).
+  - [x] Support both “synthetic from parameters” and “bootstrap from empirical tallies” modes (plan format + linker now accept analytic payload definitions alongside bootstrap JSON files).
   - [ ] Ensure outputs align with existing `BootstrapResult` metadata contracts by threading the manifest into polygon exporters + upcoming tree generators.
 - [ ] Build composable pipelines to attach per-tree metadata:
   - [ ] Spatial placement within polygons (Poisson, stratified by canopy layer, optional clustering).

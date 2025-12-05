@@ -364,6 +364,9 @@
 - Updated `synthesis-assign-stands` and the GeoJSON exporters so they can ingest the manifest,
   attaching per-feature `stand_id` / `bootstrap_id` fields plus a metadata preview (distribution,
   parameters, resamples) for downstream tree generators; new CLI/pytest coverage guards the workflow.
+- Plan files now support analytic (parameter-driven) payload definitions in addition to bootstrap
+  JSON references, enabling stands without empirical tallies to advertise DBH distributions; docs
+  describe the pattern and the CLI treats analytic/default entries the same as file-based payloads.
 - Updated planning artifacts (ROADMAP detailed next steps, `notes/synthesis_planning.md`,
   `notes/nemora_modular_reorg_plan.md`) to mark Phase 1 synthesis work complete and queue the Phase 2
   follow-ups (hook manifest into exporters + analytic-mode pathway).
