@@ -56,7 +56,7 @@ Also have a look at the FLG project documentation under `reference-papers/flg`. 
     so docs/tests can sample attributes without bespoke scripts.
   - [x] Tessellation integration: `nemora synthesis-generate-seeds --include-polygons` plus
     `nemora synthesis-assign-stands` attach sampled attributes to Voronoi polygons and export GeoJSON.
-- [ ] Write regression tests comparing polygon statistics vs. Rlandscape reference runs (small seeds stored under `tests/fixtures/synthesis`).
+- [x] Write regression tests comparing polygon statistics vs. Rlandscape reference runs (see `tests/fixtures/synthesis/reference_metrics.json` + tessellation regression test).
 
 ### Phase 2 — Stand tree-list synthesis
 - [ ] Integrate the sampling stack so each synthesized stand can draw DBH vectors via bootstrap or analytic sampling:

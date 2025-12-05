@@ -342,3 +342,11 @@
 - Extended `nemora.synthesis.stands` with helpers to load sampled attributes and build GeoJSON
   features, updated `docs/howto/synthesis.md` with the full CLI pipeline, and expanded exporter/CLI
   regression tests to cover the new flows.
+
+## 2025-12-07 — Tessellation regression fixture
+
+- Added `tests/fixtures/synthesis/reference_metrics.json`, capturing a deterministic Voronoi config
+  and CJFR-style metrics so future tessellation refactors have a reference point.
+- New regression test (`tests/synthesis/test_tessellation.py::test_voronoi_metrics_match_reference_fixture`)
+  loads the fixture, regenerates the seeds, and asserts polygon counts/area CV/vertex-degree stats
+  stay within tight tolerances.

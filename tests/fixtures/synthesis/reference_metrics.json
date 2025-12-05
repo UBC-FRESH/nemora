@@ -1,0 +1,20 @@
+{
+  "config": {
+    "count": 25,
+    "aspect_ratio": 1.5,
+    "mix": {
+      "uniform": 0.6,
+      "cluster": 0.2,
+      "inhibition": 0.2,
+      "lattice": 0.0
+    },
+    "seed": 20251207
+  },
+  "metrics": {
+    "polygon_count": 25,
+    "area_mean": 0.05999999999999997,
+    "area_cv": 0.6039151419361797,
+    "vertex_degree_mean": 5.2,
+    "vertex_degree_std": 1.0954451150103321
+  }
+}

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import cast
 
 import numpy as np
@@ -252,3 +254,31 @@ def test_geojson_layout_centroids_respected() -> None:
     result = tessellation.generate_seed_points(cfg)
     expected = np.array([[0.1, 0.1], [triangle[:, 0].mean(), triangle[:, 1].mean()]])
     assert np.allclose(result.points, expected)
+
+
+def test_voronoi_metrics_match_reference_fixture() -> None:
+    fixture_path = (
+        Path(__file__).resolve().parents[1] / "fixtures" / "synthesis" / "reference_metrics.json"
+    )
+    payload = json.loads(fixture_path.read_text(encoding="utf-8"))
+    cfg_data = payload["config"]
+    mix_data = cfg_data["mix"]
+    cfg = tessellation.VoronoiSeedConfig(
+        count=cfg_data["count"],
+        aspect_ratio=cfg_data["aspect_ratio"],
+        mix=tessellation.PointProcessMix(
+            uniform=mix_data["uniform"],
+            cluster=mix_data["cluster"],
+            inhibition=mix_data["inhibition"],
+            lattice=mix_data["lattice"],
+        ),
+        rng=np.random.default_rng(cfg_data["seed"]),
+    )
+    result = tessellation.generate_seed_points(cfg)
+    metrics = payload["metrics"]
+    actual = result.metrics
+    assert actual.polygon_count == metrics["polygon_count"]
+    assert actual.area_mean == pytest.approx(metrics["area_mean"], rel=1e-9, abs=1e-12)
+    assert actual.area_cv == pytest.approx(metrics["area_cv"], rel=1e-6)
+    assert actual.vertex_degree_mean == pytest.approx(metrics["vertex_degree_mean"], rel=1e-6)
+    assert actual.vertex_degree_std == pytest.approx(metrics["vertex_degree_std"], rel=1e-6)
