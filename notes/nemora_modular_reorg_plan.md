@@ -56,7 +56,7 @@ src/nemora/
 
 6. **Synthesis (`nemora.synthesis`)**
    - [ ] Define landscape/stem data models, leveraging `distributions` + `sampling`.
-   - [ ] Implement stand attribute sampling, stem population generation, and optional high-resolution detail.
+   - [x] Implement stand attribute sampling (template helper + CLI manifest export); stem population generation and high-resolution detail remain TODO.
    - [ ] Deliver visualization/export tools and robust unit tests.
 
 7. **Inventory simulation (`nemora.simulation`)**

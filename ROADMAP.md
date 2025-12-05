@@ -37,7 +37,7 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
   - [x] Phase 1 kickoff: deterministic seed generator covering all four point processes plus CJFR hole/merge editing with exporter-friendly metadata.
   - [x] Phase 1 continuation: Voronoi clipping + target metric reporting (n, CV, μ_d, σ_d) wired into exporters/CLI, including convex GeoJSON masks, multi-mask overlays, and raster keep/exclude modifiers.
   - [x] Phase 1 deterministic layouts: hex-packed grids, imported point sets, and GeoJSON centroid placement exposed via `SeedLayoutConfig` and the CLI (`--layout hex|imported|geojson`).
-  - [ ] Implement stand attribute sampling, stem population generation (initial template sampler landed; DBH integration still pending).
+  - [x] Implement stand attribute sampling (template helper + CLI manifest export; DBH integration still pending).
   - [ ] Provide export & visualisation helpers (GeoJSON, rasters).
 - `nemora.simulation`
   - [ ] Create interfaces for plot-based and remote-sensing simulations.

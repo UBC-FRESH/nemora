@@ -304,6 +304,31 @@ exporters.export_seed_recipe(seed_result, Path("artifacts/seed_recipe.json"))
 Drop the resulting GeoJSON into QGIS/ArcGIS to visualise the tessellation while preserving the seed
 configuration + CJFR metrics for regression tests.
 
+### CLI helper — sampling without Python scaffolding
+
+Use the Typer subcommand when you just need a manifest of sampled stands:
+
+```bash
+nemora synthesis-sample-attributes \
+    --templates data/veg_templates.json \
+    --total-area 40 \
+    --seed 2025 \
+    --output artifacts/stands_sampled.json
+```
+
+The command loads the template JSON, samples enough patches to cover the requested area, and writes a
+JSON list such as:
+
+```json
+[
+  {"vegetation_type": "CedarHemlock", "age_class": "60-90", "area": 4.22},
+  {"vegetation_type": "DouglasFir", "age_class": "20-40", "area": 3.01}
+]
+```
+
+Pass the manifest downstream to synthesis/exporter scripts or stash it alongside the Voronoi seed
+recipe so regression tests share the same attribute plan.
+
 ## Helper module (`nemora.synthesis.helpers`)
 
 Nemora exposes helper utilities that convert bootstrap results into synthesis-ready payloads:

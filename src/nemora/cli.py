@@ -60,7 +60,7 @@ from .ingest.hps import (
     load_plot_selections as load_hps_plot_selections,
 )
 from .sampling import BootstrapResult, bootstrap_dbh_vectors, bootstrap_inventory
-from .synthesis import exporters, tessellation
+from .synthesis import exporters, stands, tessellation
 from .synthesis.helpers import bootstrap_payload
 from .workflows.hps import fit_hps_inventory
 
@@ -424,6 +424,41 @@ LAYOUT_GEOJSON_OPTION = cast(
         help="GeoJSON polygons used for deterministic centroid layouts (repeatable).",
         show_default=False,
     ),  # type: ignore[misc, call-overload]
+)
+
+STAND_TEMPLATE_PATH_OPTION = typer.Option(
+    None,
+    "--templates",
+    "-t",
+    help="JSON file describing stand templates (vegetation, age-class CDF, Weibull params).",
+    exists=True,
+    file_okay=True,
+    dir_okay=False,
+    readable=True,
+    show_default=False,
+)
+
+STAND_ATTRIBUTE_OUTPUT_OPTION = typer.Option(
+    Path("stand_attributes.json"),
+    "--output",
+    "-o",
+    help="Destination JSON for sampled stand attributes.",
+    show_default=True,
+)
+
+STAND_TOTAL_AREA_OPTION = typer.Option(
+    10.0,
+    "--total-area",
+    min=0.01,
+    help="Target area (hectares) to fill with sampled stand attributes.",
+    show_default=True,
+)
+
+STAND_SEED_OPTION = typer.Option(
+    None,
+    "--seed",
+    help="Optional RNG seed for reproducible attribute sampling.",
+    show_default=False,
 )
 
 BOOTSTRAP_DBH_OUTPUT_OPTION = typer.Option(
@@ -1456,6 +1491,45 @@ def synthesis_generate_seeds(  # noqa: B008
         "[green]Seed recipe written[/green] "
         f"{output} (area CV={metrics.area_cv:.3f}, μ_d={metrics.vertex_degree_mean:.2f}"
         f"{mask_suffix})"
+    )
+
+
+@app.command("synthesis-sample-attributes")
+def synthesis_sample_attributes_cli(  # noqa: B008
+    templates_path: Path = STAND_TEMPLATE_PATH_OPTION,
+    total_area: float = STAND_TOTAL_AREA_OPTION,
+    seed: int | None = STAND_SEED_OPTION,
+    output: Path = STAND_ATTRIBUTE_OUTPUT_OPTION,
+) -> None:
+    """Sample stand attributes from template JSON and export as a manifest."""
+
+    if total_area <= 0:
+        console.print("[red]--total-area must be positive.[/red]")
+        raise typer.Exit(code=1)
+    try:
+        templates = stands.load_templates_from_json(templates_path)
+    except Exception as exc:  # noqa: BLE001
+        console.print(f"[red]Failed to load templates:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+    rng = np.random.default_rng(seed) if seed is not None else None
+    try:
+        samples = stands.sample_stand_attributes(templates, total_area=total_area, rng=rng)
+    except Exception as exc:  # noqa: BLE001
+        console.print(f"[red]Failed to sample stand attributes:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+    payload = [
+        {
+            "vegetation_type": sample.vegetation_type,
+            "age_class": sample.age_class,
+            "area": sample.area,
+        }
+        for sample in samples
+    ]
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    console.print(
+        "[green]Stand attributes sampled[/green] "
+        f"{len(samples)} patches (~{sum(p.area for p in samples):.2f} ha) → {output}"
     )
 
 

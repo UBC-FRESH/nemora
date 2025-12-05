@@ -471,6 +471,41 @@ def test_synthesis_generate_seeds_cli_geojson_layout(tmp_path: Path) -> None:
     assert layout_meta["geojson_features"] == 2
 
 
+def test_synthesis_sample_attributes_cli(tmp_path: Path) -> None:
+    templates_path = tmp_path / "templates.json"
+    templates_path.write_text(
+        json.dumps(
+            [
+                {
+                    "vegetation_type": "fir",
+                    "age_classes": [["10-30", 1.0]],
+                    "patch_weibull": [1.0, 1.0, 0.1],
+                }
+            ]
+        ),
+        encoding="utf-8",
+    )
+    output = tmp_path / "attributes.json"
+    result = runner.invoke(
+        app,
+        [
+            "synthesis-sample-attributes",
+            "--templates",
+            str(templates_path),
+            "--total-area",
+            "2",
+            "--seed",
+            "5",
+            "--output",
+            str(output),
+        ],
+    )
+    assert result.exit_code == 0
+    payload = json.loads(output.read_text())
+    assert payload
+    assert payload[0]["vegetation_type"] == "fir"
+
+
 def test_ingest_faib_command(tmp_path: Path) -> None:
     fixtures = Path("tests/fixtures/faib")
     output = tmp_path / "stand_table.csv"

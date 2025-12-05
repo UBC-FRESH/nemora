@@ -321,3 +321,12 @@
   vegetation/age classes, generates deterministic hex layouts, and exports both GeoJSON features and
   the seed recipe metadata, demonstrating how the helpers chain together.
 - No code changes; tests were not run (documentation-only update).
+
+## 2025-12-07 — Stand attribute sampling CLI
+
+- Added `nemora synthesis-sample-attributes`, a Typer command that loads stand template JSON, fills a
+  requested area with sampled vegetation/age-class assignments, and writes the manifest as JSON so
+  docs/tests/recipes can reference the same attribute plan without custom scripts.
+- `docs/howto/synthesis.md` now documents the CLI workflow, including example output.
+- Regression coverage expanded via a new CLI test; roadmap and planning notes now mark the Phase 1
+  stand-attribute deliverable complete.

@@ -49,9 +49,11 @@ Also have a look at the FLG project documentation under `reference-papers/flg`. 
   - [x] Optional slope/elevation raster support for physiographic modifiers.
     - Multiple vector overlays supported via repeatable `--mask-geojson`/`--mask-mode` pairs
       (clip/exclude), plus raster-based keep/exclude grids with threshold controls.
-- [ ] Attach stand-level attributes (species mix, age class, site index, crown closure) using probability surfaces or user-specified distributions; expose hooks for ingesting real inventory summaries.
+- [x] Attach stand-level attributes (species mix, age class, site index, crown closure) using probability surfaces or user-specified distributions; expose hooks for ingesting real inventory summaries.
   - [x] Initial scaffolding: `sample_stand_attributes` consumes templates (JSON or iterable records)
     and fills a requested area with vegetation/age-class assignments for downstream DBH sampling.
+  - [x] CLI bridge: `nemora synthesis-sample-attributes` loads template JSON and emits stand manifests
+    so docs/tests can sample attributes without bespoke scripts.
 - [ ] Write regression tests comparing polygon statistics vs. Rlandscape reference runs (small seeds stored under `tests/fixtures/synthesis`).
 
 ### Phase 2 — Stand tree-list synthesis
