@@ -93,6 +93,100 @@ must expose `x` and `y` headers; JSON inputs can be a raw list of `[x, y]` pairs
 `points` list. Metadata emitted by `export_seed_recipe` reports the chosen layout mode plus the
 number of coordinates provided so downstream docs/tests can cite the provenance.
 
+Use `--layout geojson` when you already have polygon features that should drive seed placement;
+repeat `--layout-geojson path/to/polygons.geojson` to register the feature collection(s). The
+generator uses polygon centroids, guaranteeing deterministic coordinates without converting the
+files to CSV intermediates.
+
+### Physiographic modifiers
+
+Vector masks now accept multiple overlays, each tagged as `clip` or `exclude`. Repeat
+`--mask-geojson path/to/mask.geojson --mask-mode clip --mask-name riparian` to constrain the
+landscape, then supply `--mask-geojson path/to/waterbodies.geojson --mask-mode exclude` to carve
+voids that remove specific polygons entirely. When multiple masks are provided, the CLI pairs
+entries with the optional `--mask-mode` / `--mask-name` lists by position.
+
+Raster constraints complement the vector overlays for quick slope/elevation gating. Provide NumPy
+arrays (``.npy``/``.npz``) or CSV grids that span the seed bounding box, then describe the logic with
+`--mask-raster path.npy --mask-raster-threshold 0.4 --mask-raster-mode keep`. The tessellation
+pipeline samples each polygon’s seed coordinate against the raster value and discards polygons that
+fall outside the configured threshold (keep mode) or inside an exclusion zone. Metadata emitted by
+`export_seed_recipe` now lists both vector overlays and raster constraints so downstream exporters
+can reproduce the same filters.
+
+### Worked example — vector + raster overlays
+
+The snippet below walks through the CLI flow for deterministic layouts that honour vector and raster
+modifiers. First, create simple GeoJSON boundary/exclusion shapes:
+
+```bash
+mkdir -p artifacts/masks
+cat <<'GEOJSON' > artifacts/masks/boundary.geojson
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {"name": "planning-area"},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[0, 0], [1.8, 0], [1.8, 1], [0, 1], [0, 0]]]
+      }
+    }
+  ]
+}
+GEOJSON
+
+cat <<'GEOJSON' > artifacts/masks/waterbodies.geojson
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {"name": "lake"},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[0.9, 0.1], [1.7, 0.1], [1.7, 0.6], [0.9, 0.6], [0.9, 0.1]]]
+      }
+    }
+  ]
+}
+GEOJSON
+```
+
+Next, produce a lightweight raster that keeps only elevations above 0.45:
+
+```bash
+python - <<'PY'
+import numpy as np
+arr = np.linspace(0.2, 0.8, num=36, dtype=float).reshape(6, 6)
+np.save("artifacts/masks/elevation.npy", arr)
+PY
+```
+
+Finally, run the CLI with GeoJSON-driven layouts, vector overlays, and the raster filter:
+
+```bash
+nemora synthesis-generate-seeds \
+  --layout geojson \
+  --layout-geojson artifacts/masks/boundary.geojson \
+  --mask-geojson artifacts/masks/boundary.geojson \
+  --mask-mode clip \
+  --mask-name planning-area \
+  --mask-geojson artifacts/masks/waterbodies.geojson \
+  --mask-mode exclude \
+  --mask-name water \
+  --mask-raster artifacts/masks/elevation.npy \
+  --mask-raster-threshold 0.45 \
+  --mask-raster-mode keep \
+  --metadata-only \
+  --output artifacts/masks/seed_recipe.json
+```
+
+Use `jq '.metadata' artifacts/masks/seed_recipe.json` to double-check which overlays fired. Feed the
+same metadata into `nemora.synthesis.exporters.export_geojson` (see below) whenever you want to
+visualise the resulting polygons in GIS software.
+
 ## Expected input shape
 
 ```python
@@ -113,6 +207,102 @@ attached metadata). Each bootstrap sample preserves:
 
 Stand/stem generators should persist the metadata (e.g., attach `distribution`/`parameters` to the
 output manifests) so simulation workflows can trace provenance.
+
+## Stand attribute scaffolding
+
+Use `nemora.synthesis.stands.build_templates` (or `load_templates_from_json`) to convert vegetation
+summaries into reusable templates, then `sample_stand_attributes` to fill a target area with sampled
+patch descriptors:
+
+```python
+from pathlib import Path
+from nemora.synthesis import stands
+
+templates = stands.load_templates_from_json(Path("data/veg_templates.json"))
+samples = stands.sample_stand_attributes(templates, total_area=50.0, rng=np.random.default_rng(0))
+for sample in samples:
+    print(sample.vegetation_type, sample.age_class, f"{sample.area:.1f} ha")
+```
+
+Each sample records the vegetation type, chosen age class, and allocated area so later phases can
+attach DBH distributions or bootstrap payloads per stand. The helper accepts optional weights (for
+probability surfaces) and respects the same `np.random.Generator` hooks used elsewhere in the
+synthesis module.
+
+### Template JSON format
+
+Attribute templates are plain JSON files. Each record declares the vegetation type, an optional
+`area_weight`, and the available age classes (with optional weights/extras). A minimal example:
+
+```json
+[
+  {
+    "vegetation_type": "CedarHemlock",
+    "area_weight": 0.55,
+    "age_classes": [
+      {"label": "30-60", "weight": 0.4, "site_index": 22},
+      {"label": "60-90", "weight": 0.6, "site_index": 24}
+    ],
+    "extras": {"target_basal_area": 28.5}
+  },
+  {
+    "vegetation_type": "DouglasFir",
+    "area_weight": 0.45,
+    "age_classes": [
+      {"label": "20-40", "weight": 0.3},
+      {"label": "40-80", "weight": 0.7}
+    ]
+  }
+]
+```
+
+`stands.load_templates_from_json` validates the schema, normalises weights (uniform when omitted),
+and preserves any custom `extras` mapping so later phases can propagate site-based modifiers.
+
+### Python walkthrough — sampling attributes + exporting GeoJSON
+
+```python
+from pathlib import Path
+import numpy as np
+
+from nemora.synthesis import exporters, stands, tessellation
+
+# 1. Sample 25 ha of attributes.
+templates = stands.load_templates_from_json(Path("data/veg_templates.json"))
+samples = stands.sample_stand_attributes(
+    templates,
+    total_area=25.0,
+    rng=np.random.default_rng(0),
+)
+
+# 2. Generate deterministic hex seeds that match the sample count.
+seed_cfg = tessellation.VoronoiSeedConfig(
+    count=len(samples),
+    layout=tessellation.SeedLayoutConfig(mode=tessellation.SeedLayoutMode.HEX),
+)
+seed_result = tessellation.generate_seed_points(seed_cfg)
+
+# 3. Pair polygons with the sampled attributes and emit GeoJSON + recipe metadata.
+features = []
+for poly, sample in zip(seed_result.polygons, samples):
+    features.append(
+        {
+            "type": "Feature",
+            "properties": {
+                "veg_type": sample.vegetation_type,
+                "age_class": sample.age_class,
+                "area_ha": sample.area,
+            },
+            "geometry": {"type": "Polygon", "coordinates": [poly.tolist()]},
+        }
+    )
+
+exporters.export_geojson(features, Path("artifacts/stands.geojson"))
+exporters.export_seed_recipe(seed_result, Path("artifacts/seed_recipe.json"))
+```
+
+Drop the resulting GeoJSON into QGIS/ArcGIS to visualise the tessellation while preserving the seed
+configuration + CJFR metrics for regression tests.
 
 ## Helper module (`nemora.synthesis.helpers`)
 

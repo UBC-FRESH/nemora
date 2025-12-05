@@ -291,3 +291,33 @@
 - Updated docs (`docs/howto/synthesis.md`) and planning notes (roadmap + synthesis plan + modular reorg outline) to mark the Phase 1 deterministic layout checklist complete and describe how the CLI/API consume the new knobs.
 - Expanded regression coverage: new tessellation tests assert deterministic hex grids/imported coordinates, and CLI tests verify the new options/metadata plumbing.
 - Tests / validation: `ruff format src tests`, `ruff check src tests`, `mypy src` *(fails on existing typing issues in `src/nemora/dataprep/hps.py` and `src/nemora/ingest/{fia,faib}.py`)*, `pytest`, `sphinx-build -b html docs _build/html -W`, `pre-commit run --all-files`.
+
+## 2025-12-07 — Physiographic modifiers + stand templates
+
+- Added multi-mask overlays (clip/exclude) and raster keep/exclude constraints to
+  `nemora.synthesis.tessellation`, surfaced via the CLI (`--mask-geojson`, `--mask-mode`,
+  `--mask-raster`, etc.) so landscapes can respect physiographic boundaries or slope/elevation grids.
+- Introduced a GeoJSON-driven layout mode that seeds centroids directly from feature collections:
+  `--layout geojson --layout-geojson files...` plus the new `SeedLayoutMode.GEOJSON`.
+- Expanded metadata to describe vector/raster modifiers and layout provenance; exporter/tests/docs now
+  cover the mask/raster/geojson workflows.
+- Added `StandAttributeSample`, `sample_stand_attributes`, and `load_templates_from_json` so stand
+  attribute templates can be loaded from manifest files and used to fill target areas with vegetation
+  and age-class assignments (first step toward the Phase 1 stand attribute deliverable).
+- Tests: new tessellation regression cases for exclude masks, raster modifiers, GeoJSON layouts +
+  CLI coverage for raster & geojson options + stand-template unit tests.
+- Docs/planning: how-to guide now documents multi-mask/raster usage and the stand attribute helper;
+  roadmap/notes updated to mark Phase 1 physiographic work complete and note the new attribute
+  sampler.
+- Validation: `ruff format src tests`, `ruff check src tests`, `mypy src` *(fails on existing ingest/HPS
+  typing issues)*, `pytest`, `sphinx-build -b html docs _build/html -W`, `pre-commit run --all-files`.
+
+## 2025-12-07 — Synthesis walkthroughs (docs)
+
+- Expanded `docs/howto/synthesis.md` with end-to-end walkthroughs that create GeoJSON/raster masks,
+  run `nemora synthesis-generate-seeds` with deterministic GeoJSON layouts plus the new overlay
+  options, and inspect the resulting metadata.
+- Added stand-template documentation outlining the JSON schema and a Python example that samples
+  vegetation/age classes, generates deterministic hex layouts, and exports both GeoJSON features and
+  the seed recipe metadata, demonstrating how the helpers chain together.
+- No code changes; tests were not run (documentation-only update).
