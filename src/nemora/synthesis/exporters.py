@@ -211,6 +211,8 @@ def export_tree_geojson(
                 "geometry": {"type": "Point", "coordinates": [x, y]},
             }
         )
+    if not features:
+        raise ValueError("No tree records to export.")
     export_geojson(features, path, crs=crs)
 
 
@@ -245,6 +247,9 @@ def tree_records_to_dataframe(records: Sequence[Mapping[str, object]]) -> pd.Dat
             )
         elif isinstance(attrs, Mapping):
             row.update(dict(attrs))
+        prov = row.get("attributes_provenance")
+        if isinstance(prov, Mapping):
+            row["attributes_provenance"] = dict(prov)
         rows.append(row)
     return pd.DataFrame.from_records(rows)
 

@@ -6,7 +6,7 @@ from typing import cast
 
 import numpy as np
 
-from nemora.synthesis import stands, stems
+from nemora.synthesis import exporters, stands, stems
 from nemora.synthesis.helpers import StandDBHSampler
 
 
@@ -269,3 +269,17 @@ def test_load_attribute_config_from_json(tmp_path: Path) -> None:
     enriched = stems.attach_tree_attributes(records, config=cfg)
     prov = cast(dict[str, object], enriched[0]["attributes_provenance"])
     assert prov["provenance"] == "test-coeffs"
+
+
+def test_exporters_include_provenance_in_table(tmp_path: Path) -> None:
+    polygon = np.array([[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]])
+    sampler = _analytic_sampler(sample_size=2)
+    records = stems.place_trees_with_dbh(
+        polygon,
+        sampler,
+        rng=np.random.default_rng(3),
+        config=stems.TreePlacementConfig(min_spacing=0.1),
+    )
+    enriched = stems.attach_tree_attributes(records)
+    df = exporters.tree_records_to_dataframe(enriched)
+    assert "attributes_provenance" in df.columns

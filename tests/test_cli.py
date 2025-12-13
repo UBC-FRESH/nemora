@@ -738,6 +738,7 @@ def test_synthesis_assign_stands_with_bootstrap_manifest(tmp_path: Path) -> None
     assert len(geojson_payload["features"]) >= 2
     table_df = pd.read_parquet(table_out)
     assert {"dbh", "stand_id"} <= set(table_df.columns)
+    assert "attributes_provenance" in table_df.columns
 
 
 def test_ingest_faib_command(tmp_path: Path) -> None:
