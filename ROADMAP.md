@@ -87,6 +87,7 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
    - [x] Ship the stand→bootstrap manifest helper + CLI so sampled attributes can reference DBH payloads exported via `sampling-export-bootstrap-dbh` (plan parser, manifest writer, docs/tests).
    - [x] Thread the manifest into polygon exporters/GeoJSON so each stand feature carries a `stand_id`, `bootstrap_id`, and metadata preview for downstream tree generation.
    - [x] Outline the analytic (parameter-driven) pathway alongside bootstrap payloads and document the end-to-end workflow (seed recipe → stand templates → bootstrap manifest → tree synthesis) in `docs/howto/synthesis.md`.
+   - [x] Wire the manifest into DBH sampler helpers so future tree generators can consume bootstrap + analytic payloads via a single API.
 
 ## Backlog & Ideas
 - [ ] Investigate GPU acceleration for large tally batches.

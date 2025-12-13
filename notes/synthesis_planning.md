@@ -14,6 +14,20 @@ The R package has not been updated in 13 years, so we can safely assume it is "d
 
 Also have a look at the FLG project documentation under `reference-papers/flg`. Basically I wrote this way back. The Rlandscape package probably has a better implementation, but maybe there is something in the FLG documentation or whatnot worth salvaging (my guess is no, but work carefull scraping through and documenting)
 
+## Data dependencies & tooling
+
+Many synthesis workflows lean on DataLad-provisioned reference datasets (FAIB/FIA manifests, raster
+fixtures, etc.). When setting up a new workstation:
+
+1. Install `git-annex` first (package managers work best: NeuroDebian/apt on Ubuntu, `brew install git-annex` on macOS, or `datalad-installer git-annex` on any platform). DataLad will not function without it.
+2. Install DataLad with the full extras so Python deps land correctly: `pip install datalad[full]`
+   (use `--user` or `python3 -m pip` if needed). This only handles Python requirements.
+3. Optional but recommended: use `pip install datalad-installer` and rerun `datalad-installer git-annex`
+   when upgrading so non-Python binaries stay current across platforms.
+
+Keep `git-annex`/`datalad` on your `PATH` before attempting to fetch synthesis inputs; the ingest and
+sampling notes assume the tooling is ready to go.
+
 ## Multi-phase implementation plan
 
 ### Phase 0 — Research & design scaffolding
@@ -63,7 +77,12 @@ Also have a look at the FLG project documentation under `reference-papers/flg`. 
   - [x] Provide a stand→bootstrap manifest helper + CLI so sampled attributes can reference DBH payloads exported by `sampling-export-bootstrap-dbh` (plan JSON + Typer command + regression tests).
   - [x] Thread the manifest into stand exporters/CLI so GeoJSON features carry `stand_id`, `bootstrap_id`, and a metadata preview for downstream tree generators.
   - [x] Support both “synthetic from parameters” and “bootstrap from empirical tallies” modes (plan format + linker now accept analytic payload definitions alongside bootstrap JSON files).
-  - [ ] Ensure outputs align with existing `BootstrapResult` metadata contracts by threading the manifest into polygon exporters + upcoming tree generators.
+  - [x] Ensure outputs align with existing `BootstrapResult` metadata contracts by threading the manifest into polygon exporters + upcoming tree generators.
+  - [x] **DBH sampler helpers:** codify how manifests feed tree generators.
+    - [x] Introduce a `StandDBHSampler` protocol/dataclass that exposes `draw_dbh(rng, count)` and returns both the sampled vector and provenance (`bootstrap_id`, distribution parameters, sample weights when applicable).
+    - [x] Add a builder that consumes the manifest (`assignments`, `bootstraps`) and hydrates the correct sampler per `bootstrap_id`, loading `BootstrapResult` JSON only once (maybe via `BootstrapResult.from_dict`) and falling back to analytic sampling via `nemora.distributions` + numeric inversion when no bootstrap vectors exist. Builder likely lives in `nemora.synthesis.helpers` to keep CLI + future tree modules aligned.
+    - [x] Capture the helper contract in docs/notes (inputs, expected metadata fields, deterministic seeding requirements) so tree placement + CLI wiring depend on a stable interface. Note: CLI should support `--bootstrap-manifest` + `--sampler-cache` for pre-loading payloads in long workflows.
+    - [x] Provide regression fixtures mixing bootstrap + analytic payloads to prove deterministic draws (seeded RNG) and document failure modes (missing parameters, unsupported distributions).
 - [ ] Build composable pipelines to attach per-tree metadata:
   - [ ] Spatial placement within polygons (Poisson, stratified by canopy layer, optional clustering).
   - [ ] Crown metrics, biomass factors, bark thickness, etc., using ingest/sampling configs for consistent units.

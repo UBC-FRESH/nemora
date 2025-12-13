@@ -477,6 +477,28 @@ End-to-end workflow recap:
 5. `synthesis-assign-stands --bootstrap-manifest ...` → GeoJSON with polygons, attributes, stand IDs,
    and bootstrap metadata ready for tree synthesis/exporters.
 
+### Convert manifests into DBH samplers
+
+Use `nemora.synthesis.helpers.build_dbh_samplers` to hydrate per-stand samplers (bootstrap **and**
+analytic) before feeding the upcoming tree/stand generators:
+
+```python
+from nemora.synthesis import stands
+from nemora.synthesis.helpers import build_dbh_samplers
+
+manifest = stands.load_bootstrap_manifest(Path("artifacts/stand_bootstrap_manifest.json"))
+samplers = build_dbh_samplers(manifest)
+for sampler in samplers:
+    draws = sampler.draw(sample_size=100, rng=np.random.default_rng(42))
+    print(sampler.assignment.stand_id, sampler.sampler_type, draws[:3])
+```
+
+Bootstrap-backed samplers expose the recorded resample vectors (use `draw(resample=0)` to select a
+specific bootstrap run, or let the helper resample from the pooled vectors). Analytic samplers map the
+manifest’s distribution + parameter block to `nemora.sampling.sample_distribution`, so you can draw
+new DBH values even when no empirical bootstrap file exists. All samplers honour NumPy RNGs for
+reproducibility and default to the manifest’s recorded `sample_size` when you do not specify one.
+
 ## Helper module (`nemora.synthesis.helpers`)
 
 Nemora exposes helper utilities that convert bootstrap results into synthesis-ready payloads:

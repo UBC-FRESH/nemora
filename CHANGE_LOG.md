@@ -199,6 +199,14 @@
 - Updated the roadmap and modular reorg plan to mark the registry CLI tasks complete and queue the next deliverables (sampling adoption + ingest benchmark telemetry automation).
 - Documented `ingest-benchmark --report-path` usage in the ingest how-to and captured the plan to persist JSONL metrics via the nightly workflow / CHANGE_LOG trend summaries.
 
+## 2025-11-08 — Synthesis DBH sampler helpers
+
+- Added `StandDBHSampler` and `build_dbh_samplers` so manifests now hydrate per-stand samplers that draw DBH vectors from cached bootstrap resamples or analytic payloads via `sample_distribution`, keeping RNG controls and default sizes consistent with recorded metadata.
+- Backed the helpers with regression coverage combining empirical and analytic payloads, exercising sampler selection, deterministic resample replay, and failure paths for missing payloads/parameters inside `tests/test_synthesis_helpers.py`.
+- Expanded the synthesis how-to with a workflow section showing how to load manifests, build samplers, and blend bootstrap + analytic draws; linked the helper into the documented CLI pipeline so downstream modules understand the contract.
+- Updated Phase 2 planning notes / roadmap checkboxes to mark the DBH sampler work complete and to keep the “Detailed Next Steps” log aligned with the actual synthesis milestones.
+- Registered a canonical `lognormal` distribution (PDF/CDF/inverse metadata) and taught the analytic sampler to accept the friendlier `mean`/`sigma` aliases so manifest payloads can advertise lognormal parameters without bespoke conversions.
+
 ## 2025-11-08 — Synthforest bootstrap helper & docs
 
 - Added `nemora.synthforest.helpers` with `bootstrap_to_dataframe` and `bootstrap_payload` so synthforest consumers can access bootstrap samples, stacked arrays, and provenance metadata via a single helper; exported the package under `nemora.synthforest`.
@@ -367,6 +375,9 @@
 - Plan files now support analytic (parameter-driven) payload definitions in addition to bootstrap
   JSON references, enabling stands without empirical tallies to advertise DBH distributions; docs
   describe the pattern and the CLI treats analytic/default entries the same as file-based payloads.
+- Introduced `StandDBHSampler` + `build_dbh_samplers` so manifest consumers can hydrate DBH samplers
+  (bootstrap or analytic) via one API; includes regression coverage and an expanded how-to section
+  illustrating how to draw DBH vectors directly from the manifest.
 - Updated planning artifacts (ROADMAP detailed next steps, `notes/synthesis_planning.md`,
   `notes/nemora_modular_reorg_plan.md`) to mark Phase 1 synthesis work complete and queue the Phase 2
   follow-ups (hook manifest into exporters + analytic-mode pathway).

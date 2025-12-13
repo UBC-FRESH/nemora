@@ -151,6 +151,17 @@ def lognormal_inverse_cdf(u: np.ndarray, params: Mapping[str, float]) -> np.ndar
     return np.exp(mu + sigma * ndtri(arr))
 
 
+def lognormal_pdf(x: np.ndarray, params: Mapping[str, float]) -> np.ndarray:
+    arr = np.asarray(x, dtype=float)
+    arr = np.clip(arr, 1e-12, None)
+    mu = params["mu"]
+    sigma = float(np.sqrt(max(params["sigma2"], 1e-12)))
+    with np.errstate(divide="ignore", invalid="ignore"):
+        densities = np.exp(-np.power(np.log(arr) - mu, 2.0) / (2.0 * sigma**2))
+        densities /= arr * sigma * np.sqrt(2.0 * np.pi)
+    return np.nan_to_num(densities, nan=0.0, posinf=0.0, neginf=0.0)
+
+
 STANDARD_DISTRIBUTIONS = [
     Distribution(
         name="weibull",
@@ -165,6 +176,19 @@ STANDARD_DISTRIBUTIONS = [
         parameters=("beta", "p", "s"),
         pdf=gamma_pdf,
         notes="Gamma distribution with optional scaling factor.",
+    ),
+    Distribution(
+        name="lognormal",
+        parameters=("mu", "sigma2"),
+        pdf=lognormal_pdf,
+        cdf=lognormal_cdf,
+        inverse_cdf=lognormal_inverse_cdf,
+        bounds={
+            "sigma2": (1e-6, None),
+        },
+        notes=(
+            "Log-normal distribution parameterised by log-mean (`mu`) and log-variance (`sigma2`)."
+        ),
     ),
     Distribution(
         name="johnsonsb",
@@ -347,7 +371,7 @@ def _apply_inverse_metadata(dist: Distribution) -> None:
     elif name == "pareto":
         dist.cdf = pareto_cdf
         dist.inverse_cdf = pareto_inverse_cdf
-    elif name == "ln":
+    elif name in {"ln", "lognormal"}:
         dist.cdf = lognormal_cdf
         dist.inverse_cdf = lognormal_inverse_cdf
 
