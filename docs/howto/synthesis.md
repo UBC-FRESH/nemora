@@ -598,6 +598,8 @@ CLI flag reference:
 - `--placement-mode`: `poisson`, `stratified`, or `clustered`.
 - `--cluster-count` / `--cluster-spread`: Cluster mode controls (cluster count default auto;
   spread is a fraction of polygon extent).
+- `--attribute-coeffs`: JSON file with attribute coefficients (`height_a`/`height_b`, etc.). You can
+  also set `NEMORA_TREE_ATTRIBUTE_CONFIG=/path/to/coeffs.json` to apply globally.
 - `--count`: Optional per-stand tree count override (defaults to sampler `sample_size` when omitted).
 - `--output-geojson` / `--output-table`: Output paths; table format chosen by suffix (CSV/Parquet).
 

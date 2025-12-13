@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import json
+import os
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Literal
 
 import numpy as np
@@ -12,6 +15,9 @@ from .helpers import StandDBHSampler
 __all__ = [
     "TreePlacementMode",
     "TreeAttributeConfig",
+    "DEFAULT_ATTRIBUTE_PROVENANCE",
+    "load_attribute_config",
+    "TreeAttributeConfig",
     "TreeAttributes",
     "TreePlacementConfig",
     "attach_tree_attributes",
@@ -20,6 +26,8 @@ __all__ = [
 ]
 
 TreePlacementMode = Literal["poisson", "stratified", "clustered"]
+
+DEFAULT_ATTRIBUTE_PROVENANCE = "placeholder-v1"
 
 
 @dataclass(slots=True)
@@ -44,6 +52,7 @@ class TreeAttributeConfig:
     biomass_b: float = 2.35
     bark_thickness_a: float = 0.03
     bark_thickness_b: float = 1.05
+    provenance: str = DEFAULT_ATTRIBUTE_PROVENANCE
 
 
 @dataclass(slots=True)
@@ -128,7 +137,7 @@ def attach_tree_attributes(
 ) -> list[dict[str, object]]:
     """Return records augmented with derived tree attributes."""
 
-    cfg = config or TreeAttributeConfig()
+    cfg = config or load_attribute_config()
     enriched: list[dict[str, object]] = []
     for record in records:
         dbh = _coerce_dbh(record.get("dbh"))
@@ -151,6 +160,7 @@ def attach_tree_attributes(
             "bark_thickness_a": cfg.bark_thickness_a,
             "bark_thickness_b": cfg.bark_thickness_b,
             "crown_ratio": cfg.crown_ratio,
+            "provenance": cfg.provenance,
         }
         enriched.append(enriched_record)
     return enriched
@@ -207,6 +217,60 @@ def _coerce_dbh(value: object | None) -> float:
         except ValueError:
             return 0.0
     return 0.0
+
+
+def load_attribute_config(path: Path | None = None) -> TreeAttributeConfig:
+    """Load a tree attribute config from JSON or fall back to defaults.
+
+    JSON schema keys mirror ``TreeAttributeConfig`` fields and may include
+    ``provenance`` for versioning (defaults to ``placeholder-v1``).
+    An environment variable ``NEMORA_TREE_ATTRIBUTE_CONFIG`` can point to a
+    JSON file to override defaults across CLI runs.
+    """
+
+    config_path = path
+    if config_path is None:
+        env_path = os.environ.get("NEMORA_TREE_ATTRIBUTE_CONFIG")
+        if env_path:
+            config_path = Path(env_path)
+    if config_path is None:
+        return TreeAttributeConfig()
+    payload = json.loads(Path(config_path).read_text(encoding="utf-8"))
+    kwargs: dict[str, object] = {
+        k: payload.get(k)
+        for k in (
+            "height_a",
+            "height_b",
+            "crown_ratio",
+            "biomass_a",
+            "biomass_b",
+            "bark_thickness_a",
+            "bark_thickness_b",
+            "provenance",
+        )
+    }
+    height_a_raw = kwargs.get("height_a")
+    height_b_raw = kwargs.get("height_b")
+    crown_ratio_raw = kwargs.get("crown_ratio")
+    biomass_a_raw = kwargs.get("biomass_a")
+    biomass_b_raw = kwargs.get("biomass_b")
+    bark_a_raw = kwargs.get("bark_thickness_a")
+    bark_b_raw = kwargs.get("bark_thickness_b")
+    provenance_raw = kwargs.get("provenance")
+    return TreeAttributeConfig(
+        height_a=float(height_a_raw) if isinstance(height_a_raw, int | float | str) else 1.3,
+        height_b=float(height_b_raw) if isinstance(height_b_raw, int | float | str) else 0.45,
+        crown_ratio=float(crown_ratio_raw)
+        if isinstance(crown_ratio_raw, int | float | str)
+        else 0.45,
+        biomass_a=float(biomass_a_raw) if isinstance(biomass_a_raw, int | float | str) else 0.05,
+        biomass_b=float(biomass_b_raw) if isinstance(biomass_b_raw, int | float | str) else 2.35,
+        bark_thickness_a=float(bark_a_raw) if isinstance(bark_a_raw, int | float | str) else 0.03,
+        bark_thickness_b=float(bark_b_raw) if isinstance(bark_b_raw, int | float | str) else 1.05,
+        provenance=str(provenance_raw)
+        if provenance_raw is not None
+        else DEFAULT_ATTRIBUTE_PROVENANCE,
+    )
 
 
 def _place_poisson(

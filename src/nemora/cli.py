@@ -1748,6 +1748,12 @@ TREE_CLUSTER_SPREAD_OPTION = typer.Option(
     help="Cluster spread factor (fraction of polygon extent) for clustered mode.",
     show_default=True,
 )
+TREE_ATTRIBUTE_COEFFS_OPTION = typer.Option(
+    None,
+    "--attribute-coeffs",
+    help="JSON file with tree attribute coefficients (power laws + crown ratio).",
+    show_default=False,
+)
 
 
 @app.command("synthesis-export-trees")
@@ -1772,6 +1778,7 @@ def synthesis_export_trees_cli(  # noqa: B008
     placement_mode: str = TREE_PLACEMENT_MODE_OPTION,
     cluster_count: int | None = TREE_CLUSTER_COUNT_OPTION,
     cluster_spread: float = TREE_CLUSTER_SPREAD_OPTION,
+    attribute_coeffs_path: Path | None = TREE_ATTRIBUTE_COEFFS_OPTION,
     count_override: int | None = typer.Option(
         None,
         "--count",
@@ -1827,6 +1834,7 @@ def synthesis_export_trees_cli(  # noqa: B008
         cluster_count=cluster_count,
         cluster_spread=cluster_spread,
     )
+    attribute_cfg = stems.load_attribute_config(attribute_coeffs_path)
     records: list[dict[str, object]] = []
     for idx, sampler in enumerate(samplers):
         if idx >= len(polygons):
@@ -1846,7 +1854,7 @@ def synthesis_export_trees_cli(  # noqa: B008
             rng=rng,
             config=placement_cfg,
         )
-        enriched = stems.attach_tree_attributes(placed)
+        enriched = stems.attach_tree_attributes(placed, config=attribute_cfg)
         records.extend(enriched)
 
     if not records:

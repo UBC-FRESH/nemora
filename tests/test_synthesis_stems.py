@@ -162,6 +162,9 @@ def test_attributes_scale_with_dbh() -> None:
     assert basals == sorted(basals)
     assert heights == sorted(heights)
     assert biomass == sorted(biomass)
+    for rec in enriched:
+        prov = cast(dict[str, object], rec["attributes_provenance"])
+        assert prov["provenance"] == stems.DEFAULT_ATTRIBUTE_PROVENANCE
 
 
 def _bootstrap_sampler(sample_size: int = 6) -> StandDBHSampler:
@@ -241,3 +244,28 @@ def test_clustered_gallery_fixture_alignment() -> None:
     boot_dbh = np.array([rec["dbh"] for rec in boot_records], dtype=float)
     assert np.isclose(boot_dbh.mean(), payload["bootstrap"]["mean_dbh"], atol=0.5)
     assert np.isclose(boot_dbh.std(), payload["bootstrap"]["std_dbh"], atol=0.75)
+
+
+def test_load_attribute_config_from_json(tmp_path: Path) -> None:
+    cfg_path = tmp_path / "attr.json"
+    cfg_path.write_text(
+        json.dumps(
+            {
+                "height_a": 2.0,
+                "height_b": 0.5,
+                "crown_ratio": 0.6,
+                "biomass_a": 0.1,
+                "biomass_b": 2.0,
+                "bark_thickness_a": 0.05,
+                "bark_thickness_b": 1.1,
+                "provenance": "test-coeffs",
+            }
+        ),
+        encoding="utf-8",
+    )
+    cfg = stems.load_attribute_config(cfg_path)
+    assert cfg.provenance == "test-coeffs"
+    records: list[dict[str, object]] = [{"dbh": 10.0, "x": 0.0, "y": 0.0}]
+    enriched = stems.attach_tree_attributes(records, config=cfg)
+    prov = cast(dict[str, object], enriched[0]["attributes_provenance"])
+    assert prov["provenance"] == "test-coeffs"
