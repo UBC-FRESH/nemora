@@ -18,6 +18,7 @@ api/index
 
 examples/faib_manifest_parquet
 examples/hps_benchmark
+examples/clustered_gallery
 ```
 
 .. todo:: Update this section once the nemora.ingest / sampling / synthesis modules land to reflect the broader workflow.
