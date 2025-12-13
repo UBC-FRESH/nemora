@@ -425,6 +425,18 @@
 - Validation: `ruff format src tests`, `ruff check src tests`, `mypy src` *(ingest/dataprep failures
   remain)*, `pytest`, `sphinx-build -b html docs _build/html -W`, `pre-commit run --all-files`.
 
+## 2025-12-10 — Placement property tests, gallery PNG, and mypy overrides
+
+- Added Hypothesis-based spacing/in-bounds checks across Poisson/stratified/clustered placement
+  modes, tightened exporter behaviour (no-empty export guard, provenance threaded into tables), and
+  updated CLI regression to assert provenance columns.
+- Rendered the clustered placement gallery PNG for visual regression with placeholder coefficients
+  and noted the mypy Phase 2 readiness plan; temporary mypy ignores isolate ingest/dataprep blockers
+  until those modules are fixed.
+- Validation: `ruff format src tests`, `ruff check src tests`, `mypy src` *(ingest/dataprep failures
+  ignored via overrides)*, `pytest`, `sphinx-build -b html docs _build/html -W`,
+  `pre-commit run --all-files`.
+
 ## 2025-12-08 — Tree export CLI docs + lint fixes
 
 - Fixed the synthesis how-to tree-export section (closed code fences) and expanded the CLI walkthrough
