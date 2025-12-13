@@ -616,6 +616,14 @@ CLI flag reference:
   empty outputs, confirm the attributes JSON is non-empty and matches the stand count in the seed
   recipe.
 
+### Override tree attribute coefficients
+
+Provide a JSON file (see `tests/fixtures/synthesis/attribute_coeffs_placeholder.json` for the default)
+and either pass `--attribute-coeffs path/to/coeffs.json` or set
+`NEMORA_TREE_ATTRIBUTE_CONFIG=/path/to/coeffs.json`. This is a stopgap until ingest-derived
+allometry lands; each export stamps the provenance (defaults to `placeholder-v1`) in
+`attributes_provenance`.
+
 ### Gallery: analytic vs. bootstrap clustered placement
 
 Use the clustered placement mode to compare analytic vs. bootstrap DBH payloads in a fixed polygon:
