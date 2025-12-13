@@ -9,7 +9,10 @@ import numpy as np
 from .helpers import StandDBHSampler
 
 __all__ = [
+    "TreeAttributeConfig",
+    "TreeAttributes",
     "TreePlacementConfig",
+    "attach_tree_attributes",
     "place_trees",
     "place_trees_with_dbh",
 ]
@@ -21,6 +24,28 @@ class TreePlacementConfig:
 
     min_spacing: float = 0.0
     max_attempt_factor: int = 50
+
+
+@dataclass(slots=True)
+class TreeAttributeConfig:
+    """Simple scalars used to derive placeholder tree attributes."""
+
+    height_factor: float = 0.65  # metres per cm dbh (placeholder)
+    crown_ratio: float = 0.4
+    biomass_factor: float = 0.08  # tonnes per cm^2 dbh proxy
+    bark_thickness_factor: float = 0.02  # cm bark per cm dbh
+
+
+@dataclass(slots=True)
+class TreeAttributes:
+    """Derived per-tree metrics."""
+
+    dbh_cm: float
+    height_m: float
+    crown_ratio: float
+    basal_area_m2: float
+    biomass_tonnes: float
+    bark_thickness_cm: float
 
 
 def place_trees(
@@ -100,6 +125,32 @@ def place_trees_with_dbh(
     return records
 
 
+def attach_tree_attributes(
+    records: list[dict[str, object]],
+    *,
+    config: TreeAttributeConfig | None = None,
+) -> list[dict[str, object]]:
+    """Return records augmented with derived tree attributes."""
+
+    cfg = config or TreeAttributeConfig()
+    enriched: list[dict[str, object]] = []
+    for record in records:
+        dbh = _coerce_dbh(record.get("dbh"))
+        basal_area = _basal_area_from_dbh(dbh)
+        attrs = TreeAttributes(
+            dbh_cm=dbh,
+            height_m=max(dbh * cfg.height_factor, 0.0),
+            crown_ratio=max(cfg.crown_ratio, 0.0),
+            basal_area_m2=basal_area,
+            biomass_tonnes=max(basal_area * cfg.biomass_factor, 0.0),
+            bark_thickness_cm=max(dbh * cfg.bark_thickness_factor, 0.0),
+        )
+        enriched_record = dict(record)
+        enriched_record["attributes"] = attrs
+        enriched.append(enriched_record)
+    return enriched
+
+
 def _point_in_polygon(x: float, y: float, polygon: np.ndarray) -> bool:
     """Ray-casting algorithm for point-in-polygon."""
 
@@ -133,3 +184,21 @@ def _is_spaced(
         if dx * dx + dy * dy < min_dist_sq:
             return False
     return True
+
+
+def _basal_area_from_dbh(dbh_cm: float) -> float:
+    """Compute basal area (m2) from DBH (cm)."""
+
+    radius_m = (dbh_cm / 100.0) / 2.0
+    return float(np.pi * radius_m * radius_m)
+
+
+def _coerce_dbh(value: object | None) -> float:
+    if isinstance(value, int | float | np.floating):
+        return float(value)
+    if isinstance(value, str | bytes | bytearray):
+        try:
+            return float(value)
+        except ValueError:
+            return 0.0
+    return 0.0

@@ -528,6 +528,25 @@ type). `TreePlacementConfig.min_spacing` enforces a minimum Euclidean separation
 deterministic RNG keeps exports reproducible. More advanced placement modes (stratified/clustering)
 will layer on the same contract as the module matures.
 
+### Add basic per-tree attributes
+
+Use `attach_tree_attributes` to tack on simple derived metrics (height, basal area, biomass, bark
+thickness) before exporting stems:
+
+```python
+from nemora.synthesis import stems
+
+records = stems.place_trees_with_dbh(...)
+enriched = stems.attach_tree_attributes(records)
+for record in enriched:
+    attrs = record["attributes"]
+    print(attrs.dbh_cm, attrs.height_m, attrs.basal_area_m2)
+```
+
+Attributes currently use placeholder scalars (`TreeAttributeConfig`) so downstream code can be wired
+up ahead of richer allometry. The helper never mutates the original list; it returns a copy with an
+`attributes` field populated.
+
 ## Helper module (`nemora.synthesis.helpers`)
 
 Nemora exposes helper utilities that convert bootstrap results into synthesis-ready payloads:

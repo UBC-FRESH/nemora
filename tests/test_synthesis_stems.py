@@ -74,3 +74,27 @@ def test_place_trees_with_dbh_pairs_sampler_draws() -> None:
         assert 0.0 <= x <= 1.0
         assert 0.0 <= y <= 1.0
         assert dbh > 0.0
+
+
+def test_attach_tree_attributes_adds_basal_area_and_height() -> None:
+    sampler = _analytic_sampler(sample_size=2)
+    polygon = np.array([[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]])
+    rng = np.random.default_rng(99)
+    records = stems.place_trees_with_dbh(
+        polygon,
+        sampler,
+        count=2,
+        rng=rng,
+        config=stems.TreePlacementConfig(min_spacing=0.05),
+    )
+    enriched = stems.attach_tree_attributes(records)
+    assert len(enriched) == 2
+    for record in enriched:
+        attrs = record["attributes"]
+        assert isinstance(attrs, stems.TreeAttributes)
+        assert attrs.dbh_cm > 0.0
+        assert attrs.height_m > 0.0
+        assert 0.0 < attrs.crown_ratio <= 1.0
+        assert attrs.basal_area_m2 > 0.0
+        assert attrs.biomass_tonnes >= 0.0
+        assert attrs.bark_thickness_cm >= 0.0

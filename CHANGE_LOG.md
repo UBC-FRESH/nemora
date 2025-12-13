@@ -207,6 +207,7 @@
 - Updated Phase 2 planning notes / roadmap checkboxes to mark the DBH sampler work complete and to keep the “Detailed Next Steps” log aligned with the actual synthesis milestones.
 - Registered a canonical `lognormal` distribution (PDF/CDF/inverse metadata) and taught the analytic sampler to accept the friendlier `mean`/`sigma` aliases so manifest payloads can advertise lognormal parameters without bespoke conversions.
 - Added an initial tree-placement helper (`TreePlacementConfig`, `place_trees`, `place_trees_with_dbh`) that pairs DBH draws with uniform in-polygon coordinates, including optional minimum-spacing control, regression tests, and a how-to snippet demonstrating usage.
+- Introduced `TreeAttributes` + `attach_tree_attributes` so stems can carry placeholder height/basal area/biomass/bark metrics; updated docs and tests to exercise the enriched records ahead of full allometry wiring.
 
 ## 2025-11-08 — Synthforest bootstrap helper & docs
 

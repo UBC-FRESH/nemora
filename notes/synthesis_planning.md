@@ -89,7 +89,7 @@ sampling notes assume the tooling is ready to go.
     - [x] Add bootstrap-aware convenience: `place_trees_with_dbh(stand_feature, sampler, count=None, config=...)` that draws DBH from `StandDBHSampler` and pairs with coordinates.
     - [x] Provide deterministic seeding hooks so repeated exports remain reproducible.
   - [ ] Crown metrics, biomass factors, bark thickness, etc., using ingest/sampling configs for consistent units.
-    - [ ] Define a lightweight `TreeAttributes` dataclass carrying DBH, height (placeholder), crown ratio, biomass, bark thickness; seed with simple allometry placeholders until ingest-derived models land.
+    - [x] Define a lightweight `TreeAttributes` dataclass carrying DBH, height (placeholder), crown ratio, biomass, bark thickness; seed with simple allometry placeholders until ingest-derived models land.
     - [ ] Wire attributes into GeoJSON/Parquet exporters with provenance (sampler type, distribution params).
   - [ ] Tests verifying tree count / basal area per stand stays within configured tolerances plus property-based checks on allometric relationships.
     - [ ] Regression fixtures: simple square polygon + analytic sampler to validate placement density and DBH summary stats.
