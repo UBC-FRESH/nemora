@@ -25,6 +25,8 @@ This note captures baseline metrics to compare against future Phase 3 refactor
 
 - Placeholder allometry (power laws) and crown ratio are recorded on each tree record under
   `attributes_provenance` so downstream consumers can track coefficient changes.
+- Defaults are stamped `placeholder-v1`; override via `--attribute-coeffs` or the
+  `NEMORA_TREE_ATTRIBUTE_CONFIG` env var until ingest-derived coefficients land.
 
 ## Follow-ups before locking Phase 2
 
