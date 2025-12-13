@@ -160,3 +160,44 @@ def test_attributes_scale_with_dbh() -> None:
     assert basals == sorted(basals)
     assert heights == sorted(heights)
     assert biomass == sorted(biomass)
+
+
+def _bootstrap_sampler(sample_size: int = 6) -> StandDBHSampler:
+    entry = stands.StandBootstrapLibraryEntry(
+        identifier="bootstrap-1",
+        source="bootstrap.json",
+        metadata={"distribution": "empirical", "sample_size": sample_size, "mode": "bootstrap"},
+        dbh_vectors={
+            "0": [12.0, 14.0, 16.0],
+            "1": [10.0, 20.0, 22.0],
+        },
+    )
+    assignment = stands.StandBootstrapAssignment(
+        stand_id="stand-0002",
+        vegetation_type="pine",
+        age_class="40-60",
+        area=3.5,
+        bootstrap_id="bootstrap-1",
+    )
+    return StandDBHSampler(assignment=assignment, entry=entry)
+
+
+def test_clustered_mode_with_bootstrap_sampler_is_deterministic() -> None:
+    sampler = _bootstrap_sampler()
+    polygon = np.array([[0.0, 0.0], [2.0, 0.0], [2.0, 1.5], [0.0, 1.5]])
+    rng = np.random.default_rng(11)
+    records = stems.place_trees_with_dbh(
+        polygon,
+        sampler,
+        rng=rng,
+        config=stems.TreePlacementConfig(mode="clustered", cluster_spread=0.08, min_spacing=0.05),
+    )
+    assert len(records) == sampler.metadata["sample_size"]
+    dbhs = np.array([rec["dbh"] for rec in records], dtype=float)
+    assert np.isclose(dbhs.mean(), np.array([12.0, 14.0, 16.0, 10.0, 20.0, 22.0]).mean(), atol=1.0)
+    points = np.array([[rec["x"], rec["y"]] for rec in records], dtype=float)
+    assert np.all(points[:, 0] >= 0.0) and np.all(points[:, 0] <= 2.0)
+    assert np.all(points[:, 1] >= 0.0) and np.all(points[:, 1] <= 1.5)
+    for i in range(points.shape[0]):
+        for j in range(i + 1, points.shape[0]):
+            assert np.linalg.norm(points[i] - points[j]) >= 0.05

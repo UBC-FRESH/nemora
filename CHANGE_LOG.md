@@ -406,6 +406,15 @@
 - Validation: `ruff format src tests`, `ruff check src tests`, `mypy src` *(known ingest/dataprep
   failures remain)*, `pytest`, `sphinx-build -b html docs _build/html -W`, `pre-commit run --all-files`.
 
+## 2025-12-09 — Phase 2 wrap-up touches
+
+- Added attribute provenance to tree records and expanded clustered-placement regression with bootstrap
+  samplers to lock in DBH/spacing behaviour; new troubleshooting tips for `synthesis-export-trees`.
+- Updated synthesis planning notes to mark Phase 2 composition nearly complete and capture remaining
+  calibration/gallery tasks.
+- Validation: `ruff format src tests`, `ruff check src tests`, `mypy src` *(known ingest/dataprep
+  failures remain)*, `pytest`, `sphinx-build -b html docs _build/html -W`, `pre-commit run --all-files`.
+
 ## 2025-12-08 — Tree export CLI docs + lint fixes
 
 - Fixed the synthesis how-to tree-export section (closed code fences) and expanded the CLI walkthrough

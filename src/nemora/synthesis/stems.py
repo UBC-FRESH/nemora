@@ -143,6 +143,15 @@ def attach_tree_attributes(
         )
         enriched_record = dict(record)
         enriched_record["attributes"] = attrs
+        enriched_record["attributes_provenance"] = {
+            "height_a": cfg.height_a,
+            "height_b": cfg.height_b,
+            "biomass_a": cfg.biomass_a,
+            "biomass_b": cfg.biomass_b,
+            "bark_thickness_a": cfg.bark_thickness_a,
+            "bark_thickness_b": cfg.bark_thickness_b,
+            "crown_ratio": cfg.crown_ratio,
+        }
         enriched.append(enriched_record)
     return enriched
 

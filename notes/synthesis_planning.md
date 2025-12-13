@@ -96,6 +96,10 @@ sampling notes assume the tooling is ready to go.
     - [x] Property tests: no negative metrics, mean DBH roughly matches sampler mean, placement respects bounding box and min spacing when configured.
   - [x] CLI/export wiring: expose placement + attribute exports via `synthesis-export-trees` with RNG/spacing controls; document flags/workflow in how-to and cover via CLI regression.
 - [x] Tests verifying tree count / basal area per stand stays within configured tolerances plus property-based checks on allometric relationships.
+- [ ] Calibration/provenance follow-ups:
+  - [ ] Swap placeholder allometry for ingest-derived coefficients and thread provenance into exporters.
+  - [ ] Add a gallery/regression fixture combining analytic + bootstrap samplers (clustered mode) and document baseline metrics vs. CJFR/Rlandscape references.
+  - [x] Document troubleshooting tips for `synthesis-export-trees` and capture attribute provenance in exported records.
 
 ### Phase 3 — Export, visualization, and CLI
 - [ ] Add exporters for GeoJSON/GeoPackage (stands + tree points), CSV/Parquet tree lists, and lightweight rasters (canopy height, basal area density).

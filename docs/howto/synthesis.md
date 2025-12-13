@@ -476,6 +476,7 @@ End-to-end workflow recap:
 4. `synthesis-link-bootstraps` → stand manifest + plan (bootstrap + analytic) → stand→payload manifest.
 5. `synthesis-assign-stands --bootstrap-manifest ...` → GeoJSON with polygons, attributes, stand IDs,
    and bootstrap metadata ready for tree synthesis/exporters.
+6. `synthesis-export-trees` → tree points + table with DBH + derived attributes.
 
 ### Convert manifests into DBH samplers
 
@@ -535,8 +536,9 @@ records = stems.place_trees_with_dbh(
 The helper samples points uniformly inside the polygon (simple rejection sampling) and threads DBH
 values from the sampler into each record (`stand_id`, `bootstrap_id`, coordinates, DBH, sampler
 type). `TreePlacementConfig.min_spacing` enforces a minimum Euclidean separation between points; a
-deterministic RNG keeps exports reproducible. More advanced placement modes (stratified/clustering)
-will layer on the same contract as the module matures.
+deterministic RNG keeps exports reproducible. Placement modes are picked via `mode`; clustered
+placement accepts `cluster_spread` and optional `cluster_count`. Attribute provenance (power-law
+coefficients and crown ratio) is stored on each record as `attributes_provenance`.
 
 ### Add basic per-tree attributes
 
@@ -598,6 +600,19 @@ CLI flag reference:
   spread is a fraction of polygon extent).
 - `--count`: Optional per-stand tree count override (defaults to sampler `sample_size` when omitted).
 - `--output-geojson` / `--output-table`: Output paths; table format chosen by suffix (CSV/Parquet).
+
+### Troubleshooting `synthesis-export-trees`
+
+- **“Seed recipe must include polygons”**: re-run `synthesis-generate-seeds` with `--include-polygons`
+  so the recipe embeds geometry; the exporter does not recompute polygons.
+- **Mismatched counts**: ensure the bootstrap manifest assignments cover at least as many stands as
+  the polygons/attributes you supply. Use `--count` to override per-stand tree counts when the
+  manifest lacks `sample_size`.
+- **Spacing errors**: if clustered mode cannot honour `min_spacing`, lower `min_spacing`, increase
+  `cluster_spread`, or switch to `stratified`/`poisson`.
+- **Missing attributes**: the command only uses attributes for ordering/cross-checks; if you see
+  empty outputs, confirm the attributes JSON is non-empty and matches the stand count in the seed
+  recipe.
 
 The command hydrates samplers from the manifest, places trees inside each polygon, and enriches them
 with placeholder attributes before writing both a point GeoJSON and a flat table for analytics.
