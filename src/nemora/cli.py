@@ -60,8 +60,8 @@ from .ingest.hps import (
     load_plot_selections as load_hps_plot_selections,
 )
 from .sampling import BootstrapResult, bootstrap_dbh_vectors, bootstrap_inventory
-from .synthesis import exporters, stands, tessellation
-from .synthesis.helpers import bootstrap_payload
+from .synthesis import exporters, stands, stems, tessellation
+from .synthesis.helpers import bootstrap_payload, build_dbh_samplers
 from .workflows.hps import fit_hps_inventory
 
 app = typer.Typer(help="Nemora distribution fitting CLI (fit module).")
@@ -1714,6 +1714,123 @@ def synthesis_assign_stands_cli(  # noqa: B008
     console.print(
         "[green]Stand GeoJSON written[/green] "
         f"{output} (stands={assigned}, crs={crs or 'unspecified'})"
+    )
+
+
+TREE_GEOJSON_OUTPUT_OPTION = typer.Option(
+    Path("artifacts/trees.geojson"),
+    "--output-geojson",
+    help="Tree GeoJSON path.",
+    show_default=True,
+)
+TREE_TABLE_OUTPUT_OPTION = typer.Option(
+    Path("artifacts/trees.parquet"),
+    "--output-table",
+    help="Tree table path (CSV/Parquet based on suffix).",
+    show_default=True,
+)
+
+
+@app.command("synthesis-export-trees")
+def synthesis_export_trees_cli(  # noqa: B008
+    seed_recipe_path: Path = SEED_RECIPE_INPUT_OPTION,
+    attributes_path: Path = STAND_ATTRIBUTES_INPUT_OPTION,
+    bootstrap_manifest_path: Path = STAND_BOOTSTRAP_MANIFEST_OPTION,
+    output_geojson: Path = TREE_GEOJSON_OUTPUT_OPTION,
+    output_table: Path = TREE_TABLE_OUTPUT_OPTION,
+    seed: int | None = typer.Option(
+        None,
+        "--seed",
+        help="Seed for reproducible placement/sampling.",
+        show_default=False,
+    ),
+    min_spacing: float = typer.Option(
+        0.0,
+        "--min-spacing",
+        help="Minimum spacing (map units) between placed trees.",
+        show_default=True,
+    ),
+    count_override: int | None = typer.Option(
+        None,
+        "--count",
+        help="Optional explicit per-stand tree count; defaults to sampler sample_size.",
+        show_default=False,
+    ),
+) -> None:
+    """Sample DBH values from bootstrap/analytic payloads and export tree points + table."""
+
+    try:
+        manifest = stands.load_bootstrap_manifest(bootstrap_manifest_path)
+    except Exception as exc:  # noqa: BLE001
+        console.print(f"[red]Failed to load bootstrap manifest:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+
+    # Load polygons
+    try:
+        recipe = json.loads(seed_recipe_path.read_text(encoding="utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        console.print(f"[red]Failed to read seed recipe:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+    raw_polygons = recipe.get("polygons")
+    if not isinstance(raw_polygons, list):
+        console.print("[red]Seed recipe must include polygons for placement.[/red]")
+        raise typer.Exit(code=1)
+    polygons = [np.asarray(coords, dtype=float) for coords in raw_polygons if coords]
+
+    # Load stand attributes (only for stand ordering/cross-check)
+    try:
+        samples = stands.load_samples_from_json(attributes_path)
+    except Exception as exc:  # noqa: BLE001
+        console.print(f"[red]Failed to load stand attributes:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+    if not samples:
+        console.print("[red]No stand attributes available for tree export.[/red]")
+        raise typer.Exit(code=1)
+
+    try:
+        samplers = build_dbh_samplers(manifest)
+    except Exception as exc:  # noqa: BLE001
+        console.print(f"[red]Failed to build samplers from manifest:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+
+    rng = np.random.default_rng(seed) if seed is not None else np.random.default_rng()
+    placement_cfg = stems.TreePlacementConfig(min_spacing=min_spacing)
+    records: list[dict[str, object]] = []
+    for idx, sampler in enumerate(samplers):
+        if idx >= len(polygons):
+            break
+        polygon = polygons[idx]
+        if count_override is not None:
+            tree_count = count_override
+        else:
+            sample_size_meta = sampler.metadata.get("sample_size")
+            tree_count = int(sample_size_meta) if isinstance(sample_size_meta, int | float) else 0
+        if tree_count <= 0:
+            continue
+        placed = stems.place_trees_with_dbh(
+            polygon,
+            sampler,
+            count=int(tree_count),
+            rng=rng,
+            config=placement_cfg,
+        )
+        enriched = stems.attach_tree_attributes(placed)
+        records.extend(enriched)
+
+    if not records:
+        console.print("[red]No trees were generated; check manifest or counts.[/red]")
+        raise typer.Exit(code=1)
+
+    try:
+        exporters.export_tree_geojson(records, output_geojson)
+        exporters.export_tree_table(records, output_table)
+    except Exception as exc:  # noqa: BLE001
+        console.print(f"[red]Failed to export trees:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+
+    console.print(
+        "[green]Trees exported[/green] "
+        f"(records={len(records)}, geojson={output_geojson}, table={output_table})"
     )
 
 

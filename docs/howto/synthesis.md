@@ -559,6 +559,35 @@ exporters.export_tree_table(enriched, Path("artifacts/trees.parquet"))
 exporters.export_tree_table(enriched, Path("artifacts/trees.csv"))
 ```
 
+Alternatively, use the CLI to run the full seed → stands → DBH → placement pipeline:
+
+```bash
+nemora synthesis-export-trees \
+  --seed-recipe artifacts/seeds_with_polygons.json \
+  --attributes artifacts/stands_sampled.json \
+  --bootstrap-manifest artifacts/stand_bootstrap_manifest.json \
+  --seed 7 \
+  --min-spacing 0.01 \
+  --count 2 \
+  --output-geojson artifacts/trees.geojson \
+  --output-table artifacts/trees.parquet
+```
+
+CLI flag reference:
+
+- `--bootstrap-manifest`: Stand→bootstrap mapping produced by `synthesis-link-bootstraps` (includes
+  analytic payloads). Required.
+- `--seed-recipe`: Seed JSON with polygons (exported via `synthesis-generate-seeds --include-polygons`).
+- `--attributes`: Stand attributes JSON from `synthesis-sample-attributes` (used for ordering/cross-checks).
+- `--seed`: Optional RNG seed for deterministic placement + DBH draws.
+- `--min-spacing`: Minimum spacing between placed trees (map units).
+- `--count`: Optional per-stand tree count override (defaults to sampler `sample_size` when omitted).
+- `--output-geojson` / `--output-table`: Output paths; table format chosen by suffix (CSV/Parquet).
+
+The command hydrates samplers from the manifest, places trees inside each polygon, and enriches them
+with placeholder attributes before writing both a point GeoJSON and a flat table for analytics.
+```
+
 ## Helper module (`nemora.synthesis.helpers`)
 
 Nemora exposes helper utilities that convert bootstrap results into synthesis-ready payloads:

@@ -395,3 +395,12 @@
   in-bounds coordinates sane under seeding.
 - `export_tree_geojson` now serializes derived `TreeAttributes` safely, and the synthesis how-to shows
   both GeoJSON and table exports for enriched stems.
+
+## 2025-12-08 — Tree export CLI docs + lint fixes
+
+- Fixed the synthesis how-to tree-export section (closed code fences) and expanded the CLI walkthrough
+  for `synthesis-export-trees`, including flag reference and pipeline recap.
+- Validated the new `synthesis-export-trees` flow via CLI regression and synthesis exporter tests
+  (GeoJSON + Parquet), keeping stems/DBH wiring reproducible.
+- Validation: `ruff format src tests`, `ruff check src tests`, `mypy src` *(known existing failures
+  in ingest/dataprep modules)*, `pytest`, `sphinx-build -b html docs _build/html -W`.

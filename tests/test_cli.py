@@ -705,6 +705,38 @@ def test_synthesis_assign_stands_with_bootstrap_manifest(tmp_path: Path) -> None
     assert feature_props["stand_id"] == "stand-0001"
     assert feature_props["bootstrap_id"] in {"fir-old", "default"}
 
+    # Export trees from the manifest with placement + attributes
+    geojson_out = tmp_path / "trees.geojson"
+    table_out = tmp_path / "trees.parquet"
+    tree_result = runner.invoke(
+        app,
+        [
+            "synthesis-export-trees",
+            "--seed-recipe",
+            str(recipe_path),
+            "--attributes",
+            str(attributes_path),
+            "--bootstrap-manifest",
+            str(manifest_path),
+            "--output-geojson",
+            str(geojson_out),
+            "--output-table",
+            str(table_out),
+            "--seed",
+            "7",
+            "--min-spacing",
+            "0.01",
+            "--count",
+            "2",
+        ],
+    )
+    assert tree_result.exit_code == 0
+    geojson_payload = json.loads(geojson_out.read_text())
+    assert geojson_payload["type"] == "FeatureCollection"
+    assert len(geojson_payload["features"]) >= 2
+    table_df = pd.read_parquet(table_out)
+    assert {"dbh", "stand_id"} <= set(table_df.columns)
+
 
 def test_ingest_faib_command(tmp_path: Path) -> None:
     fixtures = Path("tests/fixtures/faib")

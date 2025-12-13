@@ -94,6 +94,7 @@ sampling notes assume the tooling is ready to go.
   - [ ] Tests verifying tree count / basal area per stand stays within configured tolerances plus property-based checks on allometric relationships.
     - [ ] Regression fixtures: simple square polygon + analytic sampler to validate placement density and DBH summary stats.
     - [ ] Property tests: no negative metrics, mean DBH roughly matches sampler mean, placement respects bounding box and min spacing when configured.
+  - [x] CLI/export wiring: expose placement + attribute exports via `synthesis-export-trees` with RNG/spacing controls; document flags/workflow in how-to and cover via CLI regression.
 - [ ] Tests verifying tree count / basal area per stand stays within configured tolerances plus property-based checks on allometric relationships.
 
 ### Phase 3 — Export, visualization, and CLI
