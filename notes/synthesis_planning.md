@@ -100,6 +100,7 @@ sampling notes assume the tooling is ready to go.
   - [ ] Swap placeholder allometry for ingest-derived coefficients and thread provenance into exporters.
   - [ ] Add a gallery/regression fixture combining analytic + bootstrap samplers (clustered mode) and document baseline metrics vs. CJFR/Rlandscape references.
   - [x] Document troubleshooting tips for `synthesis-export-trees` and capture attribute provenance in exported records.
+  - [x] Capture a validation snapshot with current fixture metrics in `notes/synthesis_validation.md`.
 
 ### Phase 3 — Export, visualization, and CLI
 - [ ] Add exporters for GeoJSON/GeoPackage (stands + tree points), CSV/Parquet tree lists, and lightweight rasters (canopy height, basal area density).
