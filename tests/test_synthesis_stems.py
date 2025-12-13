@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import cast
+
 import numpy as np
 
 from nemora.synthesis import stands, stems
@@ -98,3 +100,21 @@ def test_attach_tree_attributes_adds_basal_area_and_height() -> None:
         assert attrs.basal_area_m2 > 0.0
         assert attrs.biomass_tonnes >= 0.0
         assert attrs.bark_thickness_cm >= 0.0
+
+
+def test_placement_stats_match_expected_mean_dbh() -> None:
+    sampler = _analytic_sampler(sample_size=50)
+    polygon = np.array([[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]])
+    rng = np.random.default_rng(5)
+    records = stems.place_trees_with_dbh(
+        polygon,
+        sampler,
+        rng=rng,
+        config=stems.TreePlacementConfig(min_spacing=0.02),
+    )
+    dbhs = np.asarray([float(cast(float, rec["dbh"])) for rec in records], dtype=float)
+    assert dbhs.size == sampler.metadata.get("sample_size")
+    # Lognormal mu=2.0, sigma2=0.25 → mean ≈ 8.37
+    assert 7.5 <= dbhs.mean() <= 9.5
+    points = np.asarray([[rec["x"], rec["y"]] for rec in records], dtype=float)
+    assert np.all((points >= 0.0) & (points <= 1.0))

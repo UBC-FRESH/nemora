@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
+import pandas as pd
 
 from . import stands, stems
 
@@ -22,6 +23,8 @@ __all__ = [
     "seed_recipe_payload",
     "export_stand_geojson_from_polygons",
     "export_tree_geojson",
+    "tree_records_to_dataframe",
+    "export_tree_table",
 ]
 
 
@@ -220,3 +223,41 @@ def _coerce_float(value: object | None) -> float:
         except ValueError:
             return 0.0
     return 0.0
+
+
+def tree_records_to_dataframe(records: Sequence[Mapping[str, object]]) -> pd.DataFrame:
+    """Convert stem records to a flat DataFrame (attributes expanded when present)."""
+
+    rows: list[dict[str, object]] = []
+    for record in records:
+        row = dict(record)
+        attrs = row.pop("attributes", None)
+        if isinstance(attrs, stems.TreeAttributes):
+            row.update(
+                {
+                    "dbh_cm": attrs.dbh_cm,
+                    "height_m": attrs.height_m,
+                    "crown_ratio": attrs.crown_ratio,
+                    "basal_area_m2": attrs.basal_area_m2,
+                    "biomass_tonnes": attrs.biomass_tonnes,
+                    "bark_thickness_cm": attrs.bark_thickness_cm,
+                }
+            )
+        elif isinstance(attrs, Mapping):
+            row.update(dict(attrs))
+        rows.append(row)
+    return pd.DataFrame.from_records(rows)
+
+
+def export_tree_table(
+    records: Sequence[Mapping[str, object]],
+    path: Path,
+) -> None:
+    """Export stem records (flat) to CSV or Parquet based on file suffix."""
+
+    frame = tree_records_to_dataframe(records)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.suffix.lower() == ".parquet":
+        frame.to_parquet(path, index=False)
+    else:
+        frame.to_csv(path, index=False)

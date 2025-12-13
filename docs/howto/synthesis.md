@@ -553,6 +553,10 @@ Use `export_tree_geojson` to emit the enriched records as point features:
 from nemora.synthesis import exporters
 
 exporters.export_tree_geojson(enriched, Path("artifacts/trees.geojson"))
+
+# CSV/Parquet export (for downstream analytics)
+exporters.export_tree_table(enriched, Path("artifacts/trees.parquet"))
+exporters.export_tree_table(enriched, Path("artifacts/trees.csv"))
 ```
 
 ## Helper module (`nemora.synthesis.helpers`)

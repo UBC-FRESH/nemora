@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import cast
 
 import numpy as np
+import pandas as pd
 
 from nemora.synthesis import exporters, stands, stems, tessellation
 
@@ -124,3 +125,38 @@ def test_export_tree_geojson(tmp_path: Path) -> None:
     assert feature["properties"]["stand_id"] == "stand-0001"
     attrs = feature["properties"]["attributes"]
     assert attrs["dbh_cm"] == 22.5
+
+
+def test_tree_table_export_csv_and_parquet(tmp_path: Path) -> None:
+    records = [
+        {
+            "stand_id": "stand-0001",
+            "x": 0.0,
+            "y": 0.1,
+            "dbh": 10.0,
+            "attributes": {"height_m": 6.5, "basal_area_m2": 0.02},
+        },
+        {
+            "stand_id": "stand-0002",
+            "x": 0.2,
+            "y": 0.3,
+            "dbh": 12.0,
+            "attributes": stems.TreeAttributes(
+                dbh_cm=12.0,
+                height_m=8.0,
+                crown_ratio=0.35,
+                basal_area_m2=0.03,
+                biomass_tonnes=0.002,
+                bark_thickness_cm=0.24,
+            ),
+        },
+    ]
+    csv_path = tmp_path / "trees.csv"
+    parquet_path = tmp_path / "trees.parquet"
+    exporters.export_tree_table(records, csv_path)
+    exporters.export_tree_table(records, parquet_path)
+    csv_frame = pd.read_csv(csv_path)
+    pq_frame = pd.read_parquet(parquet_path)
+    assert list(csv_frame.columns) == list(pq_frame.columns)
+    assert csv_frame.shape[0] == 2
+    assert pq_frame["dbh"].iloc[0] == 10.0
