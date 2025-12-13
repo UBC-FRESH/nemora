@@ -386,3 +386,12 @@
 - Tests / validation: `ruff format src tests`, `ruff check src tests`, `mypy src`
   *(known failures: `src/nemora/dataprep/hps.py`, `src/nemora/ingest/{faib,fia}.py`)*,
   `pytest`, `sphinx-build -b html docs _build/html -W`, `pre-commit run --all-files`.
+
+## 2025-12-08 — Stem placement exports
+
+- Added CSV/Parquet export helpers for stem records (`tree_records_to_dataframe`, `export_tree_table`)
+  so placement/DBH workflows can flow into analytics without custom glue; tests cover both formats.
+- Extended placement regression with an analytic lognormal sampler check to keep mean DBH and
+  in-bounds coordinates sane under seeding.
+- `export_tree_geojson` now serializes derived `TreeAttributes` safely, and the synthesis how-to shows
+  both GeoJSON and table exports for enriched stems.
