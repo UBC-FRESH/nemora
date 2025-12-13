@@ -1,0 +1,24 @@
+{
+  "polygon": [[0.0, 0.0], [2.0, 0.0], [2.0, 1.5], [0.0, 1.5]],
+  "analytic": {
+    "distribution": {"mu": 2.0, "sigma2": 0.25},
+    "mean_dbh": 11.561699576925431,
+    "std_dbh": 6.792369383193483,
+    "min_spacing": 0.11691885961699786,
+    "seed": 2025,
+    "mode": "clustered",
+    "cluster_spread": 0.08
+  },
+  "bootstrap": {
+    "vectors": {
+      "0": [12.0, 14.0, 16.0, 18.0, 20.0],
+      "1": [10.0, 11.0, 12.5, 13.5, 15.0]
+    },
+    "mean_dbh": 14.2,
+    "std_dbh": 2.9681644159311658,
+    "min_spacing": 0.07499435637317135,
+    "seed": 2025,
+    "mode": "clustered",
+    "cluster_spread": 0.08
+  }
+}

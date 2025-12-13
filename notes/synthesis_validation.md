@@ -17,6 +17,9 @@ This note captures baseline metrics to compare against future Phase 3 refactor
 - Clustered mode with bootstrap sampler:
   - Seeded RNG produces 6 trees with mean DBH close to 15.7 cm (two resamples pooled).
   - Min spacing 0.05 respected in a 2×1.5 polygon; points remain in-bounds.
+- Clustered gallery fixture (`tests/fixtures/synthesis/clustered_gallery.json`):
+  - Analytic mean DBH ≈ 11.56 cm (σ ≈ 6.79), bootstrap mean DBH ≈ 14.2 cm (σ ≈ 2.97).
+  - Both use seeded RNG 2025, cluster_spread 0.08, min_spacing 0.05 in a 2×1.5 polygon.
 
 ## Attribute provenance
 

@@ -614,6 +614,78 @@ CLI flag reference:
   empty outputs, confirm the attributes JSON is non-empty and matches the stand count in the seed
   recipe.
 
+### Gallery: analytic vs. bootstrap clustered placement
+
+Use the clustered placement mode to compare analytic vs. bootstrap DBH payloads in a fixed polygon:
+
+```bash
+python - <<'PY'
+import json
+import numpy as np
+from pathlib import Path
+from nemora.synthesis import stands, stems
+
+fixture = json.loads(Path("tests/fixtures/synthesis/clustered_gallery.json").read_text())
+polygon = np.asarray(fixture["polygon"], dtype=float)
+
+def analytic_sampler():
+    entry = stands.StandBootstrapLibraryEntry(
+        identifier="analytic-1",
+        source="analytic",
+        metadata={"distribution": "lognormal", "parameters": {"mu": 2.0, "sigma2": 0.25}, "sample_size": 10},
+        dbh_vectors={},
+    )
+    assignment = stands.StandBootstrapAssignment(
+        stand_id="stand-0001",
+        vegetation_type="fir",
+        age_class="60-80",
+        area=4.0,
+        bootstrap_id="analytic-1",
+    )
+    return entry, assignment
+
+def bootstrap_sampler():
+    entry = stands.StandBootstrapLibraryEntry(
+        identifier="bootstrap-1",
+        source="bootstrap.json",
+        metadata={"distribution": "empirical", "sample_size": 10, "mode": "bootstrap"},
+        dbh_vectors=fixture["bootstrap"]["vectors"],
+    )
+    assignment = stands.StandBootstrapAssignment(
+        stand_id="stand-0002",
+        vegetation_type="pine",
+        age_class="40-60",
+        area=3.5,
+        bootstrap_id="bootstrap-1",
+    )
+    return entry, assignment
+
+rng = np.random.default_rng(fixture["analytic"]["seed"])
+entry, assignment = analytic_sampler()
+anal_records = stems.place_trees_with_dbh(
+    polygon,
+    stems.StandDBHSampler(assignment=assignment, entry=entry),
+    rng=rng,
+    config=stems.TreePlacementConfig(mode="clustered", cluster_spread=fixture["analytic"]["cluster_spread"], min_spacing=0.05),
+)
+anal_mean = np.mean([rec["dbh"] for rec in anal_records])
+
+rng = np.random.default_rng(fixture["bootstrap"]["seed"])
+entry, assignment = bootstrap_sampler()
+boot_records = stems.place_trees_with_dbh(
+    polygon,
+    stems.StandDBHSampler(assignment=assignment, entry=entry),
+    rng=rng,
+    config=stems.TreePlacementConfig(mode="clustered", cluster_spread=fixture["bootstrap"]["cluster_spread"], min_spacing=0.05),
+)
+boot_mean = np.mean([rec["dbh"] for rec in boot_records])
+
+print(f\"Analytic mean DBH: {anal_mean:.2f} cm (fixture {fixture['analytic']['mean_dbh']:.2f})\")\nprint(f\"Bootstrap mean DBH: {boot_mean:.2f} cm (fixture {fixture['bootstrap']['mean_dbh']:.2f})\")\nPY
+```
+
+The fixture helps catch regressions in DBH draws or placement under clustered mode; tests assert the
+means/std devs stay within a narrow tolerance so future refactors preserve behaviour.
+
 The command hydrates samplers from the manifest, places trees inside each polygon, and enriches them
 with placeholder attributes before writing both a point GeoJSON and a flat table for analytics.
 ```

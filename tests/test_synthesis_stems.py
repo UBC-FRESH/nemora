@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import cast
 
 import numpy as np
@@ -201,3 +203,41 @@ def test_clustered_mode_with_bootstrap_sampler_is_deterministic() -> None:
     for i in range(points.shape[0]):
         for j in range(i + 1, points.shape[0]):
             assert np.linalg.norm(points[i] - points[j]) >= 0.05
+
+
+def test_clustered_gallery_fixture_alignment() -> None:
+    fixture = Path("tests/fixtures/synthesis/clustered_gallery.json")
+    payload = json.loads(fixture.read_text())
+    polygon = np.asarray(payload["polygon"], dtype=float)
+
+    rng = np.random.default_rng(payload["analytic"]["seed"])
+    anal_sampler = _analytic_sampler(sample_size=10)
+    anal_records = stems.place_trees_with_dbh(
+        polygon,
+        anal_sampler,
+        rng=rng,
+        config=stems.TreePlacementConfig(
+            mode="clustered",
+            cluster_spread=payload["analytic"]["cluster_spread"],
+            min_spacing=0.05,
+        ),
+    )
+    anal_dbh = np.array([rec["dbh"] for rec in anal_records], dtype=float)
+    assert np.isclose(anal_dbh.mean(), payload["analytic"]["mean_dbh"], atol=0.75)
+    assert np.isclose(anal_dbh.std(), payload["analytic"]["std_dbh"], atol=1.0)
+
+    rng = np.random.default_rng(payload["bootstrap"]["seed"])
+    boot_sampler = _bootstrap_sampler(sample_size=10)
+    boot_records = stems.place_trees_with_dbh(
+        polygon,
+        boot_sampler,
+        rng=rng,
+        config=stems.TreePlacementConfig(
+            mode="clustered",
+            cluster_spread=payload["bootstrap"]["cluster_spread"],
+            min_spacing=0.05,
+        ),
+    )
+    boot_dbh = np.array([rec["dbh"] for rec in boot_records], dtype=float)
+    assert np.isclose(boot_dbh.mean(), payload["bootstrap"]["mean_dbh"], atol=0.5)
+    assert np.isclose(boot_dbh.std(), payload["bootstrap"]["std_dbh"], atol=0.75)
