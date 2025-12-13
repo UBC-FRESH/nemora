@@ -6,7 +6,7 @@ from typing import cast
 
 import numpy as np
 
-from nemora.synthesis import exporters, stands, tessellation
+from nemora.synthesis import exporters, stands, stems, tessellation
 
 
 def test_export_metadata_json(tmp_path: Path) -> None:
@@ -93,3 +93,34 @@ def test_export_stand_geojson_from_polygons(tmp_path: Path) -> None:
     assert assigned == 2
     payload = json.loads(path.read_text())
     assert payload["type"] == "FeatureCollection"
+
+
+def test_export_tree_geojson(tmp_path: Path) -> None:
+    records = [
+        {
+            "stand_id": "stand-0001",
+            "bootstrap_id": "bootstrap-1",
+            "sampler_type": "analytic",
+            "x": 0.1,
+            "y": 0.2,
+            "dbh": 22.5,
+            "attributes": stems.TreeAttributes(
+                dbh_cm=22.5,
+                height_m=14.6,
+                crown_ratio=0.4,
+                basal_area_m2=0.04,
+                biomass_tonnes=0.003,
+                bark_thickness_cm=0.45,
+            ),
+        }
+    ]
+    output = tmp_path / "trees.geojson"
+    exporters.export_tree_geojson(records, output)
+    payload = json.loads(output.read_text(encoding="utf-8"))
+    assert payload["type"] == "FeatureCollection"
+    assert len(payload["features"]) == 1
+    feature = payload["features"][0]
+    assert feature["geometry"]["type"] == "Point"
+    assert feature["properties"]["stand_id"] == "stand-0001"
+    attrs = feature["properties"]["attributes"]
+    assert attrs["dbh_cm"] == 22.5

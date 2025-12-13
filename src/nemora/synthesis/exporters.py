@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
-from . import stands
+from . import stands, stems
 
 if TYPE_CHECKING:
     from .stands import StandAttributeSample
@@ -21,6 +21,7 @@ __all__ = [
     "export_seed_recipe",
     "seed_recipe_payload",
     "export_stand_geojson_from_polygons",
+    "export_tree_geojson",
 ]
 
 
@@ -173,3 +174,49 @@ def _config_payload(config: VoronoiSeedConfig) -> dict[str, Any]:
             "merge_fraction": config.edit.merge_fraction,
         },
     }
+
+
+def export_tree_geojson(
+    records: Sequence[Mapping[str, object]],
+    path: Path,
+    *,
+    crs: str | None = None,
+) -> None:
+    """Export stem records (with DBH/attributes) as a GeoJSON FeatureCollection."""
+
+    features: list[dict[str, object]] = []
+    for record in records:
+        x = _coerce_float(record.get("x"))
+        y = _coerce_float(record.get("y"))
+        props = dict(record)
+        props.pop("x", None)
+        props.pop("y", None)
+        attrs = props.get("attributes")
+        if isinstance(attrs, stems.TreeAttributes):
+            props["attributes"] = {
+                "dbh_cm": attrs.dbh_cm,
+                "height_m": attrs.height_m,
+                "crown_ratio": attrs.crown_ratio,
+                "basal_area_m2": attrs.basal_area_m2,
+                "biomass_tonnes": attrs.biomass_tonnes,
+                "bark_thickness_cm": attrs.bark_thickness_cm,
+            }
+        features.append(
+            {
+                "type": "Feature",
+                "properties": props,
+                "geometry": {"type": "Point", "coordinates": [x, y]},
+            }
+        )
+    export_geojson(features, path, crs=crs)
+
+
+def _coerce_float(value: object | None) -> float:
+    if isinstance(value, int | float | np.floating):
+        return float(value)
+    if isinstance(value, str | bytes | bytearray):
+        try:
+            return float(value)
+        except ValueError:
+            return 0.0
+    return 0.0

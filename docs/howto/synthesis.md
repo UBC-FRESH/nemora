@@ -547,6 +547,14 @@ Attributes currently use placeholder scalars (`TreeAttributeConfig`) so downstre
 up ahead of richer allometry. The helper never mutates the original list; it returns a copy with an
 `attributes` field populated.
 
+Use `export_tree_geojson` to emit the enriched records as point features:
+
+```python
+from nemora.synthesis import exporters
+
+exporters.export_tree_geojson(enriched, Path("artifacts/trees.geojson"))
+```
+
 ## Helper module (`nemora.synthesis.helpers`)
 
 Nemora exposes helper utilities that convert bootstrap results into synthesis-ready payloads:
