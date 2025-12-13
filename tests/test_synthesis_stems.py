@@ -5,6 +5,8 @@ from pathlib import Path
 from typing import cast
 
 import numpy as np
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
 from nemora.synthesis import exporters, stands, stems
 from nemora.synthesis.helpers import StandDBHSampler
@@ -283,3 +285,31 @@ def test_exporters_include_provenance_in_table(tmp_path: Path) -> None:
     enriched = stems.attach_tree_attributes(records)
     df = exporters.tree_records_to_dataframe(enriched)
     assert "attributes_provenance" in df.columns
+
+
+@given(
+    st.sampled_from(["poisson", "stratified", "clustered"]),
+    st.integers(min_value=3, max_value=12),
+    st.floats(min_value=0.0, max_value=0.2),
+)
+@settings(deadline=None, max_examples=40)
+def test_property_based_spacing_and_bounds(mode: str, count: int, min_spacing: float) -> None:
+    polygon = np.array([[0.0, 0.0], [2.0, 0.0], [2.0, 1.0], [0.0, 1.0]])
+    rng = np.random.default_rng(42)
+    cfg = stems.TreePlacementConfig(
+        mode=cast(stems.TreePlacementMode, mode),
+        min_spacing=min_spacing or 0.0,
+        cluster_spread=0.1,
+    )
+    points = stems.place_trees(polygon, count, rng=rng, config=cfg)
+    assert points.shape[0] == count
+    assert np.all(points[:, 0] >= 0.0) and np.all(points[:, 0] <= 2.0)
+    assert np.all(points[:, 1] >= 0.0) and np.all(points[:, 1] <= 1.0)
+    if min_spacing > 0:
+        _assert_spacing(points, min_spacing)
+
+
+def _assert_spacing(points: np.ndarray, min_spacing: float) -> None:
+    for i in range(points.shape[0]):
+        for j in range(i + 1, points.shape[0]):
+            assert np.linalg.norm(points[i] - points[j]) >= min_spacing
