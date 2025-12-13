@@ -147,3 +147,4 @@ src/nemora/
     - [x] Thread the manifest into `synthesis-assign-stands`/exporters so polygons carry `stand_id`/`bootstrap_id` plus metadata for downstream tree generation.
     - [x] Add the analytic-mode pathway (parameter-based payloads) and document the end-to-end workflow (seed recipe → stand templates → bootstrap manifest → tree synthesis).
     - [x] Build DBH sampler helpers (`StandDBHSampler`, manifest builder, tests) so tree generators can draw from bootstrap or analytic payloads via one API.
+    - [x] Prototype tree placement helpers (`TreePlacementConfig`, `place_trees`, `place_trees_with_dbh`) with optional spacing controls and regression coverage; docs now sketch how to pair DBH draws with uniform in-polygon coordinates.

@@ -499,6 +499,35 @@ manifest’s distribution + parameter block to `nemora.sampling.sample_distribut
 new DBH values even when no empirical bootstrap file exists. All samplers honour NumPy RNGs for
 reproducibility and default to the manifest’s recorded `sample_size` when you do not specify one.
 
+### Place trees inside polygons with DBH draws
+
+`nemora.synthesis.stems` provides lightweight placement helpers for pairing DBH draws with spatial
+coordinates:
+
+```python
+import numpy as np
+from nemora.synthesis import stands, stems
+from nemora.synthesis.helpers import build_dbh_samplers
+
+manifest = stands.load_bootstrap_manifest(Path("artifacts/stand_bootstrap_manifest.json"))
+sampler = build_dbh_samplers(manifest)[0]
+
+polygon = np.array([[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]])
+records = stems.place_trees_with_dbh(
+    polygon,
+    sampler,
+    count=10,
+    rng=np.random.default_rng(7),
+    config=stems.TreePlacementConfig(min_spacing=0.05),
+)
+```
+
+The helper samples points uniformly inside the polygon (simple rejection sampling) and threads DBH
+values from the sampler into each record (`stand_id`, `bootstrap_id`, coordinates, DBH, sampler
+type). `TreePlacementConfig.min_spacing` enforces a minimum Euclidean separation between points; a
+deterministic RNG keeps exports reproducible. More advanced placement modes (stratified/clustering)
+will layer on the same contract as the module matures.
+
 ## Helper module (`nemora.synthesis.helpers`)
 
 Nemora exposes helper utilities that convert bootstrap results into synthesis-ready payloads:

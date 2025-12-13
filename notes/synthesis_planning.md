@@ -85,7 +85,15 @@ sampling notes assume the tooling is ready to go.
     - [x] Provide regression fixtures mixing bootstrap + analytic payloads to prove deterministic draws (seeded RNG) and document failure modes (missing parameters, unsupported distributions).
 - [ ] Build composable pipelines to attach per-tree metadata:
   - [ ] Spatial placement within polygons (Poisson, stratified by canopy layer, optional clustering).
+    - [x] Define `TreePlacementConfig` (layout mode, stratification bands, optional min spacing) and a `place_trees(polygon, count, config, rng)` helper living in `synthesis.stands` or a new `stems` module.
+    - [x] Add bootstrap-aware convenience: `place_trees_with_dbh(stand_feature, sampler, count=None, config=...)` that draws DBH from `StandDBHSampler` and pairs with coordinates.
+    - [x] Provide deterministic seeding hooks so repeated exports remain reproducible.
   - [ ] Crown metrics, biomass factors, bark thickness, etc., using ingest/sampling configs for consistent units.
+    - [ ] Define a lightweight `TreeAttributes` dataclass carrying DBH, height (placeholder), crown ratio, biomass, bark thickness; seed with simple allometry placeholders until ingest-derived models land.
+    - [ ] Wire attributes into GeoJSON/Parquet exporters with provenance (sampler type, distribution params).
+  - [ ] Tests verifying tree count / basal area per stand stays within configured tolerances plus property-based checks on allometric relationships.
+    - [ ] Regression fixtures: simple square polygon + analytic sampler to validate placement density and DBH summary stats.
+    - [ ] Property tests: no negative metrics, mean DBH roughly matches sampler mean, placement respects bounding box and min spacing when configured.
 - [ ] Tests verifying tree count / basal area per stand stays within configured tolerances plus property-based checks on allometric relationships.
 
 ### Phase 3 — Export, visualization, and CLI
