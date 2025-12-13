@@ -396,6 +396,16 @@
 - `export_tree_geojson` now serializes derived `TreeAttributes` safely, and the synthesis how-to shows
   both GeoJSON and table exports for enriched stems.
 
+## 2025-12-08 — Synthesis tree placement variants
+
+- Added stratified and clustered placement modes (plus spacing guardrails) to `synthesis.stems`,
+  expanded attribute allometry placeholders, and exposed the controls through
+  `synthesis-export-trees` (`--placement-mode`, `--cluster-count`, `--cluster-spread`).
+- Regression coverage now exercises the new placement modes, attribute monotonicity, and the CLI path
+  using stratified placement; docs updated to describe the placement choices and flag reference.
+- Validation: `ruff format src tests`, `ruff check src tests`, `mypy src` *(known ingest/dataprep
+  failures remain)*, `pytest`, `sphinx-build -b html docs _build/html -W`, `pre-commit run --all-files`.
+
 ## 2025-12-08 — Tree export CLI docs + lint fixes
 
 - Fixed the synthesis how-to tree-export section (closed code fences) and expanded the CLI walkthrough

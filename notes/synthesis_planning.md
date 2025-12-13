@@ -73,7 +73,7 @@ sampling notes assume the tooling is ready to go.
 - [x] Write regression tests comparing polygon statistics vs. Rlandscape reference runs (see `tests/fixtures/synthesis/reference_metrics.json` + tessellation regression test).
 
 ### Phase 2 — Stand tree-list synthesis
-- [ ] Integrate the sampling stack so each synthesized stand can draw DBH vectors via bootstrap or analytic sampling:
+- [x] Integrate the sampling stack so each synthesized stand can draw DBH vectors via bootstrap or analytic sampling:
   - [x] Provide a stand→bootstrap manifest helper + CLI so sampled attributes can reference DBH payloads exported by `sampling-export-bootstrap-dbh` (plan JSON + Typer command + regression tests).
   - [x] Thread the manifest into stand exporters/CLI so GeoJSON features carry `stand_id`, `bootstrap_id`, and a metadata preview for downstream tree generators.
   - [x] Support both “synthetic from parameters” and “bootstrap from empirical tallies” modes (plan format + linker now accept analytic payload definitions alongside bootstrap JSON files).
@@ -84,18 +84,18 @@ sampling notes assume the tooling is ready to go.
     - [x] Capture the helper contract in docs/notes (inputs, expected metadata fields, deterministic seeding requirements) so tree placement + CLI wiring depend on a stable interface. Note: CLI should support `--bootstrap-manifest` + `--sampler-cache` for pre-loading payloads in long workflows.
     - [x] Provide regression fixtures mixing bootstrap + analytic payloads to prove deterministic draws (seeded RNG) and document failure modes (missing parameters, unsupported distributions).
 - [ ] Build composable pipelines to attach per-tree metadata:
-  - [ ] Spatial placement within polygons (Poisson, stratified by canopy layer, optional clustering).
+  - [x] Spatial placement within polygons (Poisson, stratified by canopy layer, optional clustering).
     - [x] Define `TreePlacementConfig` (layout mode, stratification bands, optional min spacing) and a `place_trees(polygon, count, config, rng)` helper living in `synthesis.stands` or a new `stems` module.
     - [x] Add bootstrap-aware convenience: `place_trees_with_dbh(stand_feature, sampler, count=None, config=...)` that draws DBH from `StandDBHSampler` and pairs with coordinates.
     - [x] Provide deterministic seeding hooks so repeated exports remain reproducible.
-  - [ ] Crown metrics, biomass factors, bark thickness, etc., using ingest/sampling configs for consistent units.
+  - [x] Crown metrics, biomass factors, bark thickness, etc., using ingest/sampling configs for consistent units.
     - [x] Define a lightweight `TreeAttributes` dataclass carrying DBH, height (placeholder), crown ratio, biomass, bark thickness; seed with simple allometry placeholders until ingest-derived models land.
     - [x] Wire attributes into GeoJSON/Parquet exporters with provenance (sampler type, distribution params).
-  - [ ] Tests verifying tree count / basal area per stand stays within configured tolerances plus property-based checks on allometric relationships.
-    - [ ] Regression fixtures: simple square polygon + analytic sampler to validate placement density and DBH summary stats.
-    - [ ] Property tests: no negative metrics, mean DBH roughly matches sampler mean, placement respects bounding box and min spacing when configured.
+  - [x] Tests verifying tree count / basal area per stand stays within configured tolerances plus property-based checks on allometric relationships.
+    - [x] Regression fixtures: simple square polygon + analytic sampler to validate placement density and DBH summary stats.
+    - [x] Property tests: no negative metrics, mean DBH roughly matches sampler mean, placement respects bounding box and min spacing when configured.
   - [x] CLI/export wiring: expose placement + attribute exports via `synthesis-export-trees` with RNG/spacing controls; document flags/workflow in how-to and cover via CLI regression.
-- [ ] Tests verifying tree count / basal area per stand stays within configured tolerances plus property-based checks on allometric relationships.
+- [x] Tests verifying tree count / basal area per stand stays within configured tolerances plus property-based checks on allometric relationships.
 
 ### Phase 3 — Export, visualization, and CLI
 - [ ] Add exporters for GeoJSON/GeoPackage (stands + tree points), CSV/Parquet tree lists, and lightweight rasters (canopy height, basal area density).

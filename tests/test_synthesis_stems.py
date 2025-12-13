@@ -37,7 +37,7 @@ def test_place_trees_uniform_with_spacing() -> None:
         polygon,
         4,
         rng=rng,
-        config=stems.TreePlacementConfig(min_spacing=0.2),
+        config=stems.TreePlacementConfig(min_spacing=0.2, mode="poisson"),
     )
     assert points.shape == (4, 2)
     assert np.all((points >= 0.0) & (points <= 1.0))
@@ -102,6 +102,33 @@ def test_attach_tree_attributes_adds_basal_area_and_height() -> None:
         assert attrs.bark_thickness_cm >= 0.0
 
 
+def test_stratified_mode_spreads_points_across_grid() -> None:
+    polygon = np.array([[0.0, 0.0], [1.2, 0.0], [1.2, 1.0], [0.0, 1.0]])
+    points = stems.place_trees(
+        polygon,
+        4,
+        config=stems.TreePlacementConfig(mode="stratified"),
+    )
+    assert points.shape == (4, 2)
+    xs = np.sort(points[:, 0])
+    ys = np.sort(points[:, 1])
+    assert xs[0] < 0.5 < xs[-1]
+    assert ys[0] < 0.5 < ys[-1]
+
+
+def test_clustered_mode_respects_min_spacing() -> None:
+    polygon = np.array([[0.0, 0.0], [2.0, 0.0], [2.0, 1.0], [0.0, 1.0]])
+    rng = np.random.default_rng(7)
+    cfg = stems.TreePlacementConfig(mode="clustered", min_spacing=0.05, cluster_spread=0.1)
+    points = stems.place_trees(polygon, 12, rng=rng, config=cfg)
+    assert points.shape == (12, 2)
+    assert np.all(points[:, 0] >= 0.0) and np.all(points[:, 0] <= 2.0)
+    assert np.all(points[:, 1] >= 0.0) and np.all(points[:, 1] <= 1.0)
+    for i in range(points.shape[0]):
+        for j in range(i + 1, points.shape[0]):
+            assert np.linalg.norm(points[i] - points[j]) >= 0.05
+
+
 def test_placement_stats_match_expected_mean_dbh() -> None:
     sampler = _analytic_sampler(sample_size=50)
     polygon = np.array([[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]])
@@ -118,3 +145,18 @@ def test_placement_stats_match_expected_mean_dbh() -> None:
     assert 7.5 <= dbhs.mean() <= 9.5
     points = np.asarray([[rec["x"], rec["y"]] for rec in records], dtype=float)
     assert np.all((points >= 0.0) & (points <= 1.0))
+
+
+def test_attributes_scale_with_dbh() -> None:
+    records: list[dict[str, object]] = [
+        {"dbh": 10.0, "x": 0.0, "y": 0.0},
+        {"dbh": 20.0, "x": 0.1, "y": 0.1},
+        {"dbh": 30.0, "x": 0.2, "y": 0.2},
+    ]
+    enriched = stems.attach_tree_attributes(records)
+    basals = [cast(stems.TreeAttributes, rec["attributes"]).basal_area_m2 for rec in enriched]
+    heights = [cast(stems.TreeAttributes, rec["attributes"]).height_m for rec in enriched]
+    biomass = [cast(stems.TreeAttributes, rec["attributes"]).biomass_tonnes for rec in enriched]
+    assert basals == sorted(basals)
+    assert heights == sorted(heights)
+    assert biomass == sorted(biomass)

@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Literal
 
 import numpy as np
 
 from .helpers import StandDBHSampler
 
 __all__ = [
+    "TreePlacementMode",
     "TreeAttributeConfig",
     "TreeAttributes",
     "TreePlacementConfig",
@@ -17,6 +19,8 @@ __all__ = [
     "place_trees_with_dbh",
 ]
 
+TreePlacementMode = Literal["poisson", "stratified", "clustered"]
+
 
 @dataclass(slots=True)
 class TreePlacementConfig:
@@ -24,16 +28,22 @@ class TreePlacementConfig:
 
     min_spacing: float = 0.0
     max_attempt_factor: int = 50
+    mode: TreePlacementMode = "poisson"
+    cluster_count: int | None = None
+    cluster_spread: float = 0.05
 
 
 @dataclass(slots=True)
 class TreeAttributeConfig:
     """Simple scalars used to derive placeholder tree attributes."""
 
-    height_factor: float = 0.65  # metres per cm dbh (placeholder)
-    crown_ratio: float = 0.4
-    biomass_factor: float = 0.08  # tonnes per cm^2 dbh proxy
-    bark_thickness_factor: float = 0.02  # cm bark per cm dbh
+    height_a: float = 1.3
+    height_b: float = 0.45
+    crown_ratio: float = 0.45
+    biomass_a: float = 0.05
+    biomass_b: float = 2.35
+    bark_thickness_a: float = 0.03
+    bark_thickness_b: float = 1.05
 
 
 @dataclass(slots=True)
@@ -69,27 +79,13 @@ def place_trees(
     poly = np.asarray(polygon, dtype=float)
     if poly.ndim != 2 or poly.shape[1] != 2 or poly.shape[0] < 3:
         raise ValueError("Polygon must be an (n, 2) array with at least 3 vertices.")
-    x_min, y_min = np.min(poly, axis=0)
-    x_max, y_max = np.max(poly, axis=0)
-    points: list[tuple[float, float]] = []
-    attempts = 0
-    max_attempts = max(cfg.max_attempt_factor * count, count)
-    while len(points) < count and attempts < max_attempts:
-        x = float(rng.uniform(x_min, x_max))
-        y = float(rng.uniform(y_min, y_max))
-        attempts += 1
-        if not _point_in_polygon(x, y, poly):
-            continue
-        if cfg.min_spacing > 0 and points:
-            if not _is_spaced((x, y), points, cfg.min_spacing):
-                continue
-        points.append((x, y))
-    if len(points) < count:
-        raise ValueError(
-            f"Unable to place {count} trees with min_spacing={cfg.min_spacing} "
-            f"after {attempts} attempts."
-        )
-    return np.asarray(points, dtype=float)
+    if cfg.mode == "stratified":
+        points = _place_stratified(poly, count, cfg, rng)
+    elif cfg.mode == "clustered":
+        points = _place_clustered(poly, count, cfg, rng)
+    else:
+        points = _place_poisson(poly, count, cfg, rng)
+    return points
 
 
 def place_trees_with_dbh(
@@ -139,11 +135,11 @@ def attach_tree_attributes(
         basal_area = _basal_area_from_dbh(dbh)
         attrs = TreeAttributes(
             dbh_cm=dbh,
-            height_m=max(dbh * cfg.height_factor, 0.0),
-            crown_ratio=max(cfg.crown_ratio, 0.0),
+            height_m=max(cfg.height_a * (dbh**cfg.height_b), 0.0),
+            crown_ratio=min(max(cfg.crown_ratio, 0.0), 1.0),
             basal_area_m2=basal_area,
-            biomass_tonnes=max(basal_area * cfg.biomass_factor, 0.0),
-            bark_thickness_cm=max(dbh * cfg.bark_thickness_factor, 0.0),
+            biomass_tonnes=max(cfg.biomass_a * (dbh**cfg.biomass_b), 0.0),
+            bark_thickness_cm=max(cfg.bark_thickness_a * (dbh**cfg.bark_thickness_b), 0.0),
         )
         enriched_record = dict(record)
         enriched_record["attributes"] = attrs
@@ -202,3 +198,111 @@ def _coerce_dbh(value: object | None) -> float:
         except ValueError:
             return 0.0
     return 0.0
+
+
+def _place_poisson(
+    polygon: np.ndarray,
+    count: int,
+    cfg: TreePlacementConfig,
+    rng: np.random.Generator,
+    *,
+    seed_points: list[tuple[float, float]] | None = None,
+) -> np.ndarray:
+    x_min, y_min = np.min(polygon, axis=0)
+    x_max, y_max = np.max(polygon, axis=0)
+    points: list[tuple[float, float]] = list(seed_points or [])
+    attempts = 0
+    max_attempts = max(cfg.max_attempt_factor * count, count)
+    while len(points) < count and attempts < max_attempts:
+        x = float(rng.uniform(x_min, x_max))
+        y = float(rng.uniform(y_min, y_max))
+        attempts += 1
+        if not _point_in_polygon(x, y, polygon):
+            continue
+        if cfg.min_spacing > 0 and points:
+            if not _is_spaced((x, y), points, cfg.min_spacing):
+                continue
+        points.append((x, y))
+    if len(points) < count:
+        raise ValueError(
+            f"Unable to place {count} trees with min_spacing={cfg.min_spacing} "
+            f"after {attempts} attempts."
+        )
+    return np.asarray(points, dtype=float)
+
+
+def _place_stratified(
+    polygon: np.ndarray,
+    count: int,
+    cfg: TreePlacementConfig,
+    rng: np.random.Generator,
+) -> np.ndarray:
+    x_min, y_min = np.min(polygon, axis=0)
+    x_max, y_max = np.max(polygon, axis=0)
+    grid_size = max(int(np.ceil(np.sqrt(count))), 1)
+    step_x = (x_max - x_min) / grid_size
+    step_y = (y_max - y_min) / grid_size
+    points: list[tuple[float, float]] = []
+    for i in range(grid_size):
+        for j in range(grid_size):
+            if len(points) >= count:
+                break
+            x = x_min + (i + 0.5) * step_x
+            y = y_min + (j + 0.5) * step_y
+            if not _point_in_polygon(x, y, polygon):
+                continue
+            if cfg.min_spacing > 0 and points:
+                if not _is_spaced((x, y), points, cfg.min_spacing):
+                    continue
+            points.append((x, y))
+    if len(points) < count:
+        remaining = count - len(points)
+        poisson_points = _place_poisson(
+            polygon,
+            remaining,
+            cfg,
+            rng,
+            seed_points=points,
+        )
+        return poisson_points
+    return np.asarray(points[:count], dtype=float)
+
+
+def _place_clustered(
+    polygon: np.ndarray,
+    count: int,
+    cfg: TreePlacementConfig,
+    rng: np.random.Generator,
+) -> np.ndarray:
+    extent = np.ptp(polygon, axis=0)
+    spread_scale = cfg.cluster_spread * float(np.min(extent) or 1.0)
+    cluster_count = cfg.cluster_count or max(1, int(np.ceil(np.sqrt(count) / 1.5)))
+    centers: list[tuple[float, float]] = []
+    while len(centers) < cluster_count:
+        candidate = _place_poisson(polygon, 1, cfg, rng)
+        centers.append((float(candidate[0, 0]), float(candidate[0, 1])))
+    points: list[tuple[float, float]] = []
+    attempts = 0
+    max_attempts = max(cfg.max_attempt_factor * count, count)
+    while len(points) < count and attempts < max_attempts:
+        cx, cy = centers[int(rng.integers(0, cluster_count))]
+        x = float(rng.normal(cx, spread_scale))
+        y = float(rng.normal(cy, spread_scale))
+        attempts += 1
+        if not _point_in_polygon(x, y, polygon):
+            continue
+        if cfg.min_spacing > 0 and points:
+            if not _is_spaced((x, y), points, cfg.min_spacing):
+                continue
+        points.append((x, y))
+    if len(points) < count:
+        remaining = count - len(points)
+        poisson_points = _place_poisson(
+            polygon,
+            remaining,
+            cfg,
+            rng,
+            seed_points=points,
+        )
+        return poisson_points
+    return np.asarray(points, dtype=float)

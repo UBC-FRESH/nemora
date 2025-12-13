@@ -726,6 +726,8 @@ def test_synthesis_assign_stands_with_bootstrap_manifest(tmp_path: Path) -> None
             "7",
             "--min-spacing",
             "0.01",
+            "--placement-mode",
+            "stratified",
             "--count",
             "2",
         ],

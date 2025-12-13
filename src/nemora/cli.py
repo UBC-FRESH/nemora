@@ -1729,6 +1729,25 @@ TREE_TABLE_OUTPUT_OPTION = typer.Option(
     help="Tree table path (CSV/Parquet based on suffix).",
     show_default=True,
 )
+TREE_PLACEMENT_MODE_OPTION = typer.Option(
+    "poisson",
+    "--placement-mode",
+    case_sensitive=False,
+    help="Tree placement strategy: poisson, stratified, clustered.",
+    show_default=True,
+)
+TREE_CLUSTER_COUNT_OPTION = typer.Option(
+    None,
+    "--cluster-count",
+    help="Number of clusters when placement-mode=clustered (default auto).",
+    show_default=False,
+)
+TREE_CLUSTER_SPREAD_OPTION = typer.Option(
+    0.05,
+    "--cluster-spread",
+    help="Cluster spread factor (fraction of polygon extent) for clustered mode.",
+    show_default=True,
+)
 
 
 @app.command("synthesis-export-trees")
@@ -1750,6 +1769,9 @@ def synthesis_export_trees_cli(  # noqa: B008
         help="Minimum spacing (map units) between placed trees.",
         show_default=True,
     ),
+    placement_mode: str = TREE_PLACEMENT_MODE_OPTION,
+    cluster_count: int | None = TREE_CLUSTER_COUNT_OPTION,
+    cluster_spread: float = TREE_CLUSTER_SPREAD_OPTION,
     count_override: int | None = typer.Option(
         None,
         "--count",
@@ -1794,7 +1816,17 @@ def synthesis_export_trees_cli(  # noqa: B008
         raise typer.Exit(code=1) from exc
 
     rng = np.random.default_rng(seed) if seed is not None else np.random.default_rng()
-    placement_cfg = stems.TreePlacementConfig(min_spacing=min_spacing)
+    placement_mode_normalized = placement_mode.lower()
+    if placement_mode_normalized not in {"poisson", "stratified", "clustered"}:
+        console.print("[red]Placement mode must be poisson, stratified, or clustered.[/red]")
+        raise typer.Exit(code=1)
+    placement_mode_value = cast(stems.TreePlacementMode, placement_mode_normalized)
+    placement_cfg = stems.TreePlacementConfig(
+        min_spacing=min_spacing,
+        mode=placement_mode_value,
+        cluster_count=cluster_count,
+        cluster_spread=cluster_spread,
+    )
     records: list[dict[str, object]] = []
     for idx, sampler in enumerate(samplers):
         if idx >= len(polygons):

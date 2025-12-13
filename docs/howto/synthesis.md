@@ -502,7 +502,13 @@ reproducibility and default to the manifest’s recorded `sample_size` when you 
 ### Place trees inside polygons with DBH draws
 
 `nemora.synthesis.stems` provides lightweight placement helpers for pairing DBH draws with spatial
-coordinates:
+coordinates. Placement can be:
+
+- **poisson** (default): rejection-sampled inside the polygon with optional `min_spacing`.
+- **stratified**: grid cell centres spanning the bounding box, falling back to Poisson for any cells
+  outside the polygon.
+- **clustered**: pick a handful of cluster centres inside the polygon, then draw points from
+  Gaussian blobs with configurable spread (and spacing guards).
 
 ```python
 import numpy as np
@@ -518,7 +524,11 @@ records = stems.place_trees_with_dbh(
     sampler,
     count=10,
     rng=np.random.default_rng(7),
-    config=stems.TreePlacementConfig(min_spacing=0.05),
+    config=stems.TreePlacementConfig(
+        min_spacing=0.05,
+        mode="stratified",
+        cluster_spread=0.1,
+    ),
 )
 ```
 
@@ -544,8 +554,10 @@ for record in enriched:
 ```
 
 Attributes currently use placeholder scalars (`TreeAttributeConfig`) so downstream code can be wired
-up ahead of richer allometry. The helper never mutates the original list; it returns a copy with an
-`attributes` field populated.
+up ahead of richer allometry. Height/biomass/bark thickness follow simple power-law placeholders
+(`height_a`/`height_b`, `biomass_a`/`biomass_b`, `bark_thickness_a`/`bark_thickness_b`) with the
+values clamped non-negative and crown ratio clamped to `[0, 1]`. The helper never mutates the
+original list; it returns a copy with an `attributes` field populated.
 
 Use `export_tree_geojson` to emit the enriched records as point features:
 
@@ -581,6 +593,9 @@ CLI flag reference:
 - `--attributes`: Stand attributes JSON from `synthesis-sample-attributes` (used for ordering/cross-checks).
 - `--seed`: Optional RNG seed for deterministic placement + DBH draws.
 - `--min-spacing`: Minimum spacing between placed trees (map units).
+- `--placement-mode`: `poisson`, `stratified`, or `clustered`.
+- `--cluster-count` / `--cluster-spread`: Cluster mode controls (cluster count default auto;
+  spread is a fraction of polygon extent).
 - `--count`: Optional per-stand tree count override (defaults to sampler `sample_size` when omitted).
 - `--output-geojson` / `--output-table`: Output paths; table format chosen by suffix (CSV/Parquet).
 
