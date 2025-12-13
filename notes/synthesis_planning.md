@@ -83,7 +83,7 @@ sampling notes assume the tooling is ready to go.
     - [x] Add a builder that consumes the manifest (`assignments`, `bootstraps`) and hydrates the correct sampler per `bootstrap_id`, loading `BootstrapResult` JSON only once (maybe via `BootstrapResult.from_dict`) and falling back to analytic sampling via `nemora.distributions` + numeric inversion when no bootstrap vectors exist. Builder likely lives in `nemora.synthesis.helpers` to keep CLI + future tree modules aligned.
     - [x] Capture the helper contract in docs/notes (inputs, expected metadata fields, deterministic seeding requirements) so tree placement + CLI wiring depend on a stable interface. Note: CLI should support `--bootstrap-manifest` + `--sampler-cache` for pre-loading payloads in long workflows.
     - [x] Provide regression fixtures mixing bootstrap + analytic payloads to prove deterministic draws (seeded RNG) and document failure modes (missing parameters, unsupported distributions).
-- [ ] Build composable pipelines to attach per-tree metadata:
+- [x] Build composable pipelines to attach per-tree metadata:
   - [x] Spatial placement within polygons (Poisson, stratified by canopy layer, optional clustering).
     - [x] Define `TreePlacementConfig` (layout mode, stratification bands, optional min spacing) and a `place_trees(polygon, count, config, rng)` helper living in `synthesis.stands` or a new `stems` module.
     - [x] Add bootstrap-aware convenience: `place_trees_with_dbh(stand_feature, sampler, count=None, config=...)` that draws DBH from `StandDBHSampler` and pairs with coordinates.
