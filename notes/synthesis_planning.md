@@ -101,6 +101,13 @@ sampling notes assume the tooling is ready to go.
   - [ ] Add a gallery/regression fixture combining analytic + bootstrap samplers (clustered mode) and document baseline metrics vs. CJFR/Rlandscape references.
   - [x] Document troubleshooting tips for `synthesis-export-trees` and capture attribute provenance in exported records.
   - [x] Capture a validation snapshot with current fixture metrics in `notes/synthesis_validation.md`.
+  - [ ] Interim plan without ingest-derived coefficients:
+    - [ ] Keep the current placeholder power laws but stamp a provenance version (e.g., `placeholder-v1`)
+      on exported records.
+    - [ ] Expose a simple override path for coefficients (env/CLI/config) so downstream experiments
+      can inject provisional values without code edits.
+    - [ ] Document the stopgap in `notes/synthesis_validation.md` and the how-to, including expected
+      metric ranges and where to drop calibrated values once available.
 
 ### Phase 3 — Export, visualization, and CLI
 - [ ] Add exporters for GeoJSON/GeoPackage (stands + tree points), CSV/Parquet tree lists, and lightweight rasters (canopy height, basal area density).
