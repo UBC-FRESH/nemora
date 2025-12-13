@@ -108,6 +108,7 @@ sampling notes assume the tooling is ready to go.
       can inject provisional values without code edits.
     - [x] Document the stopgap in `notes/synthesis_validation.md` and the how-to, including expected
       metric ranges and where to drop calibrated values once available.
+    - [ ] Prep `pyproject.toml` mypy config to ignore current ingest/dataprep failures so Phase 2 tagging can run clean once those files are fixed (do not change code paths).
 
 ### Phase 3 — Export, visualization, and CLI
 - [ ] Add exporters for GeoJSON/GeoPackage (stands + tree points), CSV/Parquet tree lists, and lightweight rasters (canopy height, basal area density).

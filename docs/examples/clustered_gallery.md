@@ -106,7 +106,12 @@ ax.set_ylabel("y")
 ax.legend()
 ax.set_aspect("equal")
 plt.tight_layout()
-plt.show()
+plt.savefig("docs/examples/clustered_gallery.png", dpi=200)
+```
+
+Rendered preview (placeholder coefficients):
+
+![Clustered gallery](clustered_gallery.png)
 ```
 
 If placement or DBH draws change, rerun the snippet and compare against the expected means from the
