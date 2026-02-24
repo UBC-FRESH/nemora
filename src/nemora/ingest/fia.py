@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING, cast
 from urllib.error import URLError
 from urllib.request import urlretrieve
 
-import numpy as np
 import pandas as pd
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -47,29 +46,41 @@ def load_fia_tables(
     """Load FIA CSV extracts from ``root`` and return trimmed dataframes."""
 
     root_path = Path(root)
-    tree_columns = columns_tree or [
-        "PLT_CN",
-        "SUBP",
-        "TREE",
-        "CONDID",
-        "STATUSCD",
-        "SPCD",
-        "DIA",
-        "TPA_UNADJ",
-    ]
-    plot_columns = columns_plot or [
-        "CN",
-        "PLOT",
-    ]
-    cond_columns = columns_cond or [
-        "PLT_CN",
-        "CONDID",
-        "COND_STATUS_CD",
-        "CONDPROP_UNADJ",
-        "SUBPPROP_UNADJ",
-        "MICRPROP_UNADJ",
-        "MACRPROP_UNADJ",
-    ]
+    tree_columns = (
+        list(columns_tree)
+        if columns_tree is not None
+        else [
+            "PLT_CN",
+            "SUBP",
+            "TREE",
+            "CONDID",
+            "STATUSCD",
+            "SPCD",
+            "DIA",
+            "TPA_UNADJ",
+        ]
+    )
+    plot_columns = (
+        list(columns_plot)
+        if columns_plot is not None
+        else [
+            "CN",
+            "PLOT",
+        ]
+    )
+    cond_columns = (
+        list(columns_cond)
+        if columns_cond is not None
+        else [
+            "PLT_CN",
+            "CONDID",
+            "COND_STATUS_CD",
+            "CONDPROP_UNADJ",
+            "SUBPPROP_UNADJ",
+            "MICRPROP_UNADJ",
+            "MACRPROP_UNADJ",
+        ]
+    )
 
     tree_df = pd.read_csv(root_path / tree_file, usecols=tree_columns, low_memory=False)
     cond_df = pd.read_csv(root_path / cond_file, usecols=cond_columns, low_memory=False)
@@ -119,7 +130,7 @@ def aggregate_plot_stand_table(
 
     dbh_cm = merged["DIA"].astype(float) * 2.54
     if dbh_bin_cm > 0:
-        dbh_cm = np.round(dbh_cm / dbh_bin_cm) * dbh_bin_cm
+        dbh_cm = (dbh_cm / dbh_bin_cm).round() * dbh_bin_cm
     else:
         dbh_cm = dbh_cm.round(2)
 
@@ -131,15 +142,15 @@ def aggregate_plot_stand_table(
                 "tally": weight,
             }
         )
-        .groupby(["plot_cn", "dbh_cm"], as_index=False)["tally"]
-        .sum()
+        .groupby(["plot_cn", "dbh_cm"], as_index=False)
+        .agg(tally=("tally", "sum"))
         .sort_values(["plot_cn", "dbh_cm"])
     )
 
     plot_lookup = plot.rename(columns={"CN": "plot_cn"})
     aggregated = aggregated.merge(plot_lookup, on="plot_cn", how="left")
     if plot_number is not None:
-        aggregated["PLOT"] = plot_number
+        aggregated["PLOT"] = int(plot_number)
 
     aggregated = aggregated.rename(columns={"PLOT": "plot"})
     columns = ["plot_cn", "plot", "dbh_cm", "tally"]

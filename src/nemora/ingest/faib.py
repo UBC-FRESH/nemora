@@ -146,9 +146,8 @@ def aggregate_stand_table(
         _weight=weight_numeric.loc[valid_mask].astype(float),
     )
     aggregated = (
-        filtered.groupby("dbh_cm", as_index=False)["_weight"]
-        .sum()
-        .rename(columns={"_weight": "tally"})
+        filtered.groupby("dbh_cm", as_index=False)
+        .agg(tally=("_weight", "sum"))
         .sort_values("dbh_cm")
     )
     return aggregated.reset_index(drop=True)

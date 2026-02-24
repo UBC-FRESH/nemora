@@ -115,14 +115,6 @@ module = [
 ]
 ignore_missing_imports = true
 
-[[tool.mypy.overrides]]
-module = [
-  "nemora.dataprep.hps",
-  "nemora.ingest.fia",
-  "nemora.ingest.faib",
-]
-ignore_errors = true
-
 [tool.sphinx]
 builder = "html"
 warning_is_error = false

@@ -437,6 +437,16 @@
   ignored via overrides)*, `pytest`, `sphinx-build -b html docs _build/html -W`,
   `pre-commit run --all-files`.
 
+## 2026-02-24 — Phase 2 typing cleanup
+
+- Fixed pandas typing issues in HPS dataprep and FIA/FAIB ingest (safer datetime handling,
+  groupby aggregation typing, and read_csv usecols handling), and removed the temporary mypy
+  overrides from `pyproject.toml`.
+- Aligned the clustered bootstrap gallery regression to use the fixture-provided vectors so the
+  expected summary stats stay deterministic.
+- Validation: `ruff format src tests`, `ruff check src tests`, `mypy src`, `pytest`,
+  `pre-commit run --all-files`.
+
 ## 2025-12-08 — Tree export CLI docs + lint fixes
 
 - Fixed the synthesis how-to tree-export section (closed code fences) and expanded the CLI walkthrough

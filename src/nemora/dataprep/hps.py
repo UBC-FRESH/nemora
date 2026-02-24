@@ -5,7 +5,9 @@ from __future__ import annotations
 from collections import Counter, defaultdict
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
+from datetime import date, datetime
 from pathlib import Path
+from typing import cast
 
 import numpy as np
 import pandas as pd
@@ -34,7 +36,7 @@ class PlotSelection:
     visit_number: int
     plot: int
     baf: float
-    measurement_date: pd.Timestamp | None
+    measurement_date: date | None
     sample_type: str | None
     site_identifier: str | None
 
@@ -107,10 +109,22 @@ def load_plot_selections(
     selections: list[PlotSelection] = []
     for row in merged.itertuples(index=False):
         cluster_id = str(row.CLSTR_ID)
-        visit_number = int(row.VISIT_NUMBER)
-        plot = int(row.PLOT)
+        visit_number = int(cast(int, row.VISIT_NUMBER))
+        plot = int(cast(int, row.PLOT))
         slug = f"{_normalise_cluster(cluster_id)}_v{visit_number}_p{plot}"
-        measurement_date = pd.to_datetime(row.MEAS_DT).date() if not pd.isna(row.MEAS_DT) else None
+        measurement_date = None
+        if not pd.isna(row.MEAS_DT):
+            if isinstance(row.MEAS_DT, datetime | pd.Timestamp):
+                measurement_date = row.MEAS_DT.date()
+            elif isinstance(row.MEAS_DT, date):
+                measurement_date = row.MEAS_DT
+            else:
+                parsed = pd.to_datetime(
+                    cast("str | float | date | datetime", row.MEAS_DT),
+                    errors="coerce",
+                )
+                if not pd.isna(parsed):
+                    measurement_date = cast(pd.Timestamp, parsed).date()
         sample_type = None
         if hasattr(row, "SAMP_TYP") and isinstance(row.SAMP_TYP, str):
             sample_type = row.SAMP_TYP.strip() or None
@@ -228,7 +242,7 @@ def aggregate_hps_tallies(
 
     tallies = {
         plot_id: pd.DataFrame(
-            sorted(counter.items(), key=lambda item: item[0]),
+            sorted(counter.items(), key=lambda item: cast(float, item[0])),
             columns=["dbh_cm", "tally"],
         ).reset_index(drop=True)
         for plot_id, counter in counters.items()

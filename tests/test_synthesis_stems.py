@@ -232,7 +232,26 @@ def test_clustered_gallery_fixture_alignment() -> None:
     assert np.isclose(anal_dbh.std(), payload["analytic"]["std_dbh"], atol=1.0)
 
     rng = np.random.default_rng(payload["bootstrap"]["seed"])
-    boot_sampler = _bootstrap_sampler(sample_size=10)
+    bootstrap_vectors = cast(dict[str, list[float]], payload["bootstrap"]["vectors"])
+    bootstrap_size = sum(len(values) for values in bootstrap_vectors.values())
+    boot_entry = stands.StandBootstrapLibraryEntry(
+        identifier="bootstrap-gallery",
+        source="bootstrap.json",
+        metadata={
+            "distribution": "empirical",
+            "sample_size": bootstrap_size,
+            "mode": "bootstrap",
+        },
+        dbh_vectors=bootstrap_vectors,
+    )
+    boot_assignment = stands.StandBootstrapAssignment(
+        stand_id="stand-0002",
+        vegetation_type="pine",
+        age_class="40-60",
+        area=3.5,
+        bootstrap_id="bootstrap-gallery",
+    )
+    boot_sampler = StandDBHSampler(assignment=boot_assignment, entry=boot_entry)
     boot_records = stems.place_trees_with_dbh(
         polygon,
         boot_sampler,
