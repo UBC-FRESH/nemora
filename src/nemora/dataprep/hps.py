@@ -34,14 +34,14 @@ class PlotSelection:
     plot_id: str
     cluster_id: str
     visit_number: int
-    plot: int
+    plot: str
     baf: float
     measurement_date: date | None
     sample_type: str | None
     site_identifier: str | None
 
     @property
-    def key(self) -> tuple[str, int, int]:
+    def key(self) -> tuple[str, int, str]:
         return (self.cluster_id, self.visit_number, self.plot)
 
 
@@ -62,7 +62,7 @@ def load_plot_selections(
         dtype={
             "CLSTR_ID": "string",
             "VISIT_NUMBER": "int64",
-            "PLOT": "int64",
+            "PLOT": "string",
             "SITE_IDENTIFIER": "string",
         },
     )
@@ -110,7 +110,7 @@ def load_plot_selections(
     for row in merged.itertuples(index=False):
         cluster_id = str(row.CLSTR_ID)
         visit_number = int(cast(int, row.VISIT_NUMBER))
-        plot = int(cast(int, row.PLOT))
+        plot = str(row.PLOT).strip()
         slug = f"{_normalise_cluster(cluster_id)}_v{visit_number}_p{plot}"
         measurement_date = None
         if not pd.isna(row.MEAS_DT):
@@ -203,7 +203,7 @@ def aggregate_hps_tallies(
 
     selection_index["CLSTR_ID"] = selection_index["CLSTR_ID"].astype("string")
     selection_index["VISIT_NUMBER"] = selection_index["VISIT_NUMBER"].astype("Int64")
-    selection_index["PLOT"] = selection_index["PLOT"].astype("Int64")
+    selection_index["PLOT"] = selection_index["PLOT"].astype("string")
 
     counters: dict[str, Counter[float]] = defaultdict(Counter)
     totals: Counter[str] = Counter()
@@ -216,7 +216,7 @@ def aggregate_hps_tallies(
         dtype={
             "CLSTR_ID": "string",
             "VISIT_NUMBER": "Int64",
-            "PLOT": "Int64",
+            "PLOT": "string",
         },
     )
 
