@@ -455,3 +455,12 @@
   (GeoJSON + Parquet), keeping stems/DBH wiring reproducible.
 - Validation: `ruff format src tests`, `ruff check src tests`, `mypy src` *(known existing failures
   in ingest/dataprep modules)*, `pytest`, `sphinx-build -b html docs _build/html -W`.
+
+## 2026-10-25 — Phase 5 roadmap entry
+
+- Added the Phase 5 parent (`#7`) for uncertainty, sampling, and synthetic
+  validation, with children `#6` (`P5.1`), `#8` (`P5.2`), `#9` (`P5.3`), and
+  `#10` (`P5.4`).
+- Planning note: `notes/p5_uncertainty_sampling_plan.md`. Branch
+  `feature/p5-uncertainty-sampling`.
+- No implementation yet; the phase starts with the curve-uncertainty issue.
