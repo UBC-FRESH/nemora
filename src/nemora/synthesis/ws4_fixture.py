@@ -167,6 +167,17 @@ def _write_json(path: Path, payload: dict[str, Any]) -> None:
     )
 
 
+def _round_json(value: Any, digits: int) -> Any:
+    """Round floats recursively so exported GeoJSON is cross-platform stable."""
+    if isinstance(value, float | np.floating):
+        return round(float(value), digits)
+    if isinstance(value, dict):
+        return {str(key): _round_json(item, digits) for key, item in value.items()}
+    if isinstance(value, list | tuple):
+        return [_round_json(item, digits) for item in value]
+    return value
+
+
 def generate_ws4_fixture(
     output_dir: str | Path,
     *,
@@ -337,7 +348,15 @@ def generate_ws4_fixture(
         lineterminator="\n",
     )
     (target / "recipe.xml").write_text(WS4_RECIPE_XML, encoding="utf-8")
-    exporters.export_geojson(features, target / "landscape.geojson", crs="local")
+    rounded_features = [
+        {
+            "type": feature["type"],
+            "properties": _round_json(feature["properties"], 6),
+            "geometry": _round_json(feature["geometry"], 10),
+        }
+        for feature in features
+    ]
+    exporters.export_geojson(rounded_features, target / "landscape.geojson", crs="local")
 
     metadata: dict[str, Any] = {
         "schema_version": FIXTURE_SCHEMA_VERSION,
