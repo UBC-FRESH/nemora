@@ -1,0 +1,3 @@
+plot_id,cluster_id,visit_number,plot,baf,measurement_date,sample_type,site_identifier,trees
+4000002_PSP1_v1_p1,4000002-PSP1,1,1,12.0,1992-06-24,F,4000002,3
+4000002_PSP1_v1_p2,4000002-PSP1,1,2,12.0,1992-06-24,F,4000002,1

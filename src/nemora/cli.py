@@ -50,6 +50,7 @@ from .ingest.hps import (
 )
 from .ingest.hps import (
     HPSPipelineResult,
+    export_hps_inventory,
     export_hps_outputs,
     run_hps_pipeline,
 )
@@ -707,6 +708,13 @@ FAIB_HPS_MANIFEST_OPTION = typer.Option(
     None,
     "--manifest",
     help="Optional path for the manifest CSV (defaults to <output>/manifest.csv).",
+    show_default=False,
+)
+
+FAIB_HPS_INVENTORY_OPTION = typer.Option(
+    None,
+    "--inventory-dir",
+    help="Optional directory for a validated nemora.inventory.v1 release.",
     show_default=False,
 )
 
@@ -2073,6 +2081,7 @@ def ingest_faib_hps(  # noqa: B008
     root: Path = FAIB_ROOT_ARGUMENT,
     output: Path = FAIB_HPS_OUTPUT_OPTION,
     manifest: Path | None = FAIB_HPS_MANIFEST_OPTION,
+    inventory_dir: Path | None = FAIB_HPS_INVENTORY_OPTION,
     fetch: bool = FAIB_HPS_FETCH_OPTION,
     cache_dir: Path = FAIB_HPS_CACHE_OPTION,
     overwrite: bool = FAIB_HPS_OVERWRITE_OPTION,
@@ -2149,6 +2158,23 @@ def ingest_faib_hps(  # noqa: B008
         manifest_path=manifest_path,
         quiet=quiet,
     )
+    if inventory_dir is not None:
+        release_id = f"hps-{output.name or 'release'}"
+        export_hps_inventory(
+            result,
+            inventory_dir,
+            release_id=release_id,
+            metadata={
+                "output_dir": str(output),
+                "manifest_path": str(manifest_path),
+                "baf": baf,
+                "bin_width": bin_width,
+                "bin_origin": bin_origin,
+                "live_status": list(live_status),
+            },
+        )
+        if not quiet:
+            console.print(f"[green]Inventory release written[/green] {inventory_dir}")
     if not quiet:
         console.print(
             f"[green]Prepared[/green] {plot_count} plots with {total_trees} live trees → {output}"

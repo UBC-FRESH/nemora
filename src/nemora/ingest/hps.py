@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -10,6 +11,16 @@ import pandas as pd
 
 from ..dataprep import PlotSelection, SelectionCriteria, aggregate_hps_tallies, load_plot_selections
 from . import TransformPipeline
+from .schema import (
+    PLOT_COLUMNS,
+    SPECIES_COLUMNS,
+    TREE_COLUMNS,
+    InventoryProvenance,
+    InventoryRelease,
+    InventoryUnits,
+    validate_inventory_release,
+    write_inventory_release,
+)
 
 DEFAULT_PLOT_HEADER = "faib_plot_header.csv"
 DEFAULT_SAMPLE_BYVISIT = "faib_sample_byvisit.csv"
@@ -23,6 +34,23 @@ class HPSPipelineResult:
     tallies: dict[str, pd.DataFrame]
     manifest: pd.DataFrame
     tallies_frame: pd.DataFrame
+
+    def to_inventory_release(
+        self,
+        *,
+        release_id: str,
+        provenance: InventoryProvenance | None = None,
+        units: InventoryUnits | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> InventoryRelease:
+        """Return a schema-validated ``nemora.inventory.v1`` release."""
+        return inventory_release_from_hps(
+            self,
+            release_id=release_id,
+            provenance=provenance,
+            units=units,
+            metadata=metadata,
+        )
 
 
 def build_hps_pipeline(
@@ -127,6 +155,104 @@ def run_hps_pipeline(
     )
 
 
+def inventory_release_from_hps(
+    result: HPSPipelineResult,
+    *,
+    release_id: str,
+    provenance: InventoryProvenance | None = None,
+    units: InventoryUnits | None = None,
+    metadata: dict[str, Any] | None = None,
+) -> InventoryRelease:
+    """Adapt an HPS pipeline result to the shared inventory schema.
+
+    HPS tallies are DBH-class aggregates, not individual trees. The canonical
+    ``trees`` table therefore uses a null ``tree_id``, a null ``species_code``,
+    and the tally count for each DBH class. The ``plots`` table carries the HPS
+    manifest fields.
+
+    Parameters
+    ----------
+    result:
+        Output of :func:`run_hps_pipeline`.
+    release_id:
+        Stable identifier for the release.
+    provenance:
+        Release provenance. Defaults to the public FAIB PSP source with a
+        current UTC retrieval timestamp.
+    units:
+        Canonical units. Defaults to centimetres, metres, counts, and
+        ``m2_per_ha``.
+    metadata:
+        Additional JSON-serializable release metadata.
+    """
+    plots = result.manifest.copy()
+    plots = plots.rename(columns={"plot": "plot_number", "trees": "tree_count"})
+    if "measurement_date" in plots.columns:
+        plots["measurement_date"] = plots["measurement_date"].map(
+            lambda value: value.isoformat() if hasattr(value, "isoformat") else value
+        )
+    plots = plots.reindex(columns=list(PLOT_COLUMNS))
+
+    trees = result.tallies_frame.copy()
+    trees = trees.assign(
+        tree_id=pd.NA,
+        species_code=pd.NA,
+        height_m=float("nan"),
+        status="live",
+    )
+    trees = trees.reindex(columns=list(TREE_COLUMNS))
+
+    release_metadata = {"tally_grain": "dbh_class", "tally_units": "count"}
+    if metadata is not None:
+        release_metadata.update(metadata)
+
+    release = InventoryRelease(
+        release_id=release_id,
+        provenance=provenance
+        or InventoryProvenance(
+            source_id="bc-faib-psp",
+            source_version="unspecified",
+            source_uri="https://bcgov-env.shinyapps.io/FAIB_GROUND_SAMPLE/",
+            retrieved_utc=datetime.now(timezone.utc).isoformat(),
+            licence="Public",
+            notes="HPS tallies derived from FAIB PSP compilations.",
+        ),
+        plots=plots,
+        trees=trees,
+        species=pd.DataFrame(columns=list(SPECIES_COLUMNS)),
+        units=units or InventoryUnits(),
+        metadata=release_metadata,
+    )
+    validate_inventory_release(release)
+    return release
+
+
+def export_hps_inventory(
+    result: HPSPipelineResult,
+    output_dir: str | Path,
+    *,
+    release_id: str,
+    provenance: InventoryProvenance | None = None,
+    units: InventoryUnits | None = None,
+    metadata: dict[str, Any] | None = None,
+) -> InventoryRelease:
+    """Write a schema-validated HPS release directory and return it.
+
+    This is additive to :func:`export_hps_outputs`: the legacy per-plot CSVs and
+    manifest keep their historical bytes, while the canonical release adds
+    ``release.json``, ``plots.csv``, ``trees.csv``, and ``species.csv``.
+    """
+    release = inventory_release_from_hps(
+        result,
+        release_id=release_id,
+        provenance=provenance,
+        units=units,
+        metadata=metadata,
+    )
+    write_inventory_release(release, output_dir)
+    return release
+
+
 def export_hps_outputs(
     tallies: dict[str, pd.DataFrame],
     manifest: pd.DataFrame,
@@ -162,7 +288,9 @@ __all__ = [
     "DEFAULT_TREE_DETAIL",
     "HPSPipelineResult",
     "build_hps_pipeline",
+    "export_hps_inventory",
     "export_hps_outputs",
+    "inventory_release_from_hps",
     "run_hps_pipeline",
     "load_plot_selections",
     "SelectionCriteria",

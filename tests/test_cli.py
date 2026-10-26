@@ -11,6 +11,7 @@ from typer.testing import CliRunner
 
 from nemora import __version__
 from nemora.cli import _check_datalad_results, app
+from nemora.ingest.schema import read_inventory_release
 from nemora.synthesis import exporters, tessellation
 from nemora.workflows import fit_hps_inventory
 
@@ -929,6 +930,7 @@ def _write_hps_cli_fixtures(base: Path) -> None:
 def test_ingest_faib_hps_command(tmp_path: Path) -> None:
     data_dir = tmp_path / "raw"
     output_dir = tmp_path / "output"
+    inventory_dir = tmp_path / "inventory"
     manifest_path = tmp_path / "manifest.csv"
     _write_hps_cli_fixtures(data_dir)
 
@@ -948,6 +950,8 @@ def test_ingest_faib_hps_command(tmp_path: Path) -> None:
             str(output_dir),
             "--manifest",
             str(manifest_path),
+            "--inventory-dir",
+            str(inventory_dir),
             "--status",
             "L",
         ],
@@ -955,6 +959,10 @@ def test_ingest_faib_hps_command(tmp_path: Path) -> None:
     assert result.exit_code == 0
     assert manifest_path.exists()
     assert any(output_dir.glob("*.csv"))
+    release = read_inventory_release(inventory_dir)
+    assert release.release_id == "hps-output"
+    assert release.trees["tally"].sum() == 2
+    assert (inventory_dir / "release.json").exists()
 
 
 def test_ingest_benchmark_command(tmp_path: Path) -> None:

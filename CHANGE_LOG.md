@@ -1,5 +1,36 @@
 # Development Change Log
 
+## 2026-10-26 — P5.3 shared inventory schema
+
+- Added `nemora.inventory.v1` in `nemora.ingest.schema`: plots, trees, species,
+  canonical units, release provenance, validation, and a canonical
+  `release.json` + CSV reader/writer.
+- Migrated HPS through a schema-backed adapter (`inventory_release_from_hps`,
+  `export_hps_inventory`, and `HPSPipelineResult.to_inventory_release`) while
+  keeping the historical per-plot CSV and manifest bytes unchanged.
+- Added `--inventory-dir` to `nemora ingest-faib-hps` for an additive canonical
+  release.
+- Added byte-level HPS export fixtures, schema failure tests, round-trip tests,
+  and the nightly schema regression step.
+- Added `docs/howto/inventory_schema.md`, the HPS migration note, API docs, and
+  roadmap updates.
+- Validation: `pytest` 163 passed, 4 skipped; `ruff check src tests` passed;
+  `mypy src` passed; Sphinx `-W` build passed.
+
+```bash
+python -m pytest
+# 163 passed, 4 skipped
+
+python -m ruff check src tests
+# All checks passed!
+
+python -m mypy src
+# Success: no issues found
+
+python -m sphinx -b html docs _build/html -W
+# build succeeded
+```
+
 ## 2026-10-26 — P5.1 curve uncertainty
 
 - Added `nemora.uncertainty` with observed/predicted ratio fitting through the

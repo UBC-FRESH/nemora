@@ -19,7 +19,8 @@ still fluid—expect rapid iteration and watch the changelog.
 - **Sampling utilities (`nemora.sampling`)** – analytic/numeric PDF→CDF inversion, bootstrap and
   Monte Carlo samplers, mixture helpers.
 - **Ingestion/ETL (`nemora.ingest`)** – transforms raw inventory releases (provincial portals,
-  open data) into the tidy secondary forms consumed by the rest of Nemora.
+  open data) into the shared `nemora.inventory.v1` tidy tables and the secondary forms consumed by
+  the rest of Nemora.
 - **Synthesis (`nemora.synthesis`)** – builds landscape mosaics, stand-level attributes, and
   stem populations for simulation and testing.
 - **Inventory simulation (`nemora.simulation`)** – simulates measurement campaigns (plots, LiDAR,
@@ -35,7 +36,7 @@ still fluid—expect rapid iteration and watch the changelog.
 | `distributions`     | ✅ Central registry connected to `fit`, `sampling`, and future modules.        |
 | `fit`               | ✅ Alpha surface live (grouped EM, mixtures, CLI).                             |
 | `sampling`          | 🚧 Bootstrap + numeric inversion utilities landed; downstream adoption next.  |
-| `ingest`            | 🚧 FAIB/FIA/HPS pipelines + CLI shipped; benchmarking + telemetry ongoing.    |
+| `ingest`            | 🚧 FAIB/FIA/HPS pipelines + `nemora.inventory.v1`; benchmarking + telemetry ongoing. |
 | `synthesis`         | 📝 Bootstrap payload helper + CLI inspection command; generators in planning. |
 | `simulation`        | 📝 Planned. Builds on synthesis; design sketches in roadmap.                  |
 
@@ -52,8 +53,9 @@ The content will expand as new modules come online.
 
 ## Nightly Monitoring
 
-A nightly GitHub Actions workflow (`Nightly Ingest Integration`) exercises live FAIB/FIA downloads.
-Failures automatically open an issue labeled `nightly-ingest-failure`. To receive notifications:
+A nightly GitHub Actions workflow (`Nightly Ingest Integration`) exercises live FAIB/FIA downloads
+and the shared inventory schema regression suite. Failures automatically open an issue labeled
+`nightly-ingest-failure`. To receive notifications:
 
 1. Watch this repository (top-right ➜ **Watch** ➜ *All Activity*) so issue creation triggers emails.
 2. In GitHub **Settings → Notifications**, ensure email alerts for *Issues* and *Actions workflow

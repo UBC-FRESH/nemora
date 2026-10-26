@@ -159,6 +159,22 @@ export_hps_outputs(
 (grouped DataFrames), a combined manifest, and a flattened tallies DataFrame.
 `export_hps_outputs` mirrors the historical script behaviour when writing files.
 
+The HPS path is also the first adapter for the shared inventory schema. The
+canonical export is additive and leaves the historical files unchanged:
+
+```python
+from nemora.ingest.hps import export_hps_inventory
+
+release = export_hps_inventory(
+    result,
+    Path("data/examples/hps_baf12_inventory"),
+    release_id="hps-baf12",
+)
+```
+
+See [Shared Inventory Schema](inventory_schema.md) for the table contract,
+units, validation rules, and the migration order.
+
 ### Data dictionaries
 
 FAIB publishes companion Excel data dictionaries alongside each compilation.
