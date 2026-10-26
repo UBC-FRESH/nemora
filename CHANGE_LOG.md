@@ -1,5 +1,48 @@
 # Development Change Log
 
+## 2026-10-26 — P5.4 sgsR sampling bridge
+
+- Chose an **R bridge** over a port: sgsR is GPL (>= 3) and Nemora is MIT.
+  The bridge calls the installed `sgsR` package through
+  `src/nemora/sampling/sgsr_bridge.R`.
+- Added `nemora.sampling.sgsr` (`run_sgsr`, `SgsRResult`, `SgsRError`) and the
+  `nemora sampling-sgsr` CLI.
+- The bridge returns `allocation.csv`, `samples.csv`, `strata.csv`,
+  `strata.tif`, and metadata with R/sgsR/terra/sf versions, licence, seed, and
+  counts.
+- Added a deterministic 20 x 20 structural-metric example at
+  `examples/sgsr_sampling/structure.asc`; the worked run returns 8 samples in
+  each of three strata with seed 42.
+- Added reproducibility, bad-argument, missing-input, missing-Rscript,
+  constant-metric, and CLI tests. The real bridge tests are skipped when
+  `Rscript` cannot load `sgsR`.
+- Added the how-to, API page, example README, roadmap, and changelog updates.
+- Phase 5 is complete: P5.1-P5.4 all have a merged implementation, tests, and a
+  docs note.
+- Validation: `pytest` 176 passed, 4 skipped with sgsR installed; `ruff check
+  src tests` passed; `mypy src` passed; Sphinx `-W` build passed.
+
+```bash
+Rscript -e 'install.packages("sgsR", repos="https://cloud.r-project.org")'
+
+R_LIBS_USER=/path/to/R/library python -m pytest
+# 176 passed, 4 skipped
+
+python -m ruff check src tests
+# All checks passed!
+
+python -m mypy src
+# Success: no issues found
+
+python -m sphinx -b html docs _build/html -W
+# build succeeded
+
+R_LIBS_USER=/path/to/R/library nemora sampling-sgsr \
+  examples/sgsr_sampling/structure.asc \
+  --output tmp/sgsr_example --n-samples 24 --seed 42 --n-strata 3
+# allocation: 8 / 8 / 8 across three strata
+```
+
 ## 2026-10-26 — P5.2 synthetic WS4 fixture
 
 - Added `nemora.synthesis.ws4_fixture` with a deterministic seeded Voronoi

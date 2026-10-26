@@ -60,11 +60,10 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 
 ## Phase 5 — Uncertainty, Sampling, and Synthetic Validation
 
-Status: active (P5.1, P5.2, and P5.3 complete; P5.4 pending).
-Branch: `feature/p5.uncertainty-sampling`; P5.1 split PR:
-`feature/p5.1-curve-uncertainty`; P5.2 split PR:
-`feature/p5.2-ws4-fixture`; P5.3 split PR:
-`feature/p5.3-ingest-schema`.
+Status: complete (P5.1-P5.4 complete).
+Branch: `feature/p5.uncertainty-sampling`; split PRs:
+`feature/p5.1-curve-uncertainty`, `feature/p5.2-ws4-fixture`,
+`feature/p5.3-ingest-schema`, and `feature/p5.4-sgsr-wrapper`.
 
 - [x] P5.1 Curve uncertainty and a 90% band for one family (`#6`).
   - [x] Add `nemora.uncertainty` with ratio fitting, multiplicative bands,
@@ -84,7 +83,13 @@ Branch: `feature/p5.uncertainty-sampling`; P5.1 split PR:
     per-plot CSV and manifest bytes unchanged.
   - [x] Add byte-level HPS fixtures, schema failure tests, and the nightly check.
   - [x] Document the contract, HPS migration, and remaining path order.
-- [ ] P5.4 sgsR structurally guided sampling wrapper (`#10`).
+- [x] P5.4 sgsR structurally guided sampling wrapper (`#10`).
+  - [x] Record the R-bridge decision: sgsR is GPL-3 and Nemora is MIT.
+  - [x] Add `nemora.sampling.sgsr`, the bundled R bridge, and the
+    `nemora sampling-sgsr` CLI.
+  - [x] Return allocation, samples, structural strata, and provenance metadata.
+  - [x] Add reproducibility, bad-input, constant-metric, and missing-R tests.
+  - [x] Add the deterministic structural-metric example and docs.
 
 Acceptance: the band is emitted with a recorded coverage check; the synthetic
 fixture is deterministic and runs through ws4 build/simulate; the ingest schema
@@ -135,6 +140,12 @@ is reproducible; each child has a test that can fail and a docs note.
    - [x] Reproduce the expected volume through WS4 build/simulate.
    - [x] Lock the fixture with deterministic, truth-table, missing-seed, and WS4 smoke tests.
    - [x] Document the realism limits and regeneration command.
+10. **P5.4 sgsR sampling bridge**
+   - [x] Record the R-bridge choice and the GPL-3/MIT boundary.
+   - [x] Add the Python wrapper, bundled R script, and `sampling-sgsr` CLI.
+   - [x] Return allocation, sample coordinates, structural strata, and versions.
+   - [x] Add the deterministic metric example and real/skipped integration tests.
+   - [x] Document installation, reproducibility, and maintenance cost.
 
 ## Backlog & Ideas
 - [ ] Investigate GPU acceleration for large tally batches.

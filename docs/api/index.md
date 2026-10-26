@@ -6,6 +6,7 @@
 nemora
 fit
 ingest
+sampling
 synthesis
 uncertainty
 ```

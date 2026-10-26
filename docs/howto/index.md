@@ -10,6 +10,7 @@ custom_distributions
 ingest
 inventory_schema
 sampling
+sgsr_sampling
 synthesis
 ws4_synthetic_fixture
 curve_uncertainty

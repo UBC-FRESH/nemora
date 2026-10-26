@@ -60,7 +60,8 @@ from .ingest.hps import (
 from .ingest.hps import (
     load_plot_selections as load_hps_plot_selections,
 )
-from .sampling import BootstrapResult, bootstrap_dbh_vectors, bootstrap_inventory
+from .sampling import BootstrapResult, bootstrap_dbh_vectors, bootstrap_inventory, run_sgsr
+from .sampling.sgsr import SgsRError
 from .synthesis import exporters, stands, stems, tessellation
 from .synthesis.helpers import bootstrap_payload, build_dbh_samplers
 from .workflows.hps import fit_hps_inventory
@@ -1166,6 +1167,86 @@ def sampling_describe_bootstrap(  # noqa: B008
                     f"{draw_value:.3f}",
                 )
             console.print(sample_table)
+
+
+SGSR_METRIC_ARGUMENT = typer.Argument(
+    ...,
+    exists=True,
+    file_okay=True,
+    dir_okay=False,
+    readable=True,
+    help="Single-layer structural metric raster (GeoTIFF or ESRI ASCII grid).",
+)
+SGSR_OUTPUT_OPTION = typer.Option(..., "--output", "-o", help="Directory for sgsR artifacts.")
+SGSR_N_SAMPLES_OPTION = typer.Option(..., "--n-samples", "-n", min=1, help="Target plot count.")
+SGSR_SEED_OPTION = typer.Option(..., "--seed", help="Required R RNG seed for reproducibility.")
+SGSR_N_STRATA_OPTION = typer.Option(4, "--n-strata", min=2, help="Number of quantile strata.")
+SGSR_ALLOCATION_OPTION = typer.Option(
+    "prop",
+    "--allocation",
+    help="Allocation method: prop, equal, or optim.",
+    show_default=True,
+)
+SGSR_METHOD_OPTION = typer.Option(
+    "Queinnec",
+    "--method",
+    help="Sampling method: Queinnec or random.",
+    show_default=True,
+)
+SGSR_MINDIST_OPTION = typer.Option(
+    None,
+    "--mindist",
+    help="Optional minimum distance between samples in raster CRS units.",
+    show_default=False,
+)
+SGSR_TIMEOUT_OPTION = typer.Option(
+    600.0,
+    "--timeout",
+    min=1.0,
+    help="R bridge timeout in seconds.",
+    show_default=True,
+)
+
+
+@app.command("sampling-sgsr")
+def sampling_sgsr(  # noqa: B008
+    metric: Path = SGSR_METRIC_ARGUMENT,
+    output: Path = SGSR_OUTPUT_OPTION,
+    n_samples: int = SGSR_N_SAMPLES_OPTION,
+    seed: int = SGSR_SEED_OPTION,
+    n_strata: int = SGSR_N_STRATA_OPTION,
+    allocation: str = SGSR_ALLOCATION_OPTION,
+    method: str = SGSR_METHOD_OPTION,
+    mindist: float | None = SGSR_MINDIST_OPTION,
+    timeout: float = SGSR_TIMEOUT_OPTION,
+) -> None:
+    """Run the optional R/sgsR structurally guided sampling bridge."""
+    try:
+        result = run_sgsr(
+            metric,
+            output,
+            n_samples=n_samples,
+            seed=seed,
+            n_strata=n_strata,
+            allocation=allocation,
+            method=method,
+            mindist=mindist,
+            timeout=timeout,
+        )
+    except (SgsRError, ValueError) as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(code=1) from exc
+
+    allocation_table = Table(title="sgsR Allocation")
+    allocation_table.add_column("Strata", justify="right")
+    allocation_table.add_column("Samples", justify="right")
+    for row in result.allocation.to_dict("records"):
+        allocation_table.add_row(str(row["strata"]), str(row["total"]))
+    console.print(allocation_table)
+    console.print(
+        f"[green]Samples[/green] {result.sample_count} -> {result.samples_path} "
+        f"(strata: {len(result.strata)} -> {result.strata_path})"
+    )
 
 
 @app.command("sampling-export-bootstrap-dbh")
