@@ -14,6 +14,7 @@ from ..core import FitResult, MixtureFitResult
 from ..distributions import Pdf, get_distribution
 from ..fit.mixture import sample_mixture as fit_sample_mixture
 from .helpers import DBHBootstrap, bootstrap_dbh_vectors
+from .sgsr import SgsRError, SgsRResult, run_sgsr
 
 if TYPE_CHECKING:  # pragma: no cover
     import pandas as pd
@@ -26,8 +27,11 @@ __all__ = [
     "BootstrapResult",
     "DBHBootstrap",
     "SamplingConfig",
+    "SgsRError",
+    "SgsRResult",
     "bootstrap_dbh_vectors",
     "pdf_to_cdf",
+    "run_sgsr",
     "sample_distribution",
     "sample_mixture_fit",
     "bootstrap_inventory",

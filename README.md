@@ -35,7 +35,7 @@ still fluid—expect rapid iteration and watch the changelog.
 | `core`              | ✅ Bootstrapped. Hosts shared dataclasses and compatibility shims.             |
 | `distributions`     | ✅ Central registry connected to `fit`, `sampling`, and future modules.        |
 | `fit`               | ✅ Alpha surface live (grouped EM, mixtures, CLI).                             |
-| `sampling`          | 🚧 Bootstrap + numeric inversion utilities landed; downstream adoption next.  |
+| `sampling`          | 🚧 Bootstrap, numeric inversion, and optional R/sgsR sampling bridge.          |
 | `ingest`            | 🚧 FAIB/FIA/HPS pipelines + `nemora.inventory.v1`; benchmarking + telemetry ongoing. |
 | `synthesis`         | 🚧 Bootstrap payload, stand/stem generators, and deterministic WS4 fixture.     |
 | `simulation`        | 📝 Planned. Builds on synthesis; design sketches in roadmap.                  |

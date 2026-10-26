@@ -191,3 +191,11 @@ integration settings. Use `--no-parquet` if you prefer CSV-only outputs.
 
 Use this pattern when validating ingest outputs or when you need to benchmark how
 numeric integration tolerances impact downstream sampling accuracy.
+
+## Structurally guided sampling with sgsR
+
+The optional `nemora.sampling.sgsr` bridge calls the GPL-3 `sgsR` R package to
+stratify a structural metric layer and allocate field samples. It does not
+reimplement sgsR. See
+[`sgsr_sampling.md`](sgsr_sampling.md) for installation, the R-bridge
+trade-off, the worked example, and the reproducibility contract.
