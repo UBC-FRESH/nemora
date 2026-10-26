@@ -1,0 +1,587 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "veg_type": "fir",
+        "age_class": "40",
+        "area_template": 1.714808,
+        "polygon_area": 0.07145,
+        "fragment_id": 1,
+        "block_id": 1,
+        "stand_id": "stand-0001",
+        "area_ha": 1.714808,
+        "age": 40,
+        "volume_per_ha": 120.0,
+        "expected_volume_m3": 205.77696,
+        "trees": 343,
+        "mean_dbh_cm": 13.559733,
+        "mean_height_m": 7.945076,
+        "basal_area_m2_per_ha": 3.389137
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.8451435466,
+              0.3895933594
+            ],
+            [
+              0.8940449854,
+              0.3217393828
+            ],
+            [
+              1.0574145417,
+              0.9193753195
+            ],
+            [
+              0.813688194,
+              0.7943854532
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "veg_type": "fir",
+        "age_class": "60",
+        "area_template": 1.57651,
+        "polygon_area": 0.065688,
+        "fragment_id": 2,
+        "block_id": 2,
+        "stand_id": "stand-0002",
+        "area_ha": 1.57651,
+        "age": 60,
+        "volume_per_ha": 170.0,
+        "expected_volume_m3": 268.0067,
+        "trees": 315,
+        "mean_dbh_cm": 19.718603,
+        "mean_height_m": 10.716886,
+        "basal_area_m2_per_ha": 7.208696
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              1.0797537955,
+              1.0
+            ],
+            [
+              1.0828023096,
+              0.9387460228
+            ],
+            [
+              1.0872841949,
+              0.9343681833
+            ],
+            [
+              1.3053879902,
+              0.792460949
+            ],
+            [
+              1.5,
+              0.8425009559
+            ],
+            [
+              1.5,
+              1.0
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "veg_type": "fir",
+        "age_class": "80",
+        "area_template": 3.153839,
+        "polygon_area": 0.13141,
+        "fragment_id": 3,
+        "block_id": 3,
+        "stand_id": "stand-0003",
+        "area_ha": 3.153839,
+        "age": 80,
+        "volume_per_ha": 220.0,
+        "expected_volume_m3": 693.84458,
+        "trees": 631,
+        "mean_dbh_cm": 26.172696,
+        "mean_height_m": 13.400436,
+        "basal_area_m2_per_ha": 13.167335
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.5544769624,
+              0.5645541515
+            ],
+            [
+              0.8451435466,
+              0.3895933594
+            ],
+            [
+              0.813688194,
+              0.7943854532
+            ],
+            [
+              0.4142815775,
+              0.9221138179
+            ],
+            [
+              0.3757323953,
+              0.836694226
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "veg_type": "fir",
+        "age_class": "40",
+        "area_template": 2.530788,
+        "polygon_area": 0.10545,
+        "fragment_id": 4,
+        "block_id": 4,
+        "stand_id": "stand-0004",
+        "area_ha": 2.530788,
+        "age": 40,
+        "volume_per_ha": 120.0,
+        "expected_volume_m3": 303.69456,
+        "trees": 506,
+        "mean_dbh_cm": 14.021059,
+        "mean_height_m": 8.159382,
+        "basal_area_m2_per_ha": 3.646055
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.0,
+              1.0
+            ],
+            [
+              0.0,
+              0.6745057801
+            ],
+            [
+              0.2274454032,
+              0.7249415442
+            ],
+            [
+              0.3757323953,
+              0.836694226
+            ],
+            [
+              0.4142815775,
+              0.9221138179
+            ],
+            [
+              0.414340967,
+              1.0
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "veg_type": "fir",
+        "age_class": "60",
+        "area_template": 2.236881,
+        "polygon_area": 0.093203,
+        "fragment_id": 5,
+        "block_id": 5,
+        "stand_id": "stand-0005",
+        "area_ha": 2.236881,
+        "age": 60,
+        "volume_per_ha": 170.0,
+        "expected_volume_m3": 380.26977,
+        "trees": 447,
+        "mean_dbh_cm": 19.547492,
+        "mean_height_m": 10.628327,
+        "basal_area_m2_per_ha": 7.197901
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.414340967,
+              1.0
+            ],
+            [
+              0.4142815775,
+              0.9221138179
+            ],
+            [
+              0.813688194,
+              0.7943854532
+            ],
+            [
+              1.0574145417,
+              0.9193753195
+            ],
+            [
+              1.0828023096,
+              0.9387460228
+            ],
+            [
+              1.0797537955,
+              1.0
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "veg_type": "fir",
+        "age_class": "80",
+        "area_template": 5.567388,
+        "polygon_area": 0.231974,
+        "fragment_id": 6,
+        "block_id": 6,
+        "stand_id": "stand-0006",
+        "area_ha": 5.567388,
+        "age": 80,
+        "volume_per_ha": 220.0,
+        "expected_volume_m3": 1224.82536,
+        "trees": 1113,
+        "mean_dbh_cm": 26.651074,
+        "mean_height_m": 13.614387,
+        "basal_area_m2_per_ha": 13.4121
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              1.0133376517,
+              0.0
+            ],
+            [
+              1.4137859398,
+              0.0
+            ],
+            [
+              1.2999132873,
+              0.6784974868
+            ],
+            [
+              1.0895650236,
+              0.6033646749
+            ],
+            [
+              0.9282404626,
+              0.2585903515
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "veg_type": "fir",
+        "age_class": "40",
+        "area_template": 2.987688,
+        "polygon_area": 0.124487,
+        "fragment_id": 7,
+        "block_id": 7,
+        "stand_id": "stand-0007",
+        "area_ha": 2.987688,
+        "age": 40,
+        "volume_per_ha": 120.0,
+        "expected_volume_m3": 358.52256,
+        "trees": 598,
+        "mean_dbh_cm": 13.122054,
+        "mean_height_m": 7.742565,
+        "basal_area_m2_per_ha": 3.154154
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              1.4137859398,
+              0.0
+            ],
+            [
+              1.5,
+              0.0
+            ],
+            [
+              1.5,
+              0.8425009559
+            ],
+            [
+              1.3053879902,
+              0.792460949
+            ],
+            [
+              1.2999132873,
+              0.6784974868
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "veg_type": "fir",
+        "age_class": "60",
+        "area_template": 1.145162,
+        "polygon_area": 0.047715,
+        "fragment_id": 8,
+        "block_id": 8,
+        "stand_id": "stand-0008",
+        "area_ha": 1.145162,
+        "age": 60,
+        "volume_per_ha": 170.0,
+        "expected_volume_m3": 194.67754,
+        "trees": 229,
+        "mean_dbh_cm": 20.012045,
+        "mean_height_m": 10.830398,
+        "basal_area_m2_per_ha": 7.563004
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              1.0895650236,
+              0.6033646749
+            ],
+            [
+              1.2999132873,
+              0.6784974868
+            ],
+            [
+              1.3053879902,
+              0.792460949
+            ],
+            [
+              1.0872841949,
+              0.9343681833
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "veg_type": "fir",
+        "age_class": "80",
+        "area_template": 6.370003,
+        "polygon_area": 0.265417,
+        "fragment_id": 9,
+        "block_id": 9,
+        "stand_id": "stand-0009",
+        "area_ha": 6.370003,
+        "age": 80,
+        "volume_per_ha": 220.0,
+        "expected_volume_m3": 1401.40066,
+        "trees": 1274,
+        "mean_dbh_cm": 27.408563,
+        "mean_height_m": 13.91219,
+        "basal_area_m2_per_ha": 14.403295
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.3072491371,
+              0.0
+            ],
+            [
+              1.0133376517,
+              0.0
+            ],
+            [
+              0.9282404626,
+              0.2585903515
+            ],
+            [
+              0.8940449854,
+              0.3217393828
+            ],
+            [
+              0.8451435466,
+              0.3895933594
+            ],
+            [
+              0.5544769624,
+              0.5645541515
+            ],
+            [
+              0.3241462178,
+              0.1894020755
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "veg_type": "fir",
+        "age_class": "40",
+        "area_template": 2.639505,
+        "polygon_area": 0.109979,
+        "fragment_id": 10,
+        "block_id": 10,
+        "stand_id": "stand-0010",
+        "area_ha": 2.639505,
+        "age": 40,
+        "volume_per_ha": 120.0,
+        "expected_volume_m3": 316.7406,
+        "trees": 528,
+        "mean_dbh_cm": 13.370731,
+        "mean_height_m": 7.851214,
+        "basal_area_m2_per_ha": 3.354755
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.3241462178,
+              0.1894020755
+            ],
+            [
+              0.5544769624,
+              0.5645541515
+            ],
+            [
+              0.3757323953,
+              0.836694226
+            ],
+            [
+              0.2274454032,
+              0.7249415442
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "veg_type": "fir",
+        "age_class": "60",
+        "area_template": 1.235246,
+        "polygon_area": 0.051469,
+        "fragment_id": 11,
+        "block_id": 11,
+        "stand_id": "stand-0011",
+        "area_ha": 1.235246,
+        "age": 60,
+        "volume_per_ha": 170.0,
+        "expected_volume_m3": 209.99182,
+        "trees": 247,
+        "mean_dbh_cm": 20.332731,
+        "mean_height_m": 10.975234,
+        "basal_area_m2_per_ha": 7.778169
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.8940449854,
+              0.3217393828
+            ],
+            [
+              0.9282404626,
+              0.2585903515
+            ],
+            [
+              1.0895650236,
+              0.6033646749
+            ],
+            [
+              1.0872841949,
+              0.9343681833
+            ],
+            [
+              1.0828023096,
+              0.9387460228
+            ],
+            [
+              1.0574145417,
+              0.9193753195
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "veg_type": "fir",
+        "age_class": "80",
+        "area_template": 4.842182,
+        "polygon_area": 0.201758,
+        "fragment_id": 12,
+        "block_id": 12,
+        "stand_id": "stand-0012",
+        "area_ha": 4.842182,
+        "age": 80,
+        "volume_per_ha": 220.0,
+        "expected_volume_m3": 1065.28004,
+        "trees": 968,
+        "mean_dbh_cm": 26.994653,
+        "mean_height_m": 13.76033,
+        "basal_area_m2_per_ha": 13.692971
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.3072491371,
+              0.0
+            ],
+            [
+              0.3241462178,
+              0.1894020755
+            ],
+            [
+              0.2274454032,
+              0.7249415442
+            ],
+            [
+              0.0,
+              0.6745057801
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "local"
+    }
+  }
+}

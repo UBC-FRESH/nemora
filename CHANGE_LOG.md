@@ -1,5 +1,45 @@
 # Development Change Log
 
+## 2026-10-26 — P5.2 synthetic WS4 fixture
+
+- Added `nemora.synthesis.ws4_fixture` with a deterministic seeded Voronoi
+  landscape, three synthetic age classes, placeholder stems, and a
+  ws4-compatible recipe/fragments/schedule export.
+- Published `examples/ws4_synthetic/` with the recipe, fragments, empty
+  schedule, truth table, fixture metadata, and landscape GeoJSON.
+- Known fixture: seed `20261026`, 12 fragments, 36.0 ha, ages 40/60/80,
+  natural volume curve `(0,0)`, `(40,120)`, `(80,220)`, expected first-year
+  volume `6623.03115 m3`.
+- Added deterministic regeneration, truth-table, missing-seed/truth-table, and
+  WS4 build/simulate tests. The WS4 test is skipped when WS4 is unavailable.
+- Added `scripts/generate_ws4_fixture.py`, the fixture README, how-to, API,
+  roadmap, and changelog updates.
+- Validation: `pytest` 169 passed, 4 skipped; `ruff check src tests` passed;
+  `mypy src` passed; Sphinx `-W` build passed. The local WS4 smoke test
+  reproduced `6623.031150000001 m3` exactly.
+
+```bash
+python -m pytest
+# 169 passed, 4 skipped
+
+python -m ruff check src tests
+# All checks passed!
+
+python -m mypy src
+# Success: no issues found
+
+python -m sphinx -b html docs _build/html -W
+# build succeeded
+
+ws4 build --xml examples/ws4_synthetic/recipe.xml \
+  --fragments examples/ws4_synthetic/fragments.csv \
+  --out /tmp/ws4_synthetic/compiled
+ws4 simulate --dataset /tmp/ws4_synthetic/compiled \
+  --schedule examples/ws4_synthetic/schedule.csv \
+  --years 2 --out /tmp/ws4_synthetic/sim
+# feature.Volume at offset 0: 6623.031150000001
+```
+
 ## 2026-10-26 — P5.3 shared inventory schema
 
 - Added `nemora.inventory.v1` in `nemora.ingest.schema`: plots, trees, species,

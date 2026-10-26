@@ -11,6 +11,7 @@ ingest
 inventory_schema
 sampling
 synthesis
+ws4_synthetic_fixture
 curve_uncertainty
 contributing
 ```

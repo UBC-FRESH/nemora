@@ -60,16 +60,23 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 
 ## Phase 5 — Uncertainty, Sampling, and Synthetic Validation
 
-Status: active (P5.1 and P5.3 complete; P5.2/P5.4 pending).
+Status: active (P5.1, P5.2, and P5.3 complete; P5.4 pending).
 Branch: `feature/p5.uncertainty-sampling`; P5.1 split PR:
-`feature/p5.1-curve-uncertainty`; P5.3 split PR:
+`feature/p5.1-curve-uncertainty`; P5.2 split PR:
+`feature/p5.2-ws4-fixture`; P5.3 split PR:
 `feature/p5.3-ingest-schema`.
 
 - [x] P5.1 Curve uncertainty and a 90% band for one family (`#6`).
   - [x] Add `nemora.uncertainty` with ratio fitting, multiplicative bands,
     coverage checks, and a validation-table reader.
   - [x] Fit TSA46 `CWH_HW` height ratios; holdout coverage 87.6%.
-- [ ] P5.2 Synthetic landscape fixture with known properties (`#8`).
+- [x] P5.2 Synthetic landscape fixture with known properties (`#8`).
+  - [x] Generate a seeded Voronoi landscape and placeholder stems.
+  - [x] Export WS4 recipe, fragments, schedule, truth table, and metadata.
+  - [x] Run WS4 build/simulate and reproduce the expected volume within
+    `1e-6 m3`.
+  - [x] Add deterministic, truth-table, missing-seed, and WS4 smoke tests.
+  - [x] Document the realism limits and regeneration command.
 - [x] P5.3 Shared inventory ingest schema and one migrated path (`#9`).
   - [x] Publish `nemora.inventory.v1` in `nemora.ingest.schema`.
   - [x] Add a validator and release reader/writer.
@@ -122,6 +129,12 @@ is reproducible; each child has a test that can fail and a docs note.
    - [x] Migrate HPS and preserve the legacy per-plot CSV/manifest bytes.
    - [x] Add byte-level fixtures, schema failure tests, nightly coverage, and the migration note.
    - [ ] Migrate the FAIB stand table next, then FIA, then source-specific tree readers.
+9. **P5.2 synthetic WS4 fixture**
+   - [x] Generate a seeded Voronoi landscape with stand and stem attributes.
+   - [x] Export the WS4 recipe, fragments, empty schedule, truth table, and metadata.
+   - [x] Reproduce the expected volume through WS4 build/simulate.
+   - [x] Lock the fixture with deterministic, truth-table, missing-seed, and WS4 smoke tests.
+   - [x] Document the realism limits and regeneration command.
 
 ## Backlog & Ideas
 - [ ] Investigate GPU acceleration for large tally batches.
