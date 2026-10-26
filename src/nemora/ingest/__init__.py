@@ -79,12 +79,34 @@ class TransformPipeline:
 from . import faib as faib  # noqa: E402,F401
 from . import fia as fia  # noqa: E402,F401
 from . import hps as hps  # noqa: E402,F401
+from . import schema as schema  # noqa: E402,F401
+from .schema import (  # noqa: E402
+    SCHEMA_VERSION,
+    InventoryProvenance,
+    InventoryRelease,
+    InventoryUnits,
+    InventoryValidationError,
+    inventory_schema,
+    read_inventory_release,
+    validate_inventory_release,
+    write_inventory_release,
+)
 
 __all__ = [
     "DatasetFetcher",
     "DatasetSource",
+    "InventoryProvenance",
+    "InventoryRelease",
+    "InventoryUnits",
+    "InventoryValidationError",
+    "SCHEMA_VERSION",
     "TransformPipeline",
     "faib",
     "fia",
     "hps",
+    "inventory_schema",
+    "read_inventory_release",
+    "schema",
+    "validate_inventory_release",
+    "write_inventory_release",
 ]

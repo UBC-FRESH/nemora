@@ -60,16 +60,23 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 
 ## Phase 5 — Uncertainty, Sampling, and Synthetic Validation
 
-Status: active (P5.1 complete; P5.2-P5.4 pending).
+Status: active (P5.1 and P5.3 complete; P5.2/P5.4 pending).
 Branch: `feature/p5.uncertainty-sampling`; P5.1 split PR:
-`feature/p5.1-curve-uncertainty`.
+`feature/p5.1-curve-uncertainty`; P5.3 split PR:
+`feature/p5.3-ingest-schema`.
 
 - [x] P5.1 Curve uncertainty and a 90% band for one family (`#6`).
   - [x] Add `nemora.uncertainty` with ratio fitting, multiplicative bands,
     coverage checks, and a validation-table reader.
   - [x] Fit TSA46 `CWH_HW` height ratios; holdout coverage 87.6%.
 - [ ] P5.2 Synthetic landscape fixture with known properties (`#8`).
-- [ ] P5.3 Shared inventory ingest schema and one migrated path (`#9`).
+- [x] P5.3 Shared inventory ingest schema and one migrated path (`#9`).
+  - [x] Publish `nemora.inventory.v1` in `nemora.ingest.schema`.
+  - [x] Add a validator and release reader/writer.
+  - [x] Migrate HPS through the schema-backed adapter while keeping the legacy
+    per-plot CSV and manifest bytes unchanged.
+  - [x] Add byte-level HPS fixtures, schema failure tests, and the nightly check.
+  - [x] Document the contract, HPS migration, and remaining path order.
 - [ ] P5.4 sgsR structurally guided sampling wrapper (`#10`).
 
 Acceptance: the band is emitted with a recorded coverage check; the synthetic
@@ -107,9 +114,14 @@ is reproducible; each child has a test that can fail and a docs note.
    - [x] Thread the manifest into polygon exporters/GeoJSON so each stand feature carries a `stand_id`, `bootstrap_id`, and metadata preview for downstream tree generation.
    - [x] Outline the analytic (parameter-driven) pathway alongside bootstrap payloads and document the end-to-end workflow (seed recipe → stand templates → bootstrap manifest → tree synthesis) in `docs/howto/synthesis.md`.
    - [x] Wire the manifest into DBH sampler helpers so future tree generators can consume bootstrap + analytic payloads via a single API.
-7. **Phase 2 typing cleanup**
+7. **Phase 2 typing cleanup**
    - [x] Resolve pandas typing mismatches in FIA/FAIB ingest + HPS dataprep and remove the temporary mypy overrides.
    - [x] Align the clustered bootstrap gallery fixture with the fixture-provided vectors to keep synthesis regression tests deterministic.
+8. **P5.3 shared inventory schema**
+   - [x] Publish `nemora.inventory.v1`, the validator, and the release reader/writer.
+   - [x] Migrate HPS and preserve the legacy per-plot CSV/manifest bytes.
+   - [x] Add byte-level fixtures, schema failure tests, nightly coverage, and the migration note.
+   - [ ] Migrate the FAIB stand table next, then FIA, then source-specific tree readers.
 
 ## Backlog & Ideas
 - [ ] Investigate GPU acceleration for large tally batches.

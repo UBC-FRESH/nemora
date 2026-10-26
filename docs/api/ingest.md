@@ -1,8 +1,9 @@
 # `nemora.ingest`
 
 Nemora’s ingest package wraps reusable dataset abstractions and pipelines that
-convert raw inventory releases (FAIB PSP, FIA Datamart, etc.) into the tidy stand
-tables consumed by `nemora.fit`, `nemora.sampling`, and downstream tooling.
+convert raw inventory releases (FAIB PSP, FIA Datamart, etc.) into the shared
+`nemora.inventory.v1` tables consumed by `nemora.fit`, `nemora.sampling`, and
+downstream tooling.
 The key entry points mirror the concepts introduced in the
 [`Ingest Module` how-to](../howto/ingest.md):
 
@@ -13,6 +14,8 @@ The key entry points mirror the concepts introduced in the
 
 ```{seealso}
 - [`docs/howto/ingest.md`](../howto/ingest.md) for step-by-step ingest workflows.
+- [`docs/howto/inventory_schema.md`](../howto/inventory_schema.md) for the
+  shared `nemora.inventory.v1` release contract and HPS migration.
 - [`nemora.cli`](../api/nemora.md) for Typer commands such as `ingest-faib`,
   `faib-manifest`, and `ingest-faib-hps` that wrap these helpers.
 ```
@@ -46,6 +49,14 @@ The key entry points mirror the concepts introduced in the
 ### HPS (`nemora.ingest.hps`)
 
 ```{automodule} nemora.ingest.hps
+:members:
+:undoc-members:
+:show-inheritance:
+```
+
+### Inventory schema (`nemora.ingest.schema`)
+
+```{automodule} nemora.ingest.schema
 :members:
 :undoc-members:
 :show-inheritance:
