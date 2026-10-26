@@ -1,5 +1,17 @@
 # Development Change Log
 
+## 2026-10-26 — P5.1 curve uncertainty
+
+- Added `nemora.uncertainty` with observed/predicted ratio fitting through the
+  existing distribution registry and fitting stack, multiplicative 90% bands,
+  coverage checks, a validation-table reader, and a band CSV writer.
+- Added `scripts/curve_uncertainty.py` and the how-to/API docs.
+- Real TSA46 `CWH_HW` height pilot: 840 training pairs, 306 holdout pairs,
+  Weibull 90% ratio interval 0.686-1.989, holdout coverage 87.6%. The interval
+  is wide because the existing curve under-predicts; coverage is honestly below
+  nominal.
+- Validation: 11 focused tests; `ruff`, `mypy`, and Sphinx `-W` pass.
+
 ## 2025-11-04 — Project Bootstrap
 
 - Established initial project scaffold with packaging metadata, distribution registry, fitting workflows, CLI entry points, and base documentation; resolved editable install version detection issues uncovered during first commits.

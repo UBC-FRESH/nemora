@@ -10,5 +10,6 @@ custom_distributions
 ingest
 sampling
 synthesis
+curve_uncertainty
 contributing
 ```
