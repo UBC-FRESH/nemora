@@ -58,6 +58,25 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 - [ ] Draft contributor guide, code of conduct, issue templates.
 - [ ] Outreach (blog posts, mailing lists, working group updates).
 
+## Phase 5 — Uncertainty, Sampling, and Synthetic Validation
+
+Status: active (P5.1 complete; P5.2-P5.4 pending).
+Branch: `feature/p5.uncertainty-sampling`; P5.1 split PR:
+`feature/p5.1-curve-uncertainty`.
+
+- [x] P5.1 Curve uncertainty and a 90% band for one family (`#6`).
+  - [x] Add `nemora.uncertainty` with ratio fitting, multiplicative bands,
+    coverage checks, and a validation-table reader.
+  - [x] Fit TSA46 `CWH_HW` height ratios; holdout coverage 87.6%.
+- [ ] P5.2 Synthetic landscape fixture with known properties (`#8`).
+- [ ] P5.3 Shared inventory ingest schema and one migrated path (`#9`).
+- [ ] P5.4 sgsR structurally guided sampling wrapper (`#10`).
+
+Acceptance: the band is emitted with a recorded coverage check; the synthetic
+fixture is deterministic and runs through ws4 build/simulate; the ingest schema
+rejects a missing key and reproduces the existing output; the sampling wrapper
+is reproducible; each child has a test that can fail and a docs note.
+
 ## Detailed Next Steps Notes
 1. **Distribution registry hardening**
    - [x] Inventory bounds/defaults/extras scattered across fit, sampling, and ingest helpers; relocate the metadata into `src/nemora/distributions` and surface it through helper APIs.

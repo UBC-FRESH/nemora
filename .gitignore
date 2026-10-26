@@ -43,3 +43,6 @@ reference-data/
 .vscode/
 
 notes/coding-agent-conversation-log.txt
+
+# Root docs build
+_build/
