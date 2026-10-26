@@ -7,6 +7,7 @@ from . import helpers as helpers
 from . import stands as stands
 from . import stems as stems
 from . import tessellation as tessellation
+from . import ws4_fixture as ws4_fixture
 from .helpers import BootstrapPayload, bootstrap_payload, bootstrap_to_dataframe
 
 __all__ = [
@@ -17,4 +18,5 @@ __all__ = [
     "stands",
     "stems",
     "exporters",
+    "ws4_fixture",
 ]

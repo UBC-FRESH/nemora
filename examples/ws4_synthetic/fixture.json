@@ -1,0 +1,53 @@
+{
+  "generator": {
+    "fixture": "synthetic WS4 build/simulate input",
+    "module": "nemora.synthesis.ws4_fixture"
+  },
+  "inputs": {
+    "fragments": "fragments.csv",
+    "recipe": "recipe.xml",
+    "schedule": "schedule.csv"
+  },
+  "landscape": {
+    "area_ha": 36.0,
+    "aspect_ratio": 1.5,
+    "count": 12,
+    "trees_per_ha": 200.0
+  },
+  "landscape_features": "landscape.geojson",
+  "limits": [
+    "One species (fir), three age classes, and no mortality or treatment schedule.",
+    "Placeholder tree allometry is not calibrated to a real stand.",
+    "Volume is the synthetic natural-volume curve, not a local yield estimate.",
+    "The fixture is not a calibrated synthetic forest or a real landscape."
+  ],
+  "schema_version": "nemora.ws4_synthetic.v1",
+  "seed": 20261026,
+  "structure": {
+    "note": "Placeholder allometry from nemora.synthesis.stems; the fixture tests integration, not taper or yield realism.",
+    "provenance": "nemora.ws4_synthetic.v1"
+  },
+  "totals": {
+    "area_ha": 36.0,
+    "expected_volume_m3": 6623.03115,
+    "trees": 7199
+  },
+  "truth_table": "truth_table.csv",
+  "volume_curve": {
+    "name": "natural_volume",
+    "points": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        40.0,
+        120.0
+      ],
+      [
+        80.0,
+        220.0
+      ]
+    ]
+  }
+}

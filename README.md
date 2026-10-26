@@ -37,7 +37,7 @@ still fluid—expect rapid iteration and watch the changelog.
 | `fit`               | ✅ Alpha surface live (grouped EM, mixtures, CLI).                             |
 | `sampling`          | 🚧 Bootstrap + numeric inversion utilities landed; downstream adoption next.  |
 | `ingest`            | 🚧 FAIB/FIA/HPS pipelines + `nemora.inventory.v1`; benchmarking + telemetry ongoing. |
-| `synthesis`         | 📝 Bootstrap payload helper + CLI inspection command; generators in planning. |
+| `synthesis`         | 🚧 Bootstrap payload, stand/stem generators, and deterministic WS4 fixture.     |
 | `simulation`        | 📝 Planned. Builds on synthesis; design sketches in roadmap.                  |
 
 See [`notes/nemora_modular_reorg_plan.md`](notes/nemora_modular_reorg_plan.md) for the detailed

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic WS4 recipe: one natural curve, one managed curve, and a
+     CC treatment. The fixture's expected volume is the natural curve at
+     each fragment's age. -->
+<ForestModel horizon="120" year="0" match="single">
+  <curve id="natural_volume">
+    <point x="0" y="0"/>
+    <point x="40" y="120"/>
+    <point x="80" y="220"/>
+  </curve>
+  <curve id="managed_volume">
+    <point x="0" y="0"/>
+    <point x="10" y="50"/>
+    <point x="40" y="180"/>
+  </curve>
+  <define field="AU" column="AU"/>
+  <define field="IFM" column="IFM"/>
+  <define field="treatment"/>
+  <input block="BLOCK" area="AREA_HA" age="F_AGE"/>
+  <output messages="messages.csv" blocks="blocks.csv" features="features.csv"
+          products="products.csv" treatments="treatments.csv"
+          curves="curves.csv" tracknames="tracknames.csv"/>
+  <select statement="IFM eq 'unmanaged'">
+    <features>
+      <attribute label="feature.Volume">
+        <curve idref="natural_volume"/>
+      </attribute>
+    </features>
+    <track>
+      <treatment label="CC" minage="40" maxage="120">
+        <produce>
+          <assign field="treatment" value="'CC'"/>
+        </produce>
+        <transition>
+          <assign field="IFM" value="'managed'"/>
+        </transition>
+      </treatment>
+    </track>
+  </select>
+  <select statement="IFM eq 'managed'">
+    <features>
+      <attribute label="feature.Volume">
+        <curve idref="managed_volume"/>
+      </attribute>
+    </features>
+    <track/>
+  </select>
+  <select statement="IFM eq 'unmanaged' and treatment eq 'CC'">
+    <products>
+      <attribute label="product.Volume">
+        <curve idref="natural_volume"/>
+      </attribute>
+    </products>
+  </select>
+</ForestModel>
