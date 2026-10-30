@@ -10,7 +10,7 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 | Phase | Parent issue | Branch | Status |
 | --- | --- | --- | --- |
 | P6 | #15 | `feature/p6-plot-lidar-interfaces` | complete |
-| P7 | #20 | `feature/p7-research-forest-validation` | active |
+| P7 | #20 | `feature/p7-research-forest-validation` | pr-open |
 
 ## Phase 0 — Foundations ✅ (complete)
 - Repository scaffolding, licensing, CI harness.
@@ -131,7 +131,7 @@ See `notes/adr/0001-plot-lidar-boundaries.md` and
 
 Parent issue: #20
 Branch: `feature/p7-research-forest-validation`
-Status: active
+Status: pr-open
 
 Goal: produce a reviewed, reproducible validation package for one or both research
 forests using public FAIB plots and prepared FEMIC/LidarBC rasters, without claiming a
