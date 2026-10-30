@@ -146,8 +146,8 @@ real tree map. See `notes/phase7_research_forest_validation.md`.
   - [x] Build training and hold-out `nemora.inventory.v1` releases.
   - [x] Generate one seeded synthetic stand per target forest.
   - [x] Report DBH, height, basal area, stems/ha, and species-mix errors.
-- [ ] P7.3 Validate canopy and terrain metrics from prepared rasters (#23)
-  - [ ] Identify prepared DEM/CHM products and provenance.
+- [ ] P7.3 Validate canopy and terrain metrics from prepared rasters (#23) — deferred: no prepared Gavin Lake DEM/CHM
+  - [ ] Identify prepared DEM/CHM products and provenance. Deferred: no Gavin Lake product found.
   - [ ] Sample plots and synthetic trees through `nemora.lidar`.
   - [ ] Report native-resolution canopy and terrain metrics.
 - [ ] P7.4 Write the validation report and limitations (#24)

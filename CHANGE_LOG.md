@@ -629,3 +629,9 @@ python -m sphinx -b html docs _build/html -W
 - Added `scripts/validate_phase7_stand.py`; it builds validating training/hold-out `nemora.inventory.v1` releases in an untracked `build/phase7/` directory and writes the result JSON.
 - Gavin Lake result: 15 training plots / 2,086 trees and 5 hold-out plots / 784 trees. Synthetic stems were 12.1% low, basal area 28.8% high, QMD 14.7% high, mean DBH 5.7% low, and mean height 2.3% low; weighted DBH KS was 0.201 and species TV distance 0.217.
 - Recorded the negative result and its limits in `notes/reports/phase7_stand_validation.md` and `phase7_stand_validation_gavin.json`; added validation API/how-to docs and tests. Species-stratified or mixture refinement remains before the final validation report.
+
+## 2026-10-30 — P7.3 LiDAR coverage audit
+
+- Audited the accessible FEMIC research-forest instances and prepared rasters for Gavin Lake and Malcolm Knapp.
+- Found no prepared Gavin Lake DEM/CHM product. The nearest AFRF prepared CHM is the Knifecreek pilot at about 52.04 N, roughly 47 km south of Gavin Lake; it was not substituted.
+- Deferred P7.3 rather than using a synthetic demo DEM or reprocessing raw LiDAR. Documented the gap, the decision, and unblocking options in `notes/reports/phase7_lidar_coverage.md`.
