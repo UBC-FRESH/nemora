@@ -195,8 +195,8 @@ def inventory_release_from_hps(
 
     trees = result.tallies_frame.copy()
     trees = trees.assign(
-        tree_id=pd.NA,
-        species_code=pd.NA,
+        tree_id=pd.Series(pd.NA, index=trees.index, dtype="string"),
+        species_code=pd.Series(pd.NA, index=trees.index, dtype="string"),
         height_m=float("nan"),
         status="live",
     )

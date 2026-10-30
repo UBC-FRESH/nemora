@@ -61,3 +61,15 @@ The key entry points mirror the concepts introduced in the
 :undoc-members:
 :show-inheritance:
 ```
+
+### Plot resolution (`nemora.ingest.plots`)
+
+`PlotInventorySpec`, `build_inventory_release`, and
+`materialize_tally_trees` map source columns into a validated release and
+optionally change the tree grain from DBH tally classes to individual trees.
+
+```{automodule} nemora.ingest.plots
+:members:
+:undoc-members:
+:show-inheritance:
+```

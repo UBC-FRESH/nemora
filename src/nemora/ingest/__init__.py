@@ -79,7 +79,13 @@ class TransformPipeline:
 from . import faib as faib  # noqa: E402,F401
 from . import fia as fia  # noqa: E402,F401
 from . import hps as hps  # noqa: E402,F401
+from . import plots as plots  # noqa: E402,F401
 from . import schema as schema  # noqa: E402,F401
+from .plots import (  # noqa: E402
+    PlotInventorySpec,
+    build_inventory_release,
+    materialize_tally_trees,
+)
 from .schema import (  # noqa: E402
     SCHEMA_VERSION,
     InventoryProvenance,
@@ -101,10 +107,14 @@ __all__ = [
     "InventoryValidationError",
     "SCHEMA_VERSION",
     "TransformPipeline",
+    "build_inventory_release",
     "faib",
     "fia",
     "hps",
     "inventory_schema",
+    "materialize_tally_trees",
+    "plots",
+    "PlotInventorySpec",
     "read_inventory_release",
     "schema",
     "validate_inventory_release",

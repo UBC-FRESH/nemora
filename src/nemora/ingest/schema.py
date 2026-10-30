@@ -374,7 +374,7 @@ def _read_csv(path: Path, table: str) -> pd.DataFrame:
         "status": "string",
     }
     try:
-        return pd.read_csv(path, dtype=dtypes)
+        return pd.read_csv(path, dtype={key: pd.StringDtype() for key in dtypes})
     except FileNotFoundError as exc:
         raise InventoryValidationError([f"missing {table} table: {path}"]) from exc
 
