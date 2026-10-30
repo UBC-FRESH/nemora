@@ -40,6 +40,27 @@ does not write plot coordinates to the output. The manifest contains:
 The split uses a SHA-256 key over the split seed and plot ID, so it is stable
 across machines and independent of row order.
 
+## Resolve tree detail
+
+Once plots are selected, stream the public tree table and keep only the selected
+plots and live stems:
+
+```python
+from pathlib import Path
+
+from nemora.ingest.selection import resolve_tree_detail
+
+trees = resolve_tree_detail(
+    Path("data/external/faib/raw/faib_tree_detail.csv"),
+    selected,
+)
+```
+
+The result has the canonical tree columns: `plot_id`, `tree_id`, `species_code`,
+`dbh_cm`, `height_m`, `tally`, and `status`. `TREE_NO` supplies the stable tree
+suffix, and `PHF_TREE` supplies the expansion tally. Invalid or missing DBH rows
+are dropped; `live_only=False` keeps dead stems with `status="dead"`.
+
 ## Python API
 
 ```python

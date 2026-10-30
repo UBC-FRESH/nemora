@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -97,7 +97,7 @@ def main() -> None:
         "source_id": "bc-faib-psp",
         "source_uri": FAIB_PSP_SOURCE_URI,
         "licence": args.licence,
-        "retrieved_utc": datetime.now(UTC).isoformat(),
+        "retrieved_utc": datetime.now(timezone.utc).isoformat(),
         "input_files": [
             _file_record(args.site_header),
             _file_record(args.plot_header),

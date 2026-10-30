@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pandas as pd
 import pytest
 
 from nemora.ingest.selection import (
     ForestPlotTarget,
     assign_holdout_split,
+    resolve_tree_detail,
     select_forest_plots,
     selection_manifest,
 )
@@ -147,3 +150,98 @@ def test_selection_manifest_records_counts_and_hashes_without_plot_coordinates()
     assert len(manifest["summary"]["plot_ids_sha256"]) == 64
     assert "latitude" not in manifest["summary"]
     assert "longitude" not in manifest["summary"]
+
+
+def _selected_for_trees() -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "plot_id": ["C1_v1_p1", "C2_v1_p11"],
+            "cluster_id": ["C1", "C2"],
+            "visit_number": [1, 1],
+            "plot_number": [1, 11],
+        }
+    )
+
+
+def _tree_detail() -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "CLSTR_ID": ["C1", "C1", "C1", "C2", "C3"],
+            "VISIT_NUMBER": [1, 1, 1, 1, 1],
+            "PLOT": [1, 1, 1, 11, 2],
+            "TREE_NO": [1, 2, 3, 1, 1],
+            "SPECIES": ["FD", "FD", "FD", "HW", "FD"],
+            "DBH": [20.0, 30.0, None, 25.0, 22.0],
+            "HEIGHT": [25.0, 28.0, 30.0, 24.0, 20.0],
+            "LV_D": ["L", "L", "L", "D", "L"],
+            "PHF_TREE": [2.0, 2.0, 2.0, 1.0, 1.0],
+        }
+    )
+
+
+def test_resolve_tree_detail_filters_selected_plots_and_live_trees(
+    tmp_path: Path,
+) -> None:
+    selected = _selected_for_trees()
+
+    trees = resolve_tree_detail(_tree_detail(), selected)
+
+    assert list(trees.columns) == [
+        "plot_id",
+        "tree_id",
+        "species_code",
+        "dbh_cm",
+        "height_m",
+        "tally",
+        "status",
+    ]
+    assert trees["plot_id"].tolist() == ["C1_v1_p1", "C1_v1_p1"]
+    assert trees["tree_id"].tolist() == ["C1_v1_p1-T00001", "C1_v1_p1-T00002"]
+    assert trees["tally"].tolist() == [2.0, 2.0]
+    assert trees["status"].tolist() == ["live", "live"]
+
+    detail_path = tmp_path / "tree_detail.csv"
+    _tree_detail().to_csv(detail_path, index=False)
+    from_path = resolve_tree_detail(detail_path, selected, chunk_size=1)
+
+    pd.testing.assert_frame_equal(from_path, trees, check_dtype=False)
+
+
+def test_resolve_tree_detail_can_keep_dead_trees() -> None:
+    trees = resolve_tree_detail(_tree_detail(), _selected_for_trees(), live_only=False)
+
+    assert len(trees) == 3
+    assert "dead" in trees["status"].tolist()
+
+
+def test_resolve_tree_detail_returns_empty_canonical_frame() -> None:
+    trees = resolve_tree_detail(
+        _tree_detail(),
+        pd.DataFrame(
+            {
+                "plot_id": ["missing_v1_p9"],
+                "cluster_id": ["MISSING"],
+                "visit_number": [1],
+                "plot_number": [9],
+            }
+        ),
+    )
+
+    assert trees.empty
+    assert list(trees.columns) == [
+        "plot_id",
+        "tree_id",
+        "species_code",
+        "dbh_cm",
+        "height_m",
+        "tally",
+        "status",
+    ]
+
+
+def test_resolve_tree_detail_requires_live_status_column() -> None:
+    with pytest.raises(KeyError, match="LV_D"):
+        resolve_tree_detail(
+            _tree_detail().drop(columns=["LV_D"]),
+            _selected_for_trees(),
+        )

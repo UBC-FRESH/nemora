@@ -6,7 +6,7 @@ Phase: P7
 
 Task: P7.1
 
-Status: selection complete; tree-detail resolution and stand validation continue in P7.2.
+Status: selection and tree-detail resolution complete; stand validation continues in P7.2.
 
 ## Decision
 
@@ -55,6 +55,22 @@ Malcolm Knapp:
 - Distance from target centre: 8.97-48.47 km.
 - Sorted plot-ID SHA-256: `1cc08661ecc368f86f682f7026b546ce33bbe56f3df2889728626e4e0d535096`.
 
+## Tree detail
+
+The public tree-detail table resolves to 2,870 live tree rows across all 20 Gavin
+Lake plots. Every selected plot has at least one live tree record.
+
+- Trees per plot: 74-331; median 105.5.
+- Species: 12 codes; dominant codes are `FD` (1,346), `AT` (477), `SW` (437),
+  `PL` (258), and `BL` (172).
+- DBH: 2.0-56.1 cm.
+- Measured height: 1.9-41.2 m.
+- Expansion tally (`PHF_TREE` sum): 40,920.48.
+
+A local pilot release validated under `nemora.inventory.v1` with 20 plots, 2,870
+tree rows, and 12 species. Tree rows are not committed; regenerate them from the
+public inputs with `resolve_tree_detail`.
+
 ## Provenance
 
 - Source: BC FAIB PSP public compilation.
@@ -85,5 +101,5 @@ Use `--forest mkrf` for the fallback target.
 
 - The selected plots are ground samples, not a tree map.
 - The selection is a documented rule, not a probability sample.
-- Tree detail has not been resolved into the stand release yet; P7.2 does that.
+- The expansion tally is not a literal stem count; P7.2 must use it explicitly.
 - Canopy/terrain context is not evaluated yet; P7.3 does that.

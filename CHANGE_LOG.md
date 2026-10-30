@@ -616,3 +616,9 @@ python -m sphinx -b html docs _build/html -W
 - Selected Gavin Lake as the first target: 20 mature plots (15 train, 5 hold-out), 18 `SBSdw1` and 2 `ICHmk3`, projected ages 74-152. Malcolm Knapp has only 6 mature plots within 50 km, so it remains an exploratory fallback.
 - Recorded provenance and input checksums in `notes/reports/phase7_plot_selection_gavin.json` and `phase7_plot_selection_mkrf.json`; the decision and limits are in `notes/reports/phase7_plot_selection.md`.
 - Added selection tests and `docs/howto/plot_selection.md`. Tree-detail resolution and stand validation remain for P7.2.
+
+## 2026-10-30 — P7.1 tree-detail resolution
+
+- Added `resolve_tree_detail` to stream public FAIB tree detail, filter selected/live plots, and emit canonical `nemora.inventory.v1` tree rows with stable IDs and `PHF_TREE` expansion tallies.
+- Gavin Lake resolves to 2,870 live tree rows across all 20 selected plots; a local pilot release validates with 20 plots, 2,870 tree rows, and 12 species.
+- Recorded the tree-detail counts and limits in `notes/reports/phase7_plot_selection.md`; added API/how-to coverage and regression tests. P7.1 is complete; P7.2 starts from the validated training/hold-out tables.

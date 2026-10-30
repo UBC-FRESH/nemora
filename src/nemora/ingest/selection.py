@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -21,6 +22,7 @@ import pandas as pd
 __all__ = [
     "ForestPlotTarget",
     "assign_holdout_split",
+    "resolve_tree_detail",
     "select_forest_plots",
     "selection_manifest",
     "write_selection_manifest",
@@ -36,6 +38,17 @@ _SAMPLE_COLUMNS = (
     "MEAS_DT",
     "PROJ_AGE_1",
     "SAMP_TYP",
+)
+_TREE_REQUIRED = ("CLSTR_ID", "VISIT_NUMBER", "PLOT", "TREE_NO", "SPECIES", "DBH", "LV_D")
+_TREE_OPTIONAL = ("HEIGHT", "PHF_TREE")
+_TREE_OUTPUT = (
+    "plot_id",
+    "tree_id",
+    "species_code",
+    "dbh_cm",
+    "height_m",
+    "tally",
+    "status",
 )
 
 
@@ -194,6 +207,115 @@ def select_forest_plots(
     return result.sort_values(["distance_km", "plot_id"]).reset_index(drop=True)
 
 
+def resolve_tree_detail(
+    tree_detail_source: str | Path | pd.DataFrame,
+    selected_plots: pd.DataFrame,
+    *,
+    live_only: bool = True,
+    chunk_size: int = 200_000,
+) -> pd.DataFrame:
+    """Resolve FAIB tree detail for selected plots into canonical tree rows.
+
+    Parameters
+    ----------
+    tree_detail_source:
+        Path to ``faib_tree_detail.csv`` or an equivalent DataFrame.
+    selected_plots:
+        Output of :func:`select_forest_plots` (or a frame with the canonical
+        ``plot_id``, ``cluster_id``, ``visit_number``, and ``plot_number``
+        columns).
+    live_only:
+        Keep only ``LV_D == "L"`` records. When false, dead records are kept with
+        ``status="dead"``.
+    chunk_size:
+        CSV chunk size for streaming reads.
+
+    Returns
+    -------
+    pandas.DataFrame
+        Canonical ``nemora.inventory.v1`` tree columns only.
+
+    Raises
+    ------
+    KeyError
+        If required selection or tree columns are missing.
+    ValueError
+        If ``chunk_size`` is not positive.
+    """
+    if chunk_size < 1:
+        raise ValueError("chunk_size must be positive")
+    selection_columns = ("plot_id", "cluster_id", "visit_number", "plot_number")
+    _require_columns(selected_plots, selection_columns, "selected_plots")
+    selection = selected_plots.loc[:, list(selection_columns)].copy()
+    selection["cluster_id"] = selection["cluster_id"].astype(str)
+    selection["visit_number"] = pd.to_numeric(selection["visit_number"], errors="coerce").astype(
+        "Int64"
+    )
+    selection["plot_number"] = pd.to_numeric(selection["plot_number"], errors="coerce").astype(
+        "Int64"
+    )
+
+    available = _source_columns(tree_detail_source)
+    missing = [column for column in _TREE_REQUIRED if column not in available]
+    if missing:
+        raise KeyError("tree_detail_source is missing required columns: " + ", ".join(missing))
+    usecols = [column for column in (*_TREE_REQUIRED, *_TREE_OPTIONAL) if column in available]
+    frames: list[pd.DataFrame] = []
+    for chunk in _tree_chunks(tree_detail_source, usecols=usecols, chunk_size=chunk_size):
+        frame = chunk.copy()
+        frame["CLSTR_ID"] = frame["CLSTR_ID"].astype(str)
+        frame["VISIT_NUMBER"] = pd.to_numeric(frame["VISIT_NUMBER"], errors="coerce").astype(
+            "Int64"
+        )
+        frame["PLOT"] = pd.to_numeric(frame["PLOT"], errors="coerce").astype("Int64")
+        frame = frame.merge(
+            selection.rename(
+                columns={
+                    "cluster_id": "CLSTR_ID",
+                    "visit_number": "VISIT_NUMBER",
+                    "plot_number": "PLOT",
+                }
+            ),
+            on=["CLSTR_ID", "VISIT_NUMBER", "PLOT"],
+            how="inner",
+        )
+        if frame.empty:
+            continue
+        if live_only:
+            frame = frame.loc[frame["LV_D"].eq("L")]
+        else:
+            frame = frame.loc[frame["LV_D"].notna()]
+        frame = frame.assign(
+            dbh_cm=pd.to_numeric(frame["DBH"], errors="coerce"),
+            height_m=(
+                pd.to_numeric(frame["HEIGHT"], errors="coerce")
+                if "HEIGHT" in frame.columns
+                else np.nan
+            ),
+            tally=(
+                pd.to_numeric(frame["PHF_TREE"], errors="coerce")
+                if "PHF_TREE" in frame.columns
+                else 1.0
+            ),
+        )
+        frame = frame.loc[frame["dbh_cm"].notna() & (frame["dbh_cm"] > 0.0)]
+        if frame.empty:
+            continue
+        frame["tally"] = frame["tally"].fillna(1.0)
+        frame["species_code"] = frame["SPECIES"].astype("string")
+        frame["status"] = np.where(frame["LV_D"].eq("L"), "live", "dead")
+        frame["tree_id"] = _make_tree_ids(frame)
+        frames.append(frame.loc[:, list(_TREE_OUTPUT)])
+
+    if not frames:
+        return pd.DataFrame(columns=list(_TREE_OUTPUT))
+    return (
+        pd.concat(frames, ignore_index=True)
+        .sort_values(["plot_id", "tree_id"])
+        .reset_index(drop=True)
+    )
+
+
 def assign_holdout_split(
     plots: pd.DataFrame,
     *,
@@ -302,6 +424,42 @@ def write_selection_manifest(manifest: dict[str, Any], path: str | Path) -> None
     target = Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def _source_columns(source: str | Path | pd.DataFrame) -> set[str]:
+    if isinstance(source, pd.DataFrame):
+        return set(source.columns)
+    return set(pd.read_csv(Path(source), nrows=0).columns)
+
+
+def _tree_chunks(
+    source: str | Path | pd.DataFrame,
+    *,
+    usecols: list[str],
+    chunk_size: int,
+) -> Iterator[pd.DataFrame]:
+    if isinstance(source, pd.DataFrame):
+        yield source.loc[:, usecols]
+        return
+    yield from pd.read_csv(
+        Path(source),
+        usecols=usecols,
+        chunksize=chunk_size,
+        low_memory=False,
+    )
+
+
+def _make_tree_ids(frame: pd.DataFrame) -> pd.Series:
+    plot_ids = frame["plot_id"].astype(str).tolist()
+    tree_numbers = pd.to_numeric(frame["TREE_NO"], errors="coerce").tolist()
+    counts: dict[str, int] = {}
+    ids: list[str] = []
+    for plot_id, tree_number in zip(plot_ids, tree_numbers, strict=True):
+        base = f"{plot_id}-T00000" if pd.isna(tree_number) else f"{plot_id}-T{int(tree_number):05d}"
+        count = counts.get(base, 0)
+        counts[base] = count + 1
+        ids.append(base if count == 0 else f"{base}-{count}")
+    return pd.Series(ids, index=frame.index, dtype="string")
 
 
 def _require_columns(frame: pd.DataFrame, columns: tuple[str, ...], name: str) -> None:

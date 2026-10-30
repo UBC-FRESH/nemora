@@ -101,6 +101,7 @@ from .schema import (  # noqa: E402
 from .selection import (  # noqa: E402
     ForestPlotTarget,
     assign_holdout_split,
+    resolve_tree_detail,
     select_forest_plots,
     selection_manifest,
     write_selection_manifest,
@@ -124,6 +125,7 @@ __all__ = [
     "assign_holdout_split",
     "select_forest_plots",
     "selection_manifest",
+    "resolve_tree_detail",
     "write_selection_manifest",
     "materialize_tally_trees",
     "plots",
