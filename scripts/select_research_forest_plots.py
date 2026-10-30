@@ -17,6 +17,7 @@ from pathlib import Path
 import pandas as pd
 
 from nemora.ingest.selection import (
+    RESEARCH_FOREST_TARGETS,
     ForestPlotTarget,
     assign_holdout_split,
     select_forest_plots,
@@ -24,30 +25,13 @@ from nemora.ingest.selection import (
     write_selection_manifest,
 )
 
-FOREST_TARGETS: dict[str, ForestPlotTarget] = {
-    "gavin": ForestPlotTarget(
-        name="Alex Fraser Research Forest, Gavin Lake",
-        latitude=52.462616,
-        longitude=-121.763919,
-        radius_km=25.0,
-        bec_codes=("ICHmk3", "SBSdw1"),
-    ),
-    "mkrf": ForestPlotTarget(
-        name="Malcolm Knapp Research Forest",
-        latitude=49.30663,
-        longitude=-122.551375,
-        radius_km=50.0,
-        bec_codes=("CWHdm",),
-    ),
-}
-
 FAIB_PSP_SOURCE_URI = "ftp://ftp.for.gov.bc.ca/HTS/external/!publish/ground_plot_compilations/psp/"
 
 
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--forest", choices=sorted(FOREST_TARGETS), required=True)
+    parser.add_argument("--forest", choices=sorted(RESEARCH_FOREST_TARGETS), required=True)
     parser.add_argument("--site-header", type=Path, required=True)
     parser.add_argument("--plot-header", type=Path, required=True)
     parser.add_argument("--sample-byvisit", type=Path, required=True)
@@ -62,7 +46,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     """Run the selection and write the manifest."""
     args = parse_args()
-    base = FOREST_TARGETS[args.forest]
+    base = RESEARCH_FOREST_TARGETS[args.forest]
     target = ForestPlotTarget(
         name=base.name,
         latitude=base.latitude,

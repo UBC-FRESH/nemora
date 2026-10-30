@@ -21,6 +21,7 @@ import pandas as pd
 
 __all__ = [
     "ForestPlotTarget",
+    "RESEARCH_FOREST_TARGETS",
     "assign_holdout_split",
     "resolve_tree_detail",
     "select_forest_plots",
@@ -96,6 +97,24 @@ class ForestPlotTarget:
             raise ValueError("bec_codes must contain at least one code")
         if self.min_projected_age < 0.0 or not math.isfinite(self.min_projected_age):
             raise ValueError("min_projected_age must be finite and non-negative")
+
+
+RESEARCH_FOREST_TARGETS: dict[str, ForestPlotTarget] = {
+    "gavin": ForestPlotTarget(
+        name="Alex Fraser Research Forest, Gavin Lake",
+        latitude=52.462616,
+        longitude=-121.763919,
+        radius_km=25.0,
+        bec_codes=("ICHmk3", "SBSdw1"),
+    ),
+    "mkrf": ForestPlotTarget(
+        name="Malcolm Knapp Research Forest",
+        latitude=49.30663,
+        longitude=-122.551375,
+        radius_km=50.0,
+        bec_codes=("CWHdm",),
+    ),
+}
 
 
 def select_forest_plots(

@@ -142,10 +142,10 @@ real tree map. See `notes/phase7_research_forest_validation.md`.
   - [x] Resolve public plot, visit, and tree tables.
   - [x] Record provenance, licence, checksums, and a selection manifest.
   - [x] Select Gavin Lake as the first target: 20 plots, 15 train / 5 hold-out.
-- [ ] P7.2 Build and validate plot-conditioned mature-stand inventories (#22)
-  - [ ] Build training and hold-out `nemora.inventory.v1` releases.
-  - [ ] Generate one seeded synthetic stand per target forest.
-  - [ ] Report DBH, height, basal area, stems/ha, and species-mix errors.
+- [x] P7.2 Build and validate plot-conditioned mature-stand inventories (#22)
+  - [x] Build training and hold-out `nemora.inventory.v1` releases.
+  - [x] Generate one seeded synthetic stand per target forest.
+  - [x] Report DBH, height, basal area, stems/ha, and species-mix errors.
 - [ ] P7.3 Validate canopy and terrain metrics from prepared rasters (#23)
   - [ ] Identify prepared DEM/CHM products and provenance.
   - [ ] Sample plots and synthetic trees through `nemora.lidar`.
@@ -214,7 +214,7 @@ real tree map. See `notes/phase7_research_forest_validation.md`.
    - [ ] Select and resolve public FAIB plots with a deterministic hold-out split.
      - [x] Selected Gavin Lake: 20 mature plots, 15 train / 5 hold-out.
      - [x] Resolve tree detail and build the canonical pilot release.
-   - [ ] Build and validate plot-conditioned mature-stand inventories.
+   - [x] Build and validate plot-conditioned mature-stand inventories.
    - [ ] Validate prepared DEM/CHM metrics through `nemora.lidar`.
    - [ ] Publish the limitations-first validation report.
 

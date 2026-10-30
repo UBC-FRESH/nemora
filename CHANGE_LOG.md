@@ -622,3 +622,10 @@ python -m sphinx -b html docs _build/html -W
 - Added `resolve_tree_detail` to stream public FAIB tree detail, filter selected/live plots, and emit canonical `nemora.inventory.v1` tree rows with stable IDs and `PHF_TREE` expansion tallies.
 - Gavin Lake resolves to 2,870 live tree rows across all 20 selected plots; a local pilot release validates with 20 plots, 2,870 tree rows, and 12 species.
 - Recorded the tree-detail counts and limits in `notes/reports/phase7_plot_selection.md`; added API/how-to coverage and regression tests. P7.1 is complete; P7.2 starts from the validated training/hold-out tables.
+
+## 2026-10-30 — P7.2 Gavin Lake stand validation
+
+- Added `nemora.validation` with plot-conditioned DBH/height fitting, a seeded one-hectare-equivalent synthetic stand, weighted DBH KS, species total-variation distance, metric errors, and plot-resampling bootstrap intervals.
+- Added `scripts/validate_phase7_stand.py`; it builds validating training/hold-out `nemora.inventory.v1` releases in an untracked `build/phase7/` directory and writes the result JSON.
+- Gavin Lake result: 15 training plots / 2,086 trees and 5 hold-out plots / 784 trees. Synthetic stems were 12.1% low, basal area 28.8% high, QMD 14.7% high, mean DBH 5.7% low, and mean height 2.3% low; weighted DBH KS was 0.201 and species TV distance 0.217.
+- Recorded the negative result and its limits in `notes/reports/phase7_stand_validation.md` and `phase7_stand_validation_gavin.json`; added validation API/how-to docs and tests. Species-stratified or mixture refinement remains before the final validation report.
