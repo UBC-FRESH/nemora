@@ -62,6 +62,18 @@ The key entry points mirror the concepts introduced in the
 :show-inheritance:
 ```
 
+### Plot selection (`nemora.ingest.selection`)
+
+`ForestPlotTarget` and `select_forest_plots` apply target/BEC/age/radius filters
+to public FAIB tables. `assign_holdout_split` adds a deterministic split, and
+`selection_manifest` records a location-light summary.
+
+```{automodule} nemora.ingest.selection
+:members:
+:undoc-members:
+:show-inheritance:
+```
+
 ### Plot resolution (`nemora.ingest.plots`)
 
 `PlotInventorySpec`, `build_inventory_release`, and

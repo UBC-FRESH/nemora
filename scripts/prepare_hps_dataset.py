@@ -316,8 +316,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     if args.dry_run:
         dry_run_msg = (
-            f"[dry-run] {len(result.tallies)} plots would be written "
-            f"totaling {total_trees} trees."
+            f"[dry-run] {len(result.tallies)} plots would be written totaling {total_trees} trees."
         )
         print(dry_run_msg, file=sys.stderr)
         return 0

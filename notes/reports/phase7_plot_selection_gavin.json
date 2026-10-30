@@ -1,0 +1,60 @@
+{
+  "counts": {
+    "holdout": 5,
+    "total": 20,
+    "train": 15
+  },
+  "filters": {
+    "age_column": "PROJ_AGE_1",
+    "holdout_fraction": 0.25,
+    "split_seed": 20261030
+  },
+  "provenance": {
+    "input_files": [
+      {
+        "name": "faib_header.csv",
+        "sha256": "d484279ddd023ec72ad83a34a50c52f71da2b4d9cd9072d0910e40917feae7f8",
+        "size_bytes": 1405737
+      },
+      {
+        "name": "faib_plot_header.csv",
+        "sha256": "838405d1f21c1b3c5e5ed918d085730b7da579475281c2ce3916c474512933b2",
+        "size_bytes": 2810178
+      },
+      {
+        "name": "faib_sample_byvisit.csv",
+        "sha256": "cda59cb450a74df3829d718ae83f5ede569c27d5aaa449ed6c871b636329886f",
+        "size_bytes": 3179941
+      }
+    ],
+    "licence": "OGL-BC",
+    "retrieved_utc": "2026-10-30T05:37:56.372007+00:00",
+    "source_id": "bc-faib-psp",
+    "source_uri": "ftp://ftp.for.gov.bc.ca/HTS/external/!publish/ground_plot_compilations/psp/"
+  },
+  "summary": {
+    "bec_counts": {
+      "ICHmk3": 2,
+      "SBSdw1": 18
+    },
+    "distance_km_max": 23.92154551296456,
+    "distance_km_min": 2.2876364374567593,
+    "plot_ids_sha256": "aa60d48f31bb27bafeb697a4ba3caa731c0b774906c1964f6ef1628ca7cb60f3",
+    "projected_age_max": 152.0,
+    "projected_age_median": 124.0,
+    "projected_age_min": 74.0
+  },
+  "target": {
+    "bec_codes": [
+      "ICHmk3",
+      "SBSdw1"
+    ],
+    "first_visit_only": true,
+    "latitude": 52.462616,
+    "longitude": -121.763919,
+    "min_projected_age": 60.0,
+    "name": "Alex Fraser Research Forest, Gavin Lake",
+    "radius_km": 25.0,
+    "sample_type": "F"
+  }
+}

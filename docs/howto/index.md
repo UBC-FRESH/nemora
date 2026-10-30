@@ -9,6 +9,8 @@ hps_dataset
 custom_distributions
 ingest
 inventory_schema
+plot_selection
+stand_validation
 sampling
 sgsr_sampling
 synthesis

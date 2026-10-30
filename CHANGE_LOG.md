@@ -601,3 +601,50 @@ python -m sphinx -b html docs _build/html -W
 - Validation: `pytest` (187 passed, 8 skipped), `ruff format --check src tests`,
   `ruff check src tests`, `mypy src`, `sphinx-build -b html docs _build/html -W`, and
   `pre-commit run --all-files` all pass.
+
+## 2026-10-30 — Phase 7 activated
+
+- Closed P6 after squash-merging #19 as `901098e`; the approved-head tree matched the merge tree.
+- Activated P7 "Research-forest plot and LiDAR validation" with parent #20 and tasks #21-#24.
+- Recorded the validation plan, public-data provenance requirements, default Gavin Lake/Malcolm Knapp decision, and limitations-first reporting rule in `notes/phase7_research_forest_validation.md`.
+- No data was fitted or reported yet; P7.1 starts with plot selection and a deterministic hold-out split.
+
+## 2026-10-30 — P7.1 research-forest plot selection
+
+- Added `nemora.ingest.selection` with explicit forest targets, BEC/age/radius filters, a stable SHA-256 train/hold-out split, and a location-light manifest.
+- Added `scripts/select_research_forest_plots.py` to regenerate selection manifests from public FAIB tables without writing plot coordinates.
+- Selected Gavin Lake as the first target: 20 mature plots (15 train, 5 hold-out), 18 `SBSdw1` and 2 `ICHmk3`, projected ages 74-152. Malcolm Knapp has only 6 mature plots within 50 km, so it remains an exploratory fallback.
+- Recorded provenance and input checksums in `notes/reports/phase7_plot_selection_gavin.json` and `phase7_plot_selection_mkrf.json`; the decision and limits are in `notes/reports/phase7_plot_selection.md`.
+- Added selection tests and `docs/howto/plot_selection.md`. Tree-detail resolution and stand validation remain for P7.2.
+
+## 2026-10-30 — P7.1 tree-detail resolution
+
+- Added `resolve_tree_detail` to stream public FAIB tree detail, filter selected/live plots, and emit canonical `nemora.inventory.v1` tree rows with stable IDs and `PHF_TREE` expansion tallies.
+- Gavin Lake resolves to 2,870 live tree rows across all 20 selected plots; a local pilot release validates with 20 plots, 2,870 tree rows, and 12 species.
+- Recorded the tree-detail counts and limits in `notes/reports/phase7_plot_selection.md`; added API/how-to coverage and regression tests. P7.1 is complete; P7.2 starts from the validated training/hold-out tables.
+
+## 2026-10-30 — P7.2 Gavin Lake stand validation
+
+- Added `nemora.validation` with plot-conditioned DBH/height fitting, a seeded one-hectare-equivalent synthetic stand, weighted DBH KS, species total-variation distance, metric errors, and plot-resampling bootstrap intervals.
+- Added `scripts/validate_phase7_stand.py`; it builds validating training/hold-out `nemora.inventory.v1` releases in an untracked `build/phase7/` directory and writes the result JSON.
+- Gavin Lake result: 15 training plots / 2,086 trees and 5 hold-out plots / 784 trees. Synthetic stems were 12.1% low, basal area 28.8% high, QMD 14.7% high, mean DBH 5.7% low, and mean height 2.3% low; weighted DBH KS was 0.201 and species TV distance 0.217.
+- Recorded the negative result and its limits in `notes/reports/phase7_stand_validation.md` and `phase7_stand_validation_gavin.json`; added validation API/how-to docs and tests. Species-stratified or mixture refinement remains before the final validation report.
+
+## 2026-10-30 — P7.3 LiDAR coverage audit
+
+- Audited the accessible FEMIC research-forest instances and prepared rasters for Gavin Lake and Malcolm Knapp.
+- Found no prepared Gavin Lake DEM/CHM product. The nearest AFRF prepared CHM is the Knifecreek pilot at about 52.04 N, roughly 47 km south of Gavin Lake; it was not substituted.
+- Deferred P7.3 rather than using a synthetic demo DEM or reprocessing raw LiDAR. Documented the gap, the decision, and unblocking options in `notes/reports/phase7_lidar_coverage.md`.
+
+## 2026-10-30 — P7.4 validation report
+
+- Wrote `notes/reports/phase7_validation.md`, combining the Gavin Lake plot selection, tree-detail resolution, stand validation, uncertainty, and the prepared-raster coverage gap.
+- The report marks P7.3 as deferred, records the negative stand-validation result, and separates observed, fitted, assumed, and synthetic evidence.
+- No operational, real-tree-map, or regulatory claim is made.
+
+## 2026-10-30 — P7.3 LiDAR correction and materialization
+
+- Corrected the earlier coverage claim: a public LidarBC catalogue query through the FEMIC discovery/materialization functions found 2024 1 m DEM/DSM coverage for Gavin Lake.
+- Materialized 16 DEM/DSM pairs (32 tiles) with `femic.lidar.materialization.materialize_lidar_selection`, derived CHM/slope with `femic.lidar.canopy` and `femic.lidar.terrain`, and sampled plots plus the synthetic-stand centre with `nemora.lidar`.
+- 15 of 20 selected plots have valid canopy/slope samples; 4 have no tile-index hit and 1 has no valid sampled pixels. Results are in `notes/reports/phase7_lidar_metrics.json` and the corrected `notes/reports/phase7_lidar_coverage.md`.
+- The earlier P7.3 deferral is withdrawn; the remaining limitation is partial coverage, not missing data.

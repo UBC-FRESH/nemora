@@ -282,7 +282,7 @@ def _normalise_table(
 
 
 def _as_non_negative_integer(value: object, plot_id: object) -> int:
-    if not isinstance(value, (str, SupportsFloat)):
+    if not isinstance(value, str) and not isinstance(value, SupportsFloat):
         raise InventoryValidationError([f"tally for plot {plot_id!r} is not numeric: {value!r}"])
     try:
         numeric = float(value)
