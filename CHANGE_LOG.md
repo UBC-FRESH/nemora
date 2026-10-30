@@ -777,3 +777,9 @@ python -m sphinx -b html docs _build/html -W
 - Wrote `notes/reports/phase11-closeout.md` with the multi-block/yield/sensitivity evidence and the P12 release-candidate recommendation.
 - Updated the roadmap to P11 `pr-open`; no merge or publication has been performed.
 - MKRf work_required warning, independent-yield discrepancy, and truck-bound makespan remain explicit.
+
+## 2026-10-30 — Phase 12 activated
+
+- Closed P11 after squash-merging #46 as `5c17e7f`; the approved-head tree matched the merge tree.
+- Activated P12 "Release candidate and publication readiness" with parent #47 and tasks #48-#51.
+- Default candidate version is `0.1.0a1`; no tag or publication is approved by this activation.
