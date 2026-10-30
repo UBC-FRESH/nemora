@@ -12,7 +12,7 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 | P6 | #15 | `feature/p6-plot-lidar-interfaces` | complete |
 | P7 | #20 | `feature/p7-research-forest-validation` | complete |
 | P8 | #26 | `feature/p8-validation-refinement` | complete |
-| P9 | #31 | `feature/p9-cross-forest-handoff` | active |
+| P9 | #31 | `feature/p9-cross-forest-handoff` | pr-open |
 
 ## Phase 0 — Foundations ✅ (complete)
 - Repository scaffolding, licensing, CI harness.
@@ -185,7 +185,7 @@ without weakening provenance or making operational claims. See
 
 Parent issue: #31
 Branch: `feature/p9-cross-forest-handoff`
-Status: active
+Status: pr-open
 
 Goal: validate Malcolm Knapp with an explicit regional pool and hand the selected
 Nemora stand to FHOPS through a tested tree-inventory export. See
@@ -202,7 +202,7 @@ Nemora stand to FHOPS through a tested tree-inventory export. See
 - [x] P9.3 Run the FHOPS tree-scale handoff and write the close-out report (#34)
   - [x] Ran FHOPS 1.2.0 on 1,978 exported trees: 530.54 m³, 0 unreachable.
   - [x] Assembled the Gavin/Malcolm Knapp comparison.
-  - [x] Wrote `notes/reports/phase9_validation.md`; close-out pending.
+  - [x] Wrote `notes/reports/phase9_validation.md` and the phase close-out report.
 
 ## Detailed Next Steps Notes
 1. **Distribution registry hardening**

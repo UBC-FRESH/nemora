@@ -707,3 +707,9 @@ python -m sphinx -b html docs _build/html -W
 - Ran FHOPS 1.2.0 on the 1,978-tree exported Gavin inventory: 530.54 m³ processed, 0 unreachable trees, 115.46 h makespan, 106 truck loads, max landing inventory 14.89 m³.
 - Recorded the expected fixture work-required warning and the cross-forest comparison. Malcolm Knapp regional transfer is limited: BA/QMD are close, DBH -18.0% and height -26.3%.
 - Added `notes/reports/phase9_validation.md` and `notes/reports/phase9_fhops_system_summary.json`; no FHOPS core changes.
+
+## 2026-10-30 — P9 queued for close-out
+
+- Wrote `notes/reports/phase9-closeout.md` with the cross-forest and FHOPS handoff evidence package and the P10 calibration/handoff hardening recommendation.
+- Updated the roadmap to P9 `pr-open`; no merge has been performed.
+- The Malcolm Knapp regional transfer and FHOPS fixture warning remain explicit limits.
