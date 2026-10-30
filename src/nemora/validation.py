@@ -18,10 +18,14 @@ from .fit import fit_inventory
 from .sampling import sample_distribution
 
 __all__ = [
+    "ModelComparison",
     "StandMetrics",
     "StandValidationResult",
+    "compare_stand_models",
     "stand_metrics_from_trees",
+    "validate_empirical_stand",
     "validate_plot_conditioned_stand",
+    "validate_species_weibull_stand",
 ]
 
 _TREE_COLUMNS = ("plot_id", "species_code", "dbh_cm", "height_m", "tally")
@@ -70,10 +74,12 @@ class StandValidationResult:
     seed: int
     holdout_plots: dict[str, StandMetrics]
     synthetic_trees: pd.DataFrame
+    model: str = "pooled_weibull"
 
     def to_dict(self) -> dict[str, object]:
         """Return a JSON-serializable summary without the synthetic tree rows."""
         return {
+            "model": self.model,
             "training": self.training.to_dict(),
             "holdout": self.holdout.to_dict(),
             "synthetic": self.synthetic.to_dict(),
@@ -109,6 +115,41 @@ class StandValidationResult:
                     "holdout": holdout[metric],
                     "synthetic": synthetic[metric],
                     "relative_error": self.relative_errors.get(metric),
+                }
+            )
+        return pd.DataFrame(rows)
+
+
+@dataclass(frozen=True, slots=True)
+class ModelComparison:
+    """Comparison of candidate stand models on one held-out plot set."""
+
+    results: tuple[StandValidationResult, ...]
+    scores: dict[str, float]
+    selected: str
+
+    def to_dict(self) -> dict[str, object]:
+        """Return a JSON-serializable comparison summary."""
+        return {
+            "selected": self.selected,
+            "scores": dict(self.scores),
+            "models": {result.model: result.to_dict() for result in self.results},
+        }
+
+    def comparison_frame(self) -> pd.DataFrame:
+        """Return a compact model-comparison table."""
+        rows: list[dict[str, object]] = []
+        for result in self.results:
+            rows.append(
+                {
+                    "model": result.model,
+                    "score": self.scores[result.model],
+                    "dbh_ks_weighted": result.dbh_ks_weighted,
+                    "species_tv_distance": result.species_tv_distance,
+                    "ba_relative_error": result.relative_errors.get("basal_area_m2_per_ha"),
+                    "qmd_relative_error": result.relative_errors.get("qmd_cm"),
+                    "dbh_relative_error": result.relative_errors.get("mean_dbh_cm"),
+                    "height_relative_error": result.relative_errors.get("mean_height_m"),
                 }
             )
         return pd.DataFrame(rows)
@@ -264,6 +305,170 @@ def validate_plot_conditioned_stand(
     )
 
 
+def validate_empirical_stand(
+    training_trees: pd.DataFrame,
+    holdout_trees: pd.DataFrame,
+    *,
+    area_ha: float = 1.0,
+    seed: int = 20261030,
+) -> StandValidationResult:
+    """Validate a plot-level empirical stand against held-out plots.
+
+    The empirical candidate samples training tree rows with replacement,
+    weighted by their expansion tallies, and keeps the observed DBH/height
+    pairs. It is a non-parametric alternative to the pooled Weibull model.
+    """
+    _require_tree_columns(training_trees, _TREE_COLUMNS)
+    _require_tree_columns(holdout_trees, _TREE_COLUMNS)
+    training_plots = _plot_metrics(training_trees)
+    holdout_plots = _plot_metrics(holdout_trees)
+    training = _mean_metrics(list(training_plots.values()))
+    holdout = _mean_metrics(list(holdout_plots.values()))
+    synthetic_trees = _generate_empirical(
+        training_trees,
+        count=max(1, int(round(training.stems_per_ha * area_ha))),
+        seed=seed,
+    )
+    synthetic = stand_metrics_from_trees(synthetic_trees, area_ha=area_ha)
+    ks = _weighted_ks(
+        synthetic_trees["dbh_cm"].to_numpy(dtype=float),
+        np.ones(len(synthetic_trees), dtype=float),
+        pd.to_numeric(holdout_trees["dbh_cm"], errors="coerce").to_numpy(dtype=float),
+        pd.to_numeric(holdout_trees["tally"], errors="coerce").fillna(1.0).to_numpy(dtype=float),
+    )
+    tv = _species_tv(synthetic.species_proportions, holdout.species_proportions)
+    return StandValidationResult(
+        training=training,
+        holdout=holdout,
+        synthetic=synthetic,
+        relative_errors=_relative_errors(synthetic, holdout),
+        dbh_ks_weighted=ks,
+        species_tv_distance=tv,
+        fit_parameters={},
+        height_fit={},
+        uncertainty={},
+        bootstrap_replicates=0,
+        successful_bootstrap=0,
+        seed=seed,
+        holdout_plots=holdout_plots,
+        synthetic_trees=synthetic_trees,
+        model="empirical",
+    )
+
+
+def validate_species_weibull_stand(
+    training_trees: pd.DataFrame,
+    holdout_trees: pd.DataFrame,
+    *,
+    bin_width_cm: float = 2.0,
+    area_ha: float = 1.0,
+    min_species_trees: int = 25,
+    seed: int = 20261030,
+) -> StandValidationResult:
+    """Validate species-stratified Weibull fits against held-out plots.
+
+    Species with fewer than ``min_species_trees`` training records fall back to
+    the pooled Weibull fit. Rare-species overfitting is therefore reported
+    rather than hidden.
+    """
+    _require_tree_columns(training_trees, _TREE_COLUMNS)
+    _require_tree_columns(holdout_trees, _TREE_COLUMNS)
+    training_plots = _plot_metrics(training_trees)
+    holdout_plots = _plot_metrics(holdout_trees)
+    training = _mean_metrics(list(training_plots.values()))
+    holdout = _mean_metrics(list(holdout_plots.values()))
+    pooled = _fit_dbh(training_trees, bin_width_cm)
+    height_fit = _fit_height(training_trees)
+    max_dbh = float(pd.to_numeric(training_trees["dbh_cm"], errors="coerce").max())
+    synthetic_trees, fallbacks = _generate_species_weibull(
+        training_trees,
+        training,
+        pooled.parameters,
+        height_fit,
+        bin_width_cm=bin_width_cm,
+        min_species_trees=min_species_trees,
+        max_dbh_cm=max_dbh,
+        area_ha=area_ha,
+        seed=seed,
+    )
+    synthetic = stand_metrics_from_trees(synthetic_trees, area_ha=area_ha)
+    ks = _weighted_ks(
+        synthetic_trees["dbh_cm"].to_numpy(dtype=float),
+        np.ones(len(synthetic_trees), dtype=float),
+        pd.to_numeric(holdout_trees["dbh_cm"], errors="coerce").to_numpy(dtype=float),
+        pd.to_numeric(holdout_trees["tally"], errors="coerce").fillna(1.0).to_numpy(dtype=float),
+    )
+    tv = _species_tv(synthetic.species_proportions, holdout.species_proportions)
+    return StandValidationResult(
+        training=training,
+        holdout=holdout,
+        synthetic=synthetic,
+        relative_errors=_relative_errors(synthetic, holdout),
+        dbh_ks_weighted=ks,
+        species_tv_distance=tv,
+        fit_parameters=pooled.parameters,
+        height_fit=height_fit,
+        uncertainty={"fallback_species": {"count": float(len(fallbacks))}},
+        bootstrap_replicates=0,
+        successful_bootstrap=0,
+        seed=seed,
+        holdout_plots=holdout_plots,
+        synthetic_trees=synthetic_trees,
+        model="species_weibull",
+    )
+
+
+def compare_stand_models(
+    training_trees: pd.DataFrame,
+    holdout_trees: pd.DataFrame,
+    *,
+    bin_width_cm: float = 2.0,
+    area_ha: float = 1.0,
+    seed: int = 20261030,
+) -> ModelComparison:
+    """Compare pooled, species-stratified, and empirical stand models.
+
+    The score is the mean absolute relative error over the five stand metrics
+    plus the weighted DBH KS and species total-variation distance. Lower is
+    better. The baseline is retained when scores tie or when no candidate
+    improves.
+    """
+    results = (
+        validate_plot_conditioned_stand(
+            training_trees,
+            holdout_trees,
+            bin_width_cm=bin_width_cm,
+            area_ha=area_ha,
+            bootstrap_replicates=0,
+            seed=seed,
+        ),
+        validate_species_weibull_stand(
+            training_trees,
+            holdout_trees,
+            bin_width_cm=bin_width_cm,
+            area_ha=area_ha,
+            seed=seed,
+        ),
+        validate_empirical_stand(
+            training_trees,
+            holdout_trees,
+            area_ha=area_ha,
+            seed=seed,
+        ),
+    )
+    scores = {result.model: _model_score(result) for result in results}
+    selected = min(scores, key=lambda name: scores[name])
+    if scores.get("pooled_weibull", float("inf")) <= scores[selected] + 1e-12:
+        selected = "pooled_weibull"
+    return ModelComparison(results=results, scores=scores, selected=selected)
+
+
+def _model_score(result: StandValidationResult) -> float:
+    errors = [abs(value) for value in result.relative_errors.values() if value is not None]
+    error_score = float(np.mean(errors)) if errors else 0.0
+    return error_score + result.dbh_ks_weighted + result.species_tv_distance
+
+
 def _fit_and_generate(
     training_trees: pd.DataFrame,
     training_metrics: StandMetrics,
@@ -383,6 +588,87 @@ def _generate_synthetic(
             "status": "live",
         }
     )
+
+
+def _generate_empirical(
+    training_trees: pd.DataFrame,
+    *,
+    count: int,
+    seed: int,
+) -> pd.DataFrame:
+    weights = pd.to_numeric(training_trees["tally"], errors="coerce").fillna(1.0)
+    probabilities = weights.to_numpy(dtype=float)
+    probabilities = np.clip(probabilities, 0.0, None)
+    if probabilities.sum() <= 0.0:
+        raise ValueError("training trees have no positive expansion tallies")
+    probabilities = probabilities / probabilities.sum()
+    rng = np.random.default_rng(seed)
+    indices = rng.choice(np.arange(len(training_trees)), size=count, replace=True, p=probabilities)
+    selected = training_trees.iloc[indices][["species_code", "dbh_cm", "height_m"]].copy()
+    selected["plot_id"] = "synthetic"
+    selected["tree_id"] = [f"EMP-{index:06d}" for index in range(len(selected))]
+    selected["tally"] = 1.0
+    selected["status"] = "live"
+    return selected.reset_index(drop=True)
+
+
+def _generate_species_weibull(
+    training_trees: pd.DataFrame,
+    training_metrics: StandMetrics,
+    pooled_parameters: dict[str, float],
+    height_fit: dict[str, float],
+    *,
+    bin_width_cm: float,
+    min_species_trees: int,
+    max_dbh_cm: float,
+    area_ha: float,
+    seed: int,
+) -> tuple[pd.DataFrame, list[str]]:
+    if min_species_trees < 1:
+        raise ValueError("min_species_trees must be positive")
+    rng = np.random.default_rng(seed)
+    count = max(1, int(round(training_metrics.stems_per_ha * area_ha)))
+    rows: list[dict[str, object]] = []
+    fallbacks: list[str] = []
+    for species, proportion in training_metrics.species_proportions.items():
+        species_count = max(1, int(round(count * proportion)))
+        subset = training_trees.loc[training_trees["species_code"].astype(str) == species]
+        try:
+            if len(subset) < min_species_trees:
+                raise ValueError("small species sample")
+            fit = _fit_dbh(subset, bin_width_cm)
+            parameters = fit.parameters
+        except ValueError:
+            fallbacks.append(str(species))
+            parameters = pooled_parameters
+        dbh = sample_distribution(
+            "weibull",
+            parameters,
+            size=species_count,
+            random_state=rng,
+        )
+        dbh = np.clip(dbh, 1.0, max(1.0, max_dbh_cm))
+        dbh = dbh[np.isfinite(dbh) & (dbh > 0.0)]
+        height = np.exp(
+            height_fit["intercept"]
+            + height_fit["slope"] * np.log(dbh)
+            + rng.normal(0.0, height_fit["residual_std"], size=dbh.size)
+        )
+        height = np.clip(height, 0.5, None)
+        for dbh_value, height_value in zip(dbh, height, strict=True):
+            rows.append(
+                {
+                    "plot_id": "synthetic",
+                    "species_code": str(species),
+                    "dbh_cm": float(dbh_value),
+                    "height_m": float(height_value),
+                    "tally": 1.0,
+                    "status": "live",
+                }
+            )
+    result = pd.DataFrame(rows)
+    result["tree_id"] = [f"SPC-{index:06d}" for index in range(len(result))]
+    return result, fallbacks
 
 
 def _plot_metrics(trees: pd.DataFrame) -> dict[str, StandMetrics]:

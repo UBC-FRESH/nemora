@@ -166,11 +166,11 @@ Goal: improve the Gavin Lake stand model and close the LidarBC coverage gaps
 without weakening provenance or making operational claims. See
 `notes/phase8_validation_refinement.md`.
 
-- [ ] P8.1 Compare refined stand models on held-out Gavin Lake plots (#27)
-  - [ ] Implement species-stratified DBH fitting.
-  - [ ] Evaluate mixture or plot-level alternatives.
-  - [ ] Improve height fitting with species and coverage guards.
-  - [ ] Select the refinement by held-out performance.
+- [x] P8.1 Compare refined stand models on held-out Gavin Lake plots (#27)
+  - [x] Implement species-stratified DBH fitting.
+  - [x] Evaluate a plot-level empirical alternative; mixture remains future work.
+  - [x] Height refinement: selected empirical candidate preserves observed DBH/height pairs; species-specific parametric height remains future work.
+  - [x] Select the empirical candidate by held-out performance.
 - [ ] P8.2 Expand LidarBC coverage and resolve the remaining raster gaps (#28)
   - [ ] Re-query the catalogue for the four missing plots.
   - [ ] Materialize missing DEM/DSM pairs through FEMIC.

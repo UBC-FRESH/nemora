@@ -654,3 +654,10 @@ python -m sphinx -b html docs _build/html -W
 - Closed P7 after squash-merging #25 as `003506c`; the approved-head tree matched the merge tree.
 - Activated P8 "Validation refinement and LiDAR coverage expansion" with parent #26 and tasks #27-#29.
 - Recorded the refinement plan: species-stratified/mixture/plot-level model comparison, LidarBC coverage expansion for four missing plots and one nodata plot, and a before/after validation report.
+
+## 2026-10-30 — P8.1 model refinement comparison
+
+- Added `compare_stand_models`, `validate_species_weibull_stand`, and `validate_empirical_stand` to `nemora.validation`.
+- Compared pooled Weibull, species-stratified Weibull, and empirical resampling on the same Gavin Lake held-out plots. The empirical candidate won: score 0.319 vs 0.545 pooled and 0.734 species-stratified; DBH KS 0.094 vs 0.201; species TV 0.143 vs 0.217.
+- Species-stratified fitting overfit rare species and worsened BA/QMD; retained as a negative result.
+- Added `scripts/compare_phase8_models.py`, `notes/reports/phase8_model_refinement.md`, and `notes/reports/phase8_model_comparison.json`. Height refinement and bootstrap uncertainty for the selected model remain before P8.3.
