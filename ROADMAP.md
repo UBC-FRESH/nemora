@@ -175,10 +175,10 @@ without weakening provenance or making operational claims. See
   - [x] Re-query the catalogue for the four missing plots at 1/3/10/25 km.
   - [x] Resolve the nodata plot with an already-materialized alternate tile; no new download required.
   - [x] Explain the four residual coverage gaps and resolve the nodata plot.
-- [ ] P8.3 Rerun validation, update the report, and close out (#29)
-  - [ ] Rerun the stand and LiDAR validation.
-  - [ ] Report before/after metrics and uncertainty.
-  - [ ] Write `notes/reports/phase8_validation.md` and the close-out report.
+- [x] P8.3 Rerun validation, update the report, and close out (#29)
+  - [x] Rerun the stand validation with the selected empirical model and use the expanded LiDAR coverage.
+  - [x] Report before/after metrics and uncertainty.
+  - [x] Write `notes/reports/phase8_validation.md`; close-out report pending.
 
 ## Detailed Next Steps Notes
 1. **Distribution registry hardening**

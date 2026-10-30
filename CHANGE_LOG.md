@@ -668,3 +668,10 @@ python -m sphinx -b html docs _build/html -W
 - Resolved `4032469-PSP1_v1_p1` using the alternate `093a031_3_2_1` tile already materialized in P7; no new download was needed.
 - The other four plots have no indexed tile footprint containing the point even at 25 km. They remain explicit coverage gaps. 16/20 plots now have valid canopy/slope samples.
 - Updated `notes/reports/phase8_lidar_metrics.json`, added `notes/reports/phase8_lidar_coverage.md`, and added a regression check for the coverage summary.
+
+## 2026-10-30 — P8.3 refined validation rerun
+
+- Reran Gavin Lake with the selected empirical model: BA error improved from +28.8% to +16.8%, QMD from +14.7% to +9.2%, mean DBH from -5.7% to -2.4%, and mean height from -2.3% to +0.6%.
+- DBH KS improved from 0.201 to 0.094; species TV distance from 0.217 to 0.143.
+- Added 100-replicate empirical bootstrap intervals and the P8 before/after report.
+- LiDAR coverage is 16/20 plots valid; four plots remain outside indexed LidarBC coverage. No operational or real-tree-map claim is made.
