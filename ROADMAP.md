@@ -9,7 +9,8 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 
 | Phase | Parent issue | Branch | Status |
 | --- | --- | --- | --- |
-| P6 | #15 | `feature/p6-plot-lidar-interfaces` | pr-open |
+| P6 | #15 | `feature/p6-plot-lidar-interfaces` | complete |
+| P7 | #20 | `feature/p7-research-forest-validation` | active |
 
 ## Phase 0 — Foundations ✅ (complete)
 - Repository scaffolding, licensing, CI harness.
@@ -106,7 +107,7 @@ is reproducible; each child has a test that can fail and a docs note.
 
 Parent issue: #15
 Branch: `feature/p6-plot-lidar-interfaces`
-Status: pr-open
+Status: complete
 
 Goal: make Nemora the home for generic plot resolution/materialization and
 LiDAR observation sampling while keeping raw LiDAR production in FEMIC/WS4.
@@ -125,6 +126,33 @@ See `notes/adr/0001-plot-lidar-boundaries.md` and
   - [x] Add `nemora.lidar` raster sampling and canopy metrics.
   - [x] Add synthetic raster tests and optional-dependency guidance.
   - [x] Add API/how-to documentation and the `lidar` extra.
+
+## Phase 7 — Research-forest plot and LiDAR validation
+
+Parent issue: #20
+Branch: `feature/p7-research-forest-validation`
+Status: active
+
+Goal: produce a reviewed, reproducible validation package for one or both research
+forests using public FAIB plots and prepared FEMIC/LidarBC rasters, without claiming a
+real tree map. See `notes/phase7_research_forest_validation.md`.
+
+- [ ] P7.1 Select and resolve research-forest FAIB plots (#21)
+  - [ ] Define forest/BEC/age/proximity filters and a held-out split.
+  - [ ] Resolve public plot, visit, and tree tables.
+  - [ ] Record provenance, licence, checksums, and a selection manifest.
+- [ ] P7.2 Build and validate plot-conditioned mature-stand inventories (#22)
+  - [ ] Build training and hold-out `nemora.inventory.v1` releases.
+  - [ ] Generate one seeded synthetic stand per target forest.
+  - [ ] Report DBH, height, basal area, stems/ha, and species-mix errors.
+- [ ] P7.3 Validate canopy and terrain metrics from prepared rasters (#23)
+  - [ ] Identify prepared DEM/CHM products and provenance.
+  - [ ] Sample plots and synthetic trees through `nemora.lidar`.
+  - [ ] Report native-resolution canopy and terrain metrics.
+- [ ] P7.4 Write the validation report and limitations (#24)
+  - [ ] Assemble metrics, uncertainty, and provenance tables.
+  - [ ] Write the report with explicit observed/fitted/synthetic labels.
+  - [ ] State what the validation does not establish.
 
 ## Detailed Next Steps Notes
 1. **Distribution registry hardening**
@@ -181,6 +209,11 @@ See `notes/adr/0001-plot-lidar-boundaries.md` and
    - [x] Add mapped plot release resolution and tally materialization.
    - [x] Add optional raster sampling and canopy metrics.
    - [x] Keep LiDAR catalog/materialization/terrain/ITD production in FEMIC/WS4.
+12. **P7 research-forest validation**
+   - [ ] Select and resolve public FAIB plots with a deterministic hold-out split.
+   - [ ] Build and validate plot-conditioned mature-stand inventories.
+   - [ ] Validate prepared DEM/CHM metrics through `nemora.lidar`.
+   - [ ] Publish the limitations-first validation report.
 
 ## Backlog & Ideas
 - [ ] Investigate GPU acceleration for large tally batches.

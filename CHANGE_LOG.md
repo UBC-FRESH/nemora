@@ -601,3 +601,10 @@ python -m sphinx -b html docs _build/html -W
 - Validation: `pytest` (187 passed, 8 skipped), `ruff format --check src tests`,
   `ruff check src tests`, `mypy src`, `sphinx-build -b html docs _build/html -W`, and
   `pre-commit run --all-files` all pass.
+
+## 2026-10-30 — Phase 7 activated
+
+- Closed P6 after squash-merging #19 as `901098e`; the approved-head tree matched the merge tree.
+- Activated P7 "Research-forest plot and LiDAR validation" with parent #20 and tasks #21-#24.
+- Recorded the validation plan, public-data provenance requirements, default Gavin Lake/Malcolm Knapp decision, and limitations-first reporting rule in `notes/phase7_research_forest_validation.md`.
+- No data was fitted or reported yet; P7.1 starts with plot selection and a deterministic hold-out split.
