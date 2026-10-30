@@ -581,3 +581,23 @@ python -m sphinx -b html docs _build/html -W
   (GeoJSON + Parquet), keeping stems/DBH wiring reproducible.
 - Validation: `ruff format src tests`, `ruff check src tests`, `mypy src` *(known existing failures
   in ingest/dataprep modules)*, `pytest`, `sphinx-build -b html docs _build/html -W`.
+
+## 2026-10-30 — Phase 6 plot resolution and LiDAR observation interfaces
+
+- Added `nemora.ingest.plots` with `PlotInventorySpec`, `build_inventory_release`, and
+  `materialize_tally_trees`; mapped source tables now resolve into a validated
+  `nemora.inventory.v1` release, and tally classes can be expanded into individual trees with
+  deterministic IDs.
+- Added the optional `nemora.lidar` adapter for reading prepared rasters, sampling them at native-CRS
+  points, and computing cover/height metrics. Raster reading needs the `lidar` extra; core imports
+  remain dependency-light.
+- Recorded the producer/consumer boundary in `notes/adr/0001-plot-lidar-boundaries.md`: Nemora owns
+  inventory resolution, observation sampling, and validation; FEMIC/WS4 retain catalog, tile,
+  point-cloud, terrain/CHM, and ITD production.
+- Documented the new APIs in `docs/api/ingest.md`, `docs/api/lidar.md`, `docs/howto/lidar.md`, and
+  `docs/howto/inventory_schema.md`.
+- Normalized GeoJSON exports to end with a newline and made the sgsR subprocess suppressions
+  compatible with the repository's pinned pre-commit Ruff version.
+- Validation: `pytest` (187 passed, 8 skipped), `ruff format --check src tests`,
+  `ruff check src tests`, `mypy src`, `sphinx-build -b html docs _build/html -W`, and
+  `pre-commit run --all-files` all pass.

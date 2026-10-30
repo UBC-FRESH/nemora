@@ -9,4 +9,5 @@ ingest
 sampling
 synthesis
 uncertainty
+lidar
 ```
