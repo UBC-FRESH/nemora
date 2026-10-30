@@ -739,3 +739,41 @@ python -m sphinx -b html docs _build/html -W
 - Wrote `notes/reports/phase10-closeout.md` with the calibration/handoff evidence package and the P11 multi-block/release-readiness recommendation.
 - Updated the roadmap to P10 `pr-open`; no merge has been performed.
 - The age-stratification density trade-off and non-independent work-required reconciliation remain explicit limits.
+
+## 2026-10-30 — Phase 11 activated
+
+- Closed P10 after squash-merging #40 as `1b36141`; the approved-head tree matched the merge tree.
+- Activated P11 "Multi-block validation and release readiness" with parent #41 and tasks #42-#45.
+- Recorded the one-block/one-landing scenario-set plan, independent yield check, sensitivity set, and release-readiness scope.
+
+## 2026-10-30 — P11.1 multi-block scenario set
+
+- Added `scripts/build_phase11_scenarios.py` and `notes/reports/phase11_scenario_catalog.json`.
+- Built Gavin B01/L1 and Malcolm Knapp B02/L2 scenarios; both pins validate and both pass `fhops validate`.
+- Gavin uses the P9 inventory with reconciled 530.543340 m³; Malcolm Knapp uses a local six-plot empirical scenario and leaves `work_required` pending P11.2.
+- Added `notes/reports/phase11_scenarios.md` and a catalog regression test.
+
+## 2026-10-30 — P11.2 independent yield check
+
+- Added `nemora.yield_check` with a paraboloid-style independent volume estimate and comparison helper.
+- Gavin estimate is 417.64 m³ vs FHOPS 530.54 m³ (-21.3%); the discrepancy is retained as evidence, not forced to match.
+- Malcolm Knapp `work_required` reconciled to 471.614268 m³; scenario pin remains valid.
+- Added `scripts/check_phase11_yield.py`, `notes/reports/phase11_yield_check.md`, and regression tests.
+
+## 2026-10-30 — P11.3 multi-block sensitivity
+
+- Ran Gavin and Malcolm Knapp scenarios with calibrated/reference rates and one/two trucks.
+- Truck count dominates makespan: Gavin 115.456 h -> 58.304 h; Malcolm Knapp 129.756 h -> 65.839 h. Rate-model differences are small at one truck.
+- Gavin runs are warning-free; MKRf retains the expected work_required mismatch from the independent estimate.
+- Added `notes/reports/phase11_validation.md` and `notes/reports/phase11_sensitivity.json`.
+
+## 2026-10-30 — P11.4 handoff docs
+
+- Added `docs/howto/fhops_handoff.md` and `docs/api/handoff.md` covering export, scenario registration, independent yield checks, FHOPS run, and limits.
+- Updated the how-to and API indexes. No release tag or publication is included.
+
+## 2026-10-30 — P11 queued for close-out
+
+- Wrote `notes/reports/phase11-closeout.md` with the multi-block/yield/sensitivity evidence and the P12 release-candidate recommendation.
+- Updated the roadmap to P11 `pr-open`; no merge or publication has been performed.
+- MKRf work_required warning, independent-yield discrepancy, and truck-bound makespan remain explicit.

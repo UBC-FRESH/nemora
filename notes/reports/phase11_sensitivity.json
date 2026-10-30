@@ -1,0 +1,329 @@
+{
+  "fhops_version": "1.2.0",
+  "runs": {
+    "gavin_cal_t1": {
+      "block_id": "B01",
+      "machine_summaries": {
+        "H1": {
+          "busy_s": 47331.25045226819,
+          "events": 2379,
+          "utilisation": 0.11387536417682842
+        },
+        "H2": {
+          "busy_s": 4882.241261715372,
+          "events": 128,
+          "utilisation": 0.011746298615914412
+        },
+        "H3": {
+          "busy_s": 4880.197078100422,
+          "events": 124,
+          "utilisation": 0.011741380466671102
+        },
+        "H4": {
+          "busy_s": 23221.34983745202,
+          "events": 63,
+          "utilisation": 0.0558687895238285
+        },
+        "H5": {
+          "busy_s": 58350.172118012044,
+          "events": 63,
+          "utilisation": 0.1403860459258333
+        }
+      },
+      "makespan_hours": 115.45578506039844,
+      "makespan_s": 415640.82621743437,
+      "processed_volume_m3": 530.5433400362283,
+      "rate_model": "calibrated",
+      "tree_count": 1978,
+      "truck_summary": {
+        "arrival_interval_s": 0.0,
+        "dispatched_loads": 106,
+        "dispatched_volume_m3": 530.0,
+        "landing_capacity_m3": 15.0,
+        "landing_inventory_final_m3": 0.543,
+        "landing_inventory_max_m3": 14.888,
+        "mill_bays": 1,
+        "mill_service_s": 600.0,
+        "mill_wait_s": 0.0,
+        "one_way_distance_m": 0.0,
+        "speed_mps": 12.0,
+        "truck_capacity_m3": 5.0,
+        "truck_count": 1,
+        "truck_total_s": 415640.826
+      },
+      "unreachable_count": 0,
+      "warnings": []
+    },
+    "gavin_cal_t2": {
+      "block_id": "B01",
+      "machine_summaries": {
+        "H1": {
+          "busy_s": 47331.25045226819,
+          "events": 2379,
+          "utilisation": 0.22549911295516387
+        },
+        "H2": {
+          "busy_s": 4882.241261715372,
+          "events": 128,
+          "utilisation": 0.023260342019912925
+        },
+        "H3": {
+          "busy_s": 4880.197078100422,
+          "events": 124,
+          "utilisation": 0.0232506029661697
+        },
+        "H4": {
+          "busy_s": 23221.349837451875,
+          "events": 63,
+          "utilisation": 0.1106329061651909
+        },
+        "H5": {
+          "busy_s": 58350.172118012044,
+          "events": 63,
+          "utilisation": 0.2779962905620276
+        }
+      },
+      "makespan_hours": 58.30430726655957,
+      "makespan_s": 209895.50615961445,
+      "processed_volume_m3": 530.5433400362283,
+      "rate_model": "calibrated",
+      "tree_count": 1978,
+      "truck_summary": {
+        "arrival_interval_s": 0.0,
+        "dispatched_loads": 106,
+        "dispatched_volume_m3": 530.0,
+        "landing_capacity_m3": 15.0,
+        "landing_inventory_final_m3": 0.543,
+        "landing_inventory_max_m3": 14.888,
+        "mill_bays": 1,
+        "mill_service_s": 600.0,
+        "mill_wait_s": 0.0,
+        "one_way_distance_m": 0.0,
+        "speed_mps": 12.0,
+        "truck_capacity_m3": 5.0,
+        "truck_count": 2,
+        "truck_total_s": 209895.506
+      },
+      "unreachable_count": 0,
+      "warnings": []
+    },
+    "gavin_ref_t1": {
+      "block_id": "B01",
+      "machine_summaries": {
+        "H1": {
+          "busy_s": 47331.25045226819,
+          "events": 2379,
+          "utilisation": 0.11356257201436444
+        },
+        "H2": {
+          "busy_s": 31866.38070108529,
+          "events": 128,
+          "utilisation": 0.07645748038821847
+        },
+        "H3": {
+          "busy_s": 31646.521264082832,
+          "events": 124,
+          "utilisation": 0.07592996837640698
+        },
+        "H4": {
+          "busy_s": 29747.0,
+          "events": 63,
+          "utilisation": 0.07137241880220413
+        },
+        "H5": {
+          "busy_s": 58350.172118012044,
+          "events": 63,
+          "utilisation": 0.14000043438287726
+        }
+      },
+      "makespan_hours": 115.77379181242455,
+      "makespan_s": 416785.65052472835,
+      "processed_volume_m3": 530.5433400362283,
+      "rate_model": "reference",
+      "tree_count": 1978,
+      "truck_summary": {
+        "arrival_interval_s": 0.0,
+        "dispatched_loads": 106,
+        "dispatched_volume_m3": 530.0,
+        "landing_capacity_m3": 15.0,
+        "landing_inventory_final_m3": 0.543,
+        "landing_inventory_max_m3": 14.888,
+        "mill_bays": 1,
+        "mill_service_s": 600.0,
+        "mill_wait_s": 0.0,
+        "one_way_distance_m": 0.0,
+        "speed_mps": 12.0,
+        "truck_capacity_m3": 5.0,
+        "truck_count": 1,
+        "truck_total_s": 416785.651
+      },
+      "unreachable_count": 0,
+      "warnings": []
+    },
+    "mkrf_cal_t1": {
+      "block_id": "B02",
+      "machine_summaries": {
+        "H1": {
+          "busy_s": 55173.26551152426,
+          "events": 2238,
+          "utilisation": 0.11811346338203313
+        },
+        "H2": {
+          "busy_s": 5015.206643228213,
+          "events": 136,
+          "utilisation": 0.01073642135763263
+        },
+        "H3": {
+          "busy_s": 4928.396264550997,
+          "events": 136,
+          "utilisation": 0.010550580001533631
+        },
+        "H4": {
+          "busy_s": 26229.359737882027,
+          "events": 68,
+          "utilisation": 0.05615111761487822
+        },
+        "H5": {
+          "busy_s": 65718.99538402258,
+          "events": 68,
+          "utilisation": 0.1406894821763525
+        }
+      },
+      "makespan_hours": 129.75580130914884,
+      "makespan_s": 467120.8847129358,
+      "processed_volume_m3": 599.2680106779974,
+      "rate_model": "calibrated",
+      "tree_count": 1856,
+      "truck_summary": {
+        "arrival_interval_s": 0.0,
+        "dispatched_loads": 119,
+        "dispatched_volume_m3": 595.0,
+        "landing_capacity_m3": 50.0,
+        "landing_inventory_final_m3": 4.268,
+        "landing_inventory_max_m3": 49.956,
+        "mill_bays": 1,
+        "mill_service_s": 600.0,
+        "mill_wait_s": 0.0,
+        "one_way_distance_m": 0.0,
+        "speed_mps": 12.0,
+        "truck_capacity_m3": 5.0,
+        "truck_count": 1,
+        "truck_total_s": 467120.885
+      },
+      "unreachable_count": 0,
+      "warnings": [
+        "Processed merchantable volume differs from work_required."
+      ]
+    },
+    "mkrf_cal_t2": {
+      "block_id": "B02",
+      "machine_summaries": {
+        "H1": {
+          "busy_s": 55173.26551152426,
+          "events": 2238,
+          "utilisation": 0.2327780759840911
+        },
+        "H2": {
+          "busy_s": 5015.206643228213,
+          "events": 136,
+          "utilisation": 0.021159344879259495
+        },
+        "H3": {
+          "busy_s": 4928.396264550997,
+          "events": 136,
+          "utilisation": 0.02079308863655601
+        },
+        "H4": {
+          "busy_s": 26229.359737881896,
+          "events": 68,
+          "utilisation": 0.11066265223695028
+        },
+        "H5": {
+          "busy_s": 65718.99538402258,
+          "events": 68,
+          "utilisation": 0.2772709057415642
+        }
+      },
+      "makespan_hours": 65.83913464248216,
+      "makespan_s": 237020.88471293577,
+      "processed_volume_m3": 599.2680106779974,
+      "rate_model": "calibrated",
+      "tree_count": 1856,
+      "truck_summary": {
+        "arrival_interval_s": 0.0,
+        "dispatched_loads": 119,
+        "dispatched_volume_m3": 595.0,
+        "landing_capacity_m3": 50.0,
+        "landing_inventory_final_m3": 4.268,
+        "landing_inventory_max_m3": 49.956,
+        "mill_bays": 1,
+        "mill_service_s": 600.0,
+        "mill_wait_s": 0.0,
+        "one_way_distance_m": 0.0,
+        "speed_mps": 12.0,
+        "truck_capacity_m3": 5.0,
+        "truck_count": 2,
+        "truck_total_s": 237020.885
+      },
+      "unreachable_count": 0,
+      "warnings": [
+        "Processed merchantable volume differs from work_required."
+      ]
+    },
+    "mkrf_ref_t1": {
+      "block_id": "B02",
+      "machine_summaries": {
+        "H1": {
+          "busy_s": 55173.26551152426,
+          "events": 2238,
+          "utilisation": 0.11814287387246669
+        },
+        "H2": {
+          "busy_s": 37787.93736236629,
+          "events": 136,
+          "utilisation": 0.08091555713283312
+        },
+        "H3": {
+          "busy_s": 38447.85802766057,
+          "events": 136,
+          "utilisation": 0.08232864956451838
+        },
+        "H4": {
+          "busy_s": 35980.0,
+          "events": 68,
+          "utilisation": 0.07704420904801211
+        },
+        "H5": {
+          "busy_s": 65718.99538402256,
+          "events": 68,
+          "utilisation": 0.14072451414096657
+        }
+      },
+      "makespan_hours": 129.7234998962238,
+      "makespan_s": 467004.59962640575,
+      "processed_volume_m3": 599.2680106779974,
+      "rate_model": "reference",
+      "tree_count": 1856,
+      "truck_summary": {
+        "arrival_interval_s": 0.0,
+        "dispatched_loads": 119,
+        "dispatched_volume_m3": 595.0,
+        "landing_capacity_m3": 50.0,
+        "landing_inventory_final_m3": 4.268,
+        "landing_inventory_max_m3": 49.956,
+        "mill_bays": 1,
+        "mill_service_s": 600.0,
+        "mill_wait_s": 0.0,
+        "one_way_distance_m": 0.0,
+        "speed_mps": 12.0,
+        "truck_capacity_m3": 5.0,
+        "truck_count": 1,
+        "truck_total_s": 467004.6
+      },
+      "unreachable_count": 0,
+      "warnings": [
+        "Processed merchantable volume differs from work_required."
+      ]
+    }
+  }
+}

@@ -11,6 +11,7 @@ ingest
 inventory_schema
 plot_selection
 stand_validation
+fhops_handoff
 sampling
 sgsr_sampling
 synthesis
