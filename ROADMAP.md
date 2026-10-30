@@ -293,12 +293,12 @@ approval gates for TestPyPI and PyPI. See `notes/phase13_publication.md`.
   - [x] Added `.github/workflows/release.yaml`.
   - [x] Separated TestPyPI/PyPI environments.
   - [ ] Document external publisher settings.
-- [ ] P13.2 Publish to TestPyPI and verify clean install (#55)
-  - [ ] Confirm explicit TestPyPI approval.
-  - [ ] Publish and clean-install test.
-- [ ] P13.3 Publish to PyPI, tag, and create the GitHub release (#56)
-  - [ ] Confirm separate PyPI/tag approval.
-  - [ ] Publish, tag, and verify.
+- [x] P13.2 Publish to TestPyPI and verify clean install (#55)
+  - [x] TestPyPI approval received.
+  - [x] Published; clean install and CLI pass.
+- [x] P13.3 Publish to PyPI, tag, and create the GitHub release (#56)
+  - [x] PyPI approval received.
+  - [x] Published; tag/release and install verified.
 - [ ] P13.4 Run post-publication verification and close out (#57)
   - [ ] Verify public artifacts.
   - [ ] Write the close-out report.
