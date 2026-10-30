@@ -16,7 +16,7 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 | P10 | #36 | `feature/p10-calibration-handoff` | complete |
 | P11 | #41 | `feature/p11-multi-block-readiness` | complete |
 | P12 | #47 | `feature/p12-release-candidate` | complete |
-| P13 | #53 | `feature/p13-publication` | active |
+| P13 | #53 | `feature/p13-publication` | pr-open |
 
 ## Phase 0 — Foundations ✅ (complete)
 - Repository scaffolding, licensing, CI harness.
@@ -284,7 +284,7 @@ tagging or publishing until separately approved. See
 
 Parent issue: #53
 Branch: `feature/p13-publication`
-Status: active
+Status: pr-open
 
 Goal: prepare and execute the `0.1.0a1` publication with separate explicit
 approval gates for TestPyPI and PyPI. See `notes/phase13_publication.md`.
@@ -300,8 +300,8 @@ approval gates for TestPyPI and PyPI. See `notes/phase13_publication.md`.
   - [x] PyPI approval received.
   - [x] Published; tag/release and install verified.
 - [ ] P13.4 Run post-publication verification and close out (#57)
-  - [ ] Verify public artifacts.
-  - [ ] Write the close-out report.
+  - [x] Verified TestPyPI, PyPI, tag, release assets, and installs.
+  - [x] Wrote `notes/reports/phase13-closeout.md`.
 
 ## Detailed Next Steps Notes
 1. **Distribution registry hardening**

@@ -828,3 +828,9 @@ python -m sphinx -b html docs _build/html -W
 - GitHub release: https://github.com/UBC-FRESH/nemora/releases/tag/v0.1.0a1 with PyPI artifacts.
 - First PyPI attempt failed before upload on Rekor HTTP 502; retry disabled optional attestations while retaining OIDC trusted publishing.
 - Wheel SHA-256 matched the approved candidate; sdist archive hash differs due rebuild but installs cleanly.
+
+## 2026-10-30 — P13 queued for close-out
+
+- Wrote `notes/reports/phase13-closeout.md` with publication URLs, hashes, CI runs, and the Rekor/attestation deviation.
+- `0.1.0a1` is live on TestPyPI and PyPI; GitHub release assets match the PyPI hashes.
+- The phase PR is queued; no further publication is pending.
