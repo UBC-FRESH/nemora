@@ -11,7 +11,7 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 | --- | --- | --- | --- |
 | P6 | #15 | `feature/p6-plot-lidar-interfaces` | complete |
 | P7 | #20 | `feature/p7-research-forest-validation` | complete |
-| P8 | #26 | `feature/p8-validation-refinement` | active |
+| P8 | #26 | `feature/p8-validation-refinement` | pr-open |
 
 ## Phase 0 — Foundations ✅ (complete)
 - Repository scaffolding, licensing, CI harness.
@@ -160,7 +160,7 @@ real tree map. See `notes/phase7_research_forest_validation.md`.
 
 Parent issue: #26
 Branch: `feature/p8-validation-refinement`
-Status: active
+Status: pr-open
 
 Goal: improve the Gavin Lake stand model and close the LidarBC coverage gaps
 without weakening provenance or making operational claims. See
@@ -178,7 +178,7 @@ without weakening provenance or making operational claims. See
 - [x] P8.3 Rerun validation, update the report, and close out (#29)
   - [x] Rerun the stand validation with the selected empirical model and use the expanded LiDAR coverage.
   - [x] Report before/after metrics and uncertainty.
-  - [x] Write `notes/reports/phase8_validation.md`; close-out report pending.
+  - [x] Write `notes/reports/phase8_validation.md` and the phase close-out report.
 
 ## Detailed Next Steps Notes
 1. **Distribution registry hardening**

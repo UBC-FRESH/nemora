@@ -675,3 +675,9 @@ python -m sphinx -b html docs _build/html -W
 - DBH KS improved from 0.201 to 0.094; species TV distance from 0.217 to 0.143.
 - Added 100-replicate empirical bootstrap intervals and the P8 before/after report.
 - LiDAR coverage is 16/20 plots valid; four plots remain outside indexed LidarBC coverage. No operational or real-tree-map claim is made.
+
+## 2026-10-30 — P8 queued for close-out
+
+- Wrote `notes/reports/phase8-closeout.md` with the P8 evidence package and the P9 cross-forest/FHOPS handoff recommendation.
+- Updated the roadmap to P8 `pr-open`; no merge has been performed.
+- The four residual LidarBC coverage gaps and the five-plot hold-out remain explicit limitations.
