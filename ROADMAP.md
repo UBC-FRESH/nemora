@@ -14,7 +14,7 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 | P8 | #26 | `feature/p8-validation-refinement` | complete |
 | P9 | #31 | `feature/p9-cross-forest-handoff` | complete |
 | P10 | #36 | `feature/p10-calibration-handoff` | complete |
-| P11 | #41 | `feature/p11-multi-block-readiness` | active |
+| P11 | #41 | `feature/p11-multi-block-readiness` | pr-open |
 
 ## Phase 0 — Foundations ✅ (complete)
 - Repository scaffolding, licensing, CI harness.
@@ -232,7 +232,7 @@ without weakening provenance. See `notes/phase10_calibration_handoff.md`.
 
 Parent issue: #41
 Branch: `feature/p11-multi-block-readiness`
-Status: active
+Status: pr-open
 
 Goal: build a reproducible multi-block/multi-landing scenario set, add an
 independent yield check, run sensitivity, and prepare release/readiness docs.
@@ -252,8 +252,8 @@ See `notes/phase11_multi_block_readiness.md`.
   - [x] Recorded MKRf work_required warning and all limits.
 - [ ] P11.4 Prepare release/readiness docs and close out (#45)
   - [x] Added FHOPS handoff how-to/API docs.
-  - [ ] Write the close-out report.
-  - [ ] Queue the phase PR.
+  - [x] Write the close-out report.
+  - [x] Queue the phase PR.
 
 ## Detailed Next Steps Notes
 1. **Distribution registry hardening**

@@ -771,3 +771,9 @@ python -m sphinx -b html docs _build/html -W
 
 - Added `docs/howto/fhops_handoff.md` and `docs/api/handoff.md` covering export, scenario registration, independent yield checks, FHOPS run, and limits.
 - Updated the how-to and API indexes. No release tag or publication is included.
+
+## 2026-10-30 — P11 queued for close-out
+
+- Wrote `notes/reports/phase11-closeout.md` with the multi-block/yield/sensitivity evidence and the P12 release-candidate recommendation.
+- Updated the roadmap to P11 `pr-open`; no merge or publication has been performed.
+- MKRf work_required warning, independent-yield discrepancy, and truck-bound makespan remain explicit.
