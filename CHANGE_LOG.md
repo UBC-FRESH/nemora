@@ -648,3 +648,9 @@ python -m sphinx -b html docs _build/html -W
 - Materialized 16 DEM/DSM pairs (32 tiles) with `femic.lidar.materialization.materialize_lidar_selection`, derived CHM/slope with `femic.lidar.canopy` and `femic.lidar.terrain`, and sampled plots plus the synthetic-stand centre with `nemora.lidar`.
 - 15 of 20 selected plots have valid canopy/slope samples; 4 have no tile-index hit and 1 has no valid sampled pixels. Results are in `notes/reports/phase7_lidar_metrics.json` and the corrected `notes/reports/phase7_lidar_coverage.md`.
 - The earlier P7.3 deferral is withdrawn; the remaining limitation is partial coverage, not missing data.
+
+## 2026-10-30 — Phase 8 activated
+
+- Closed P7 after squash-merging #25 as `003506c`; the approved-head tree matched the merge tree.
+- Activated P8 "Validation refinement and LiDAR coverage expansion" with parent #26 and tasks #27-#29.
+- Recorded the refinement plan: species-stratified/mixture/plot-level model comparison, LidarBC coverage expansion for four missing plots and one nodata plot, and a before/after validation report.
