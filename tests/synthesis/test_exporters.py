@@ -25,9 +25,11 @@ def test_export_geojson(tmp_path: Path) -> None:
         "properties": {"id": 1},
     }
     exporters.export_geojson([feature], target, crs="EPSG:3857")
-    payload = json.loads(target.read_text())
+    text = target.read_text()
+    payload = json.loads(text)
     assert payload["type"] == "FeatureCollection"
     assert payload["crs"]["properties"]["name"] == "EPSG:3857"
+    assert text.endswith("\n")
 
 
 def test_seed_recipe_payload_includes_config_when_points_disabled(tmp_path: Path) -> None:

@@ -41,6 +41,67 @@ validate_inventory_release(release)
 write_inventory_release(release, Path("data/inventory/my-release-copy"))
 ```
 
+## Resolve mapped source tables
+
+Source-specific adapters can use `nemora.ingest.plots` to map their columns into
+the canonical names without reimplementing the schema:
+
+```python
+import pandas as pd
+
+from nemora.ingest.plots import PlotInventorySpec, build_inventory_release
+from nemora.ingest.schema import InventoryProvenance
+
+release = build_inventory_release(
+    plots=pd.DataFrame(
+        {
+            "plot": ["P1", "P2"],
+            "baf": [12.0, 12.0],
+            "lat": [49.0, 49.1],
+            "lon": [-122.0, -122.1],
+        }
+    ),
+    trees=pd.DataFrame(
+        {
+            "plot": ["P1", "P2"],
+            "diameter": [20.0, 25.0],
+            "count": [1.0, 1.0],
+        }
+    ),
+    spec=PlotInventorySpec(
+        release_id="example-release",
+        provenance=InventoryProvenance(
+            source_id="example",
+            source_version="1",
+            retrieved_utc="2026-10-30T00:00:00+00:00",
+        ),
+        plot_columns={"plot_id": "plot", "baf": "baf", "latitude": "lat", "longitude": "lon"},
+        tree_columns={"plot_id": "plot", "dbh_cm": "diameter", "tally": "count"},
+        crs="EPSG:3005",
+    ),
+)
+```
+
+`derive_tree_count=True` fills a missing `plots.tree_count` with the number of
+tree rows per plot. It is a row count, not the sum of expansion tallies.
+
+## Materialize tally classes
+
+If a consumer needs individual tree records rather than DBH-class tallies, opt in
+explicitly:
+
+```python
+from nemora.ingest.plots import materialize_tally_trees
+
+individual = materialize_tally_trees(release)
+```
+
+Rows with a null `tree_id` are expanded into `tally` rows with `tally=1` and
+deterministic `<prefix><plot_id>-<sequence>` identifiers. Existing tree IDs are
+preserved. Fractional tallies are rejected because they need an explicit
+expansion rule. The resulting release records
+`metadata["tally_grain"] = "individual_tree"`.
+
 ## Tables
 
 ### `plots.csv`

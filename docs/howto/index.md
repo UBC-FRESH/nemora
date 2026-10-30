@@ -13,6 +13,7 @@ sampling
 sgsr_sampling
 synthesis
 ws4_synthetic_fixture
+lidar
 curve_uncertainty
 contributing
 ```

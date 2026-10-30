@@ -169,9 +169,10 @@ def run_sgsr(
     if env is not None:
         run_env.update({str(key): str(value) for key, value in env.items()})
 
+    # Only the configured Rscript is executed.
     try:
-        completed = subprocess.run(  # noqa: S603 - only the configured Rscript is executed
-            command,
+        completed = subprocess.run(  # noqa: S603
+            command,  # noqa: S603
             capture_output=True,
             text=True,
             timeout=timeout,
