@@ -802,3 +802,9 @@ python -m sphinx -b html docs _build/html -W
 - Added `docs/releases/v0.1.0a1.md` and linked it from the docs index.
 - Added `notes/reports/phase12_publication_checklist.md` with exact tag/upload commands and the trusted-publishing prerequisite.
 - Recorded the current blocker: the repository has no release workflow yet; publication needs a separately approved workflow or manual token path.
+
+## 2026-10-30 — P12 queued for close-out
+
+- Wrote `notes/reports/phase12-closeout.md` with the candidate artifact hashes, gates, and the no-tag/no-publish boundary.
+- The close-out report recommends P13 release publication only after a separate explicit approval.
+- Current blocker: no release workflow/trusted-publisher configuration exists yet.
