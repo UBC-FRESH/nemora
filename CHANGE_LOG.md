@@ -759,3 +759,10 @@ python -m sphinx -b html docs _build/html -W
 - Gavin estimate is 417.64 m³ vs FHOPS 530.54 m³ (-21.3%); the discrepancy is retained as evidence, not forced to match.
 - Malcolm Knapp `work_required` reconciled to 471.614268 m³; scenario pin remains valid.
 - Added `scripts/check_phase11_yield.py`, `notes/reports/phase11_yield_check.md`, and regression tests.
+
+## 2026-10-30 — P11.3 multi-block sensitivity
+
+- Ran Gavin and Malcolm Knapp scenarios with calibrated/reference rates and one/two trucks.
+- Truck count dominates makespan: Gavin 115.456 h -> 58.304 h; Malcolm Knapp 129.756 h -> 65.839 h. Rate-model differences are small at one truck.
+- Gavin runs are warning-free; MKRf retains the expected work_required mismatch from the independent estimate.
+- Added `notes/reports/phase11_validation.md` and `notes/reports/phase11_sensitivity.json`.

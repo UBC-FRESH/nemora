@@ -246,10 +246,10 @@ See `notes/phase11_multi_block_readiness.md`.
   - [x] Chose and documented a paraboloid-style estimator.
   - [x] Compared Gavin estimate (-21.3% vs FHOPS) and reconciled MKRf work_required.
   - [x] Added `tests/test_phase11_yield_check.py`.
-- [ ] P11.3 Run sensitivity set and write the multi-block report (#44)
-  - [ ] Run calibrated/reference rates and truck-count sensitivity.
-  - [ ] Write the multi-block report.
-  - [ ] Record warnings and limits.
+- [x] P11.3 Run sensitivity set and write the multi-block report (#44)
+  - [x] Ran calibrated/reference and one-vs-two-truck sensitivity.
+  - [x] Wrote `notes/reports/phase11_validation.md`.
+  - [x] Recorded MKRf work_required warning and all limits.
 - [ ] P11.4 Prepare release/readiness docs and close out (#45)
   - [ ] Update release/readiness docs.
   - [ ] Write the close-out report.
