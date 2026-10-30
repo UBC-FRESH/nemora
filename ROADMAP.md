@@ -15,7 +15,8 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 | P9 | #31 | `feature/p9-cross-forest-handoff` | complete |
 | P10 | #36 | `feature/p10-calibration-handoff` | complete |
 | P11 | #41 | `feature/p11-multi-block-readiness` | complete |
-| P12 | #47 | `feature/p12-release-candidate` | pr-open |
+| P12 | #47 | `feature/p12-release-candidate` | complete |
+| P13 | #53 | `feature/p13-publication` | active |
 
 ## Phase 0 — Foundations ✅ (complete)
 - Repository scaffolding, licensing, CI harness.
@@ -260,7 +261,7 @@ See `notes/phase11_multi_block_readiness.md`.
 
 Parent issue: #47
 Branch: `feature/p12-release-candidate`
-Status: pr-open
+Status: complete
 
 Goal: prepare a `0.1.0a1` release candidate and publication checklist without
 tagging or publishing until separately approved. See
@@ -278,6 +279,29 @@ tagging or publishing until separately approved. See
 - [ ] P12.4 Close out and request publication approval (#51)
   - [x] Write the close-out report.
   - [x] Queue the phase PR and request a separate publication decision.
+
+## Phase 13 — Release publication
+
+Parent issue: #53
+Branch: `feature/p13-publication`
+Status: active
+
+Goal: prepare and execute the `0.1.0a1` publication with separate explicit
+approval gates for TestPyPI and PyPI. See `notes/phase13_publication.md`.
+
+- [ ] P13.1 Add the release workflow and trusted-publisher checklist (#54)
+  - [ ] Add `.github/workflows/release.yaml`.
+  - [ ] Separate TestPyPI/PyPI environments.
+  - [ ] Document external publisher settings.
+- [ ] P13.2 Publish to TestPyPI and verify clean install (#55)
+  - [ ] Confirm explicit TestPyPI approval.
+  - [ ] Publish and clean-install test.
+- [ ] P13.3 Publish to PyPI, tag, and create the GitHub release (#56)
+  - [ ] Confirm separate PyPI/tag approval.
+  - [ ] Publish, tag, and verify.
+- [ ] P13.4 Run post-publication verification and close out (#57)
+  - [ ] Verify public artifacts.
+  - [ ] Write the close-out report.
 
 ## Detailed Next Steps Notes
 1. **Distribution registry hardening**

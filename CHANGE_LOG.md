@@ -808,3 +808,9 @@ python -m sphinx -b html docs _build/html -W
 - Wrote `notes/reports/phase12-closeout.md` with the candidate artifact hashes, gates, and the no-tag/no-publish boundary.
 - The close-out report recommends P13 release publication only after a separate explicit approval.
 - Current blocker: no release workflow/trusted-publisher configuration exists yet.
+
+## 2026-10-30 — Phase 13 activated
+
+- Closed P12 after squash-merging #52 as `a513bc7`; the approved-head tree matched the merge tree.
+- Activated P13 "Release publication" with parent #53 and tasks #54-#57.
+- Recorded separate approval gates for TestPyPI and PyPI/tag publication.
