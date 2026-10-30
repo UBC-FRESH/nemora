@@ -846,3 +846,9 @@ python -m sphinx -b html docs _build/html -W
 - Closed P13 after squash-merging #58 as `9327266` and correction PR #59 as `cedb66f`.
 - Activated P14 "Post-release stabilization and validation closure" with parent #60 and tasks #61-#64.
 - Corrected stale roadmap checkboxes for P11-P13.
+
+## 2026-10-30 — P14.1 post-release verification
+
+- Base and `[lidar]` PyPI installs pass: version 0.1.0a1, CLI, `pip check`.
+- PyPI, TestPyPI, GitHub Pages docs, and release notes return 200.
+- GitHub release assets match PyPI hashes; no packaging defect found.

@@ -313,10 +313,10 @@ Status: active
 Goal: stabilize `0.1.0a1`, close or defer validation gaps, and decide the next
 version path. See `notes/phase14_post_release.md`.
 
-- [ ] P14.1 Verify release, extras, docs, and packaging (#61)
-  - [ ] Clean base install.
-  - [ ] Clean lidar-extra install.
-  - [ ] Check docs/release assets.
+- [x] P14.1 Verify release, extras, docs, and packaging (#61)
+  - [x] Clean base install verified.
+  - [x] Clean lidar-extra install verified.
+  - [x] Docs, release assets, and public surfaces return 200.
 - [ ] P14.2 Review and close or defer validation gaps (#62)
   - [ ] Malcolm Knapp transfer disposition.
   - [ ] LidarBC coverage/yield disposition.
