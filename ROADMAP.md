@@ -171,10 +171,10 @@ without weakening provenance or making operational claims. See
   - [x] Evaluate a plot-level empirical alternative; mixture remains future work.
   - [x] Height refinement: selected empirical candidate preserves observed DBH/height pairs; species-specific parametric height remains future work.
   - [x] Select the empirical candidate by held-out performance.
-- [ ] P8.2 Expand LidarBC coverage and resolve the remaining raster gaps (#28)
-  - [ ] Re-query the catalogue for the four missing plots.
-  - [ ] Materialize missing DEM/DSM pairs through FEMIC.
-  - [ ] Derive CHM/slope and resolve or explain the nodata plot.
+- [x] P8.2 Expand LidarBC coverage and resolve the remaining raster gaps (#28)
+  - [x] Re-query the catalogue for the four missing plots at 1/3/10/25 km.
+  - [x] Resolve the nodata plot with an already-materialized alternate tile; no new download required.
+  - [x] Explain the four residual coverage gaps and resolve the nodata plot.
 - [ ] P8.3 Rerun validation, update the report, and close out (#29)
   - [ ] Rerun the stand and LiDAR validation.
   - [ ] Report before/after metrics and uncertainty.

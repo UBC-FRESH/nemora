@@ -661,3 +661,10 @@ python -m sphinx -b html docs _build/html -W
 - Compared pooled Weibull, species-stratified Weibull, and empirical resampling on the same Gavin Lake held-out plots. The empirical candidate won: score 0.319 vs 0.545 pooled and 0.734 species-stratified; DBH KS 0.094 vs 0.201; species TV 0.143 vs 0.217.
 - Species-stratified fitting overfit rare species and worsened BA/QMD; retained as a negative result.
 - Added `scripts/compare_phase8_models.py`, `notes/reports/phase8_model_refinement.md`, and `notes/reports/phase8_model_comparison.json`. Height refinement and bootstrap uncertainty for the selected model remain before P8.3.
+
+## 2026-10-30 — P8.2 LidarBC coverage expansion
+
+- Re-queried public LidarBC coverage for the four missing Gavin Lake plots and the nodata plot at 1/3/10/25 km.
+- Resolved `4032469-PSP1_v1_p1` using the alternate `093a031_3_2_1` tile already materialized in P7; no new download was needed.
+- The other four plots have no indexed tile footprint containing the point even at 25 km. They remain explicit coverage gaps. 16/20 plots now have valid canopy/slope samples.
+- Updated `notes/reports/phase8_lidar_metrics.json`, added `notes/reports/phase8_lidar_coverage.md`, and added a regression check for the coverage summary.
