@@ -247,6 +247,28 @@ def test_resolve_tree_detail_requires_live_status_column() -> None:
         )
 
 
+def test_select_forest_plots_supports_an_age_window() -> None:
+    target = ForestPlotTarget(
+        name="age window",
+        latitude=0.0,
+        longitude=0.0,
+        radius_km=10.0,
+        bec_codes=("AAA1", "BBB1"),
+        min_projected_age=75.0,
+        max_projected_age=85.0,
+    )
+
+    selected = select_forest_plots(
+        _site_header(),
+        _plot_header(),
+        _sample_by_visit(),
+        target=target,
+    )
+
+    assert selected["plot_id"].tolist() == ["C2_v1_p11"]
+    assert selected["projected_age"].tolist() == [80.0]
+
+
 def test_select_forest_plots_supports_a_distance_ring() -> None:
     target = ForestPlotTarget(
         name="ring",

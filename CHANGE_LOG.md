@@ -719,3 +719,10 @@ python -m sphinx -b html docs _build/html -W
 - Closed P9 after squash-merging #35 as `87dc80b`; the approved-head tree matched the merge tree.
 - Activated P10 "Calibration and handoff hardening" with parent #36 and tasks #37-#39.
 - Recorded the age/height stratification plan and the FHOPS scenario pin/reconciliation plan.
+
+## 2026-10-30 — P10.1 Malcolm Knapp stratification
+
+- Added age-window support to `ForestPlotTarget` and an `mkrf_age80_110` target.
+- Ran age-stratified regional transfer: 15 regional plots vs 43 in P9.
+- Composite score improved from 0.929 to 0.758 and DBH KS from 0.277 to 0.116, but stems/ha worsened from -20.5% to -38.8% and BA from -7.4% to -18.1%.
+- Reported the trade-off in `notes/reports/phase10_mkrf_stratified.md`; do not use it for system comparison without a density constraint.

@@ -214,10 +214,10 @@ Status: active
 Goal: improve Malcolm Knapp transfer and harden the FHOPS scenario handoff
 without weakening provenance. See `notes/phase10_calibration_handoff.md`.
 
-- [ ] P10.1 Stratify the CWHdm pool and rerun Malcolm Knapp (#37)
-  - [ ] Inspect age/height distributions for local and regional plots.
-  - [ ] Record a stratification rule before scoring.
-  - [ ] Rerun transfer validation and report before/after.
+- [x] P10.1 Stratify the CWHdm pool and rerun Malcolm Knapp (#37)
+  - [x] Inspected age/height distributions; age-first rule selected.
+  - [x] Recorded the 80–110 age rule before scoring.
+  - [x] Reran transfer; DBH/height/KS improved, density/BA worsened.
 - [ ] P10.2 Harden FHOPS scenario registration and block reconciliation (#38)
   - [ ] Automate scenario pin/checksum checks.
   - [ ] Reconcile or explain block `work_required`.

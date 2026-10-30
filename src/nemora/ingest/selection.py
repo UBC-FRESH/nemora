@@ -81,6 +81,7 @@ class ForestPlotTarget:
     radius_km: float
     bec_codes: tuple[str, ...]
     min_projected_age: float = 60.0
+    max_projected_age: float | None = None
     sample_type: str | None = "F"
     first_visit_only: bool = True
     min_distance_km: float = 0.0
@@ -100,6 +101,11 @@ class ForestPlotTarget:
             raise ValueError("min_projected_age must be finite and non-negative")
         if self.min_distance_km < 0.0 or not math.isfinite(self.min_distance_km):
             raise ValueError("min_distance_km must be finite and non-negative")
+        if self.max_projected_age is not None:
+            if self.max_projected_age < self.min_projected_age or not math.isfinite(
+                self.max_projected_age
+            ):
+                raise ValueError("max_projected_age must be finite and >= min_projected_age")
 
 
 RESEARCH_FOREST_TARGETS: dict[str, ForestPlotTarget] = {
@@ -123,6 +129,16 @@ RESEARCH_FOREST_TARGETS: dict[str, ForestPlotTarget] = {
         longitude=-122.551375,
         radius_km=100.0,
         bec_codes=("CWHdm",),
+        min_distance_km=50.0,
+    ),
+    "mkrf_age80_110": ForestPlotTarget(
+        name="Malcolm Knapp regional CWHdm pool, 80-110 years",
+        latitude=49.30663,
+        longitude=-122.551375,
+        radius_km=100.0,
+        bec_codes=("CWHdm",),
+        min_projected_age=80.0,
+        max_projected_age=110.0,
         min_distance_km=50.0,
     ),
 }
@@ -211,6 +227,8 @@ def select_forest_plots(
         & (merged["distance_km"] <= target.radius_km)
         & (merged["distance_km"] >= target.min_distance_km)
     )
+    if target.max_projected_age is not None:
+        mask &= merged["PROJ_AGE_1"] <= target.max_projected_age
     if target.first_visit_only:
         mask &= merged["FIRST_MSMT"].eq("Y")
     if target.sample_type is not None:
@@ -422,6 +440,7 @@ def selection_manifest(
             "radius_km": target.radius_km,
             "bec_codes": list(target.bec_codes),
             "min_projected_age": target.min_projected_age,
+            "max_projected_age": target.max_projected_age,
             "sample_type": target.sample_type,
             "first_visit_only": target.first_visit_only,
             "min_distance_km": target.min_distance_km,
