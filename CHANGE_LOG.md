@@ -814,3 +814,9 @@ python -m sphinx -b html docs _build/html -W
 - Closed P12 after squash-merging #52 as `a513bc7`; the approved-head tree matched the merge tree.
 - Activated P13 "Release publication" with parent #53 and tasks #54-#57.
 - Recorded separate approval gates for TestPyPI and PyPI/tag publication.
+
+## 2026-10-30 — P13.1 release workflow and checklist
+
+- Added `.github/workflows/release.yaml` with build, TestPyPI, and PyPI jobs using OIDC trusted publishing and separate environments.
+- Added `notes/reports/phase13_publication_checklist.md` with candidate hashes, external settings to confirm, and separate approval gates.
+- Added a workflow contract test. No tag or publication was performed.

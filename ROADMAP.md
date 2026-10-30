@@ -289,9 +289,9 @@ Status: active
 Goal: prepare and execute the `0.1.0a1` publication with separate explicit
 approval gates for TestPyPI and PyPI. See `notes/phase13_publication.md`.
 
-- [ ] P13.1 Add the release workflow and trusted-publisher checklist (#54)
-  - [ ] Add `.github/workflows/release.yaml`.
-  - [ ] Separate TestPyPI/PyPI environments.
+- [x] P13.1 Add the release workflow and trusted-publisher checklist (#54)
+  - [x] Added `.github/workflows/release.yaml`.
+  - [x] Separated TestPyPI/PyPI environments.
   - [ ] Document external publisher settings.
 - [ ] P13.2 Publish to TestPyPI and verify clean install (#55)
   - [ ] Confirm explicit TestPyPI approval.
