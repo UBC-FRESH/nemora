@@ -317,12 +317,12 @@ version path. See `notes/phase14_post_release.md`.
   - [x] Clean base install verified.
   - [x] Clean lidar-extra install verified.
   - [x] Docs, release assets, and public surfaces return 200.
-- [ ] P14.2 Review and close or defer validation gaps (#62)
-  - [ ] Malcolm Knapp transfer disposition.
-  - [ ] LidarBC coverage/yield disposition.
-- [ ] P14.3 Decide the next version path (#63)
-  - [ ] Record `0.1.0b1`/`0.1.0`/maintenance decision.
-  - [ ] List approval gates.
+- [x] P14.2 Review and close or defer validation gaps (#62)
+  - [x] Malcolm Knapp: defer with trigger.
+  - [x] LidarBC and yield: defer/retain with triggers.
+- [x] P14.3 Decide the next version path (#63)
+  - [x] Decision: remain `0.1.0a1` in maintenance.
+  - [x] Listed new-version triggers and approval boundary.
 - [ ] P14.4 Close out and record maintenance state (#64)
   - [ ] Write the close-out report.
   - [ ] Queue the phase PR.

@@ -852,3 +852,9 @@ python -m sphinx -b html docs _build/html -W
 - Base and `[lidar]` PyPI installs pass: version 0.1.0a1, CLI, `pip check`.
 - PyPI, TestPyPI, GitHub Pages docs, and release notes return 200.
 - GitHub release assets match PyPI hashes; no packaging defect found.
+
+## 2026-10-30 — P14.2/P14.3 validation closure and version decision
+
+- Deferred Malcolm Knapp calibration, LidarBC coverage, and independent-yield reconciliation with explicit triggers.
+- Decided to remain at `0.1.0a1` in maintenance mode; no `0.1.0b1`/`0.1.0` now.
+- No tag or publication follows from the decision.
