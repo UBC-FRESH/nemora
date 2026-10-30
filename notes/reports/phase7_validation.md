@@ -106,12 +106,36 @@ estimates.
 
 ## LiDAR and terrain context
 
-No prepared Gavin Lake DEM/CHM product was found in the accessible FEMIC
-instances. The nearest prepared AFRF CHM is the Knifecreek pilot at about 52.04
-N, roughly 47 km south of Gavin Lake. It was not substituted.
+A public LidarBC catalogue query through the FEMIC discovery/materialization
+functions found 2024 1 m DEM and DSM coverage for Gavin Lake. Sixteen DEM/DSM
+pairs were materialized and used to derive CHM and slope products. No source
+reprojection or resampling was performed.
 
-P7.3 is deferred. The report makes no terrain or canopy validation claim for
-Gavin Lake. See `notes/reports/phase7_lidar_coverage.md`.
+Coverage and results:
+
+- 16 of 20 selected plots have a raster hit; 15 have valid canopy and slope
+  values.
+- Four selected plots have no LidarBC tile-index hit in the 25 km AOI.
+- One covered plot has no valid sampled pixels.
+
+Across the 15 valid plot samples:
+
+- Canopy cover (≥2 m): mean **0.664**.
+- Mean canopy height: mean **12.05 m**.
+- Canopy p95 height: mean **25.95 m**.
+- Slope: mean **17.83%**.
+
+Synthetic-stand centre (100 m × 100 m grid):
+
+- Canopy cover (≥2 m): **0.879**.
+- Mean canopy height: **9.82 m**.
+- Canopy p95 height: **17.29 m**.
+- Slope: mean **17.23%**; p95 **31.75%**.
+
+This is context evidence, not a stand-level accuracy claim. The plot footprints
+are 40 m × 40 m sample grids, and the synthetic stand is a statistical
+reconstruction. See `notes/reports/phase7_lidar_coverage.md` and
+`notes/reports/phase7_lidar_metrics.json`.
 
 ## Observed, fitted, assumed, synthetic
 
@@ -121,7 +145,7 @@ Gavin Lake. See `notes/reports/phase7_lidar_coverage.md`.
 - **Assumed:** BEC/age/radius selection rule; independent species sampling;
   one-hectare-equivalent density; no spatial competition or defects.
 - **Synthetic:** the generated tree list and its stand metrics.
-- **Unavailable:** Gavin Lake terrain and canopy metrics from prepared rasters.
+- **Raster context:** LidarBC 2024 1 m DEM/DSM-derived CHM and slope; partial plot coverage.
 
 ## Limits
 
@@ -130,7 +154,7 @@ Gavin Lake. See `notes/reports/phase7_lidar_coverage.md`.
 - The selection is a documented rule, not a probability sample.
 - The hold-out set has only five plots.
 - The height model ignores species and measured-height coverage differences.
-- No LiDAR/terrain context is included because the prepared product is missing.
+- LiDAR/terrain context is partial: four plots lack raster coverage and one has no valid sampled pixels.
 - No operational, financial, or regulatory conclusion is supported.
 
 ## Reproduce

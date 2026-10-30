@@ -45,7 +45,7 @@ Produce a reproducible validation package for one or both research forests:
 4. Compare held-out DBH, height, basal area, stems/ha, and species mix.
 5. Propagate plot-resampling and seed uncertainty.
 
-### P7.3: LiDAR context (deferred)
+### P7.3: LiDAR context
 
 1. Use prepared DEM/CHM products already produced by FEMIC/LidarBC.
 2. Record product name, source, licence, CRS, resolution, and footprint.
@@ -53,9 +53,10 @@ Produce a reproducible validation package for one or both research forests:
 4. Summarize terrain and canopy cover/height without reprojection or resampling.
 5. Report missing coverage and do not substitute a product silently.
 
-Status: no prepared Gavin Lake DEM/CHM was found. See
-`notes/reports/phase7_lidar_coverage.md`. The step is deferred rather than
-substituting the Knifecreek CHM or a synthetic demo DEM.
+Status: public LidarBC 2024 1 m DEM/DSM coverage was found through FEMIC
+catalogue discovery. Sixteen DEM/DSM pairs were materialized; CHM and slope were
+derived with FEMIC and sampled with `nemora.lidar`. Four plots lack index coverage
+and one has no valid sampled pixels. See `notes/reports/phase7_lidar_coverage.md`.
 
 ### P7.4: report
 

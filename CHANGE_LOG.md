@@ -641,3 +641,10 @@ python -m sphinx -b html docs _build/html -W
 - Wrote `notes/reports/phase7_validation.md`, combining the Gavin Lake plot selection, tree-detail resolution, stand validation, uncertainty, and the prepared-raster coverage gap.
 - The report marks P7.3 as deferred, records the negative stand-validation result, and separates observed, fitted, assumed, and synthetic evidence.
 - No operational, real-tree-map, or regulatory claim is made.
+
+## 2026-10-30 — P7.3 LiDAR correction and materialization
+
+- Corrected the earlier coverage claim: a public LidarBC catalogue query through the FEMIC discovery/materialization functions found 2024 1 m DEM/DSM coverage for Gavin Lake.
+- Materialized 16 DEM/DSM pairs (32 tiles) with `femic.lidar.materialization.materialize_lidar_selection`, derived CHM/slope with `femic.lidar.canopy` and `femic.lidar.terrain`, and sampled plots plus the synthetic-stand centre with `nemora.lidar`.
+- 15 of 20 selected plots have valid canopy/slope samples; 4 have no tile-index hit and 1 has no valid sampled pixels. Results are in `notes/reports/phase7_lidar_metrics.json` and the corrected `notes/reports/phase7_lidar_coverage.md`.
+- The earlier P7.3 deferral is withdrawn; the remaining limitation is partial coverage, not missing data.

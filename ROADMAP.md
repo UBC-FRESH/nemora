@@ -146,10 +146,10 @@ real tree map. See `notes/phase7_research_forest_validation.md`.
   - [x] Build training and hold-out `nemora.inventory.v1` releases.
   - [x] Generate one seeded synthetic stand per target forest.
   - [x] Report DBH, height, basal area, stems/ha, and species-mix errors.
-- [ ] P7.3 Validate canopy and terrain metrics from prepared rasters (#23) — deferred: no prepared Gavin Lake DEM/CHM
-  - [ ] Identify prepared DEM/CHM products and provenance. Deferred: no Gavin Lake product found.
-  - [ ] Sample plots and synthetic trees through `nemora.lidar`.
-  - [ ] Report native-resolution canopy and terrain metrics.
+- [x] P7.3 Validate canopy and terrain metrics from prepared rasters (#23) — complete with partial coverage
+  - [x] Identify public LidarBC DEM/DSM products and provenance through FEMIC discovery.
+  - [x] Materialize 16 DEM/DSM pairs and sample plots plus the synthetic stand through `nemora.lidar`.
+  - [x] Report native-resolution canopy and slope metrics with partial plot coverage.
 - [x] P7.4 Write the validation report and limitations (#24)
   - [x] Assemble metrics, uncertainty, and provenance tables.
   - [x] Write the report with explicit observed/fitted/synthetic labels.
@@ -215,8 +215,8 @@ real tree map. See `notes/phase7_research_forest_validation.md`.
      - [x] Selected Gavin Lake: 20 mature plots, 15 train / 5 hold-out.
      - [x] Resolve tree detail and build the canonical pilot release.
    - [x] Build and validate plot-conditioned mature-stand inventories.
-   - [ ] Validate prepared DEM/CHM metrics through `nemora.lidar`.
-   - [ ] Publish the limitations-first validation report.
+   - [x] Materialize public LidarBC DEM/DSM and validate CHM/slope context through `nemora.lidar`; report missing plot coverage.
+   - [x] Publish the limitations-first validation report.
 
 ## Backlog & Ideas
 - [ ] Investigate GPU acceleration for large tally batches.
