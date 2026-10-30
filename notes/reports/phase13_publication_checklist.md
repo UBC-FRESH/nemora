@@ -19,7 +19,8 @@ Status: prepared. Not published.
 - TestPyPI environment: `testpypi`
 - PyPI environment: `pypi`
 - OIDC trusted publishing; no tokens in the repository.
-- Build → TestPyPI → PyPI chain.
+- Tag runs build → TestPyPI only.
+- PyPI publication is a separate, separately approved step; it is not chained to the tag run.
 
 ## External settings the maintainer must confirm
 
@@ -34,13 +35,13 @@ Status: prepared. Not published.
 1. Merge the approved P13 PR.
 2. Confirm the external trusted-publisher settings.
 3. Approve TestPyPI publication explicitly.
-4. Tag `v0.1.0a1` on the approved merged commit and watch the workflow:
+4. Tag `v0.1.0a1` on the approved merged commit and watch the TestPyPI workflow:
    - build;
    - `publish-testpypi`;
-   - stop and verify TestPyPI before allowing PyPI.
+   - stop and verify TestPyPI before any PyPI step.
 5. Approve PyPI publication explicitly.
-6. Let `publish-pypi` run; create the GitHub release.
-7. Verify installs and release assets.
+6. Add/execute the separately approved PyPI publication path; do not reuse the TestPyPI tag run.
+7. Create the GitHub release; verify installs and release assets.
 
 ## Approval boundary
 
