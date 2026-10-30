@@ -138,9 +138,10 @@ forests using public FAIB plots and prepared FEMIC/LidarBC rasters, without clai
 real tree map. See `notes/phase7_research_forest_validation.md`.
 
 - [ ] P7.1 Select and resolve research-forest FAIB plots (#21)
-  - [ ] Define forest/BEC/age/proximity filters and a held-out split.
+  - [x] Define forest/BEC/age/proximity filters and a held-out split.
   - [ ] Resolve public plot, visit, and tree tables.
-  - [ ] Record provenance, licence, checksums, and a selection manifest.
+  - [x] Record provenance, licence, checksums, and a selection manifest.
+  - [x] Select Gavin Lake as the first target: 20 plots, 15 train / 5 hold-out.
 - [ ] P7.2 Build and validate plot-conditioned mature-stand inventories (#22)
   - [ ] Build training and hold-out `nemora.inventory.v1` releases.
   - [ ] Generate one seeded synthetic stand per target forest.
@@ -211,6 +212,8 @@ real tree map. See `notes/phase7_research_forest_validation.md`.
    - [x] Keep LiDAR catalog/materialization/terrain/ITD production in FEMIC/WS4.
 12. **P7 research-forest validation**
    - [ ] Select and resolve public FAIB plots with a deterministic hold-out split.
+     - [x] Selected Gavin Lake: 20 mature plots, 15 train / 5 hold-out.
+     - [ ] Resolve tree detail and build the canonical stand release.
    - [ ] Build and validate plot-conditioned mature-stand inventories.
    - [ ] Validate prepared DEM/CHM metrics through `nemora.lidar`.
    - [ ] Publish the limitations-first validation report.

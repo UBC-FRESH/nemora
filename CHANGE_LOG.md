@@ -608,3 +608,11 @@ python -m sphinx -b html docs _build/html -W
 - Activated P7 "Research-forest plot and LiDAR validation" with parent #20 and tasks #21-#24.
 - Recorded the validation plan, public-data provenance requirements, default Gavin Lake/Malcolm Knapp decision, and limitations-first reporting rule in `notes/phase7_research_forest_validation.md`.
 - No data was fitted or reported yet; P7.1 starts with plot selection and a deterministic hold-out split.
+
+## 2026-10-30 — P7.1 research-forest plot selection
+
+- Added `nemora.ingest.selection` with explicit forest targets, BEC/age/radius filters, a stable SHA-256 train/hold-out split, and a location-light manifest.
+- Added `scripts/select_research_forest_plots.py` to regenerate selection manifests from public FAIB tables without writing plot coordinates.
+- Selected Gavin Lake as the first target: 20 mature plots (15 train, 5 hold-out), 18 `SBSdw1` and 2 `ICHmk3`, projected ages 74-152. Malcolm Knapp has only 6 mature plots within 50 km, so it remains an exploratory fallback.
+- Recorded provenance and input checksums in `notes/reports/phase7_plot_selection_gavin.json` and `phase7_plot_selection_mkrf.json`; the decision and limits are in `notes/reports/phase7_plot_selection.md`.
+- Added selection tests and `docs/howto/plot_selection.md`. Tree-detail resolution and stand validation remain for P7.2.

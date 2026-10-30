@@ -81,6 +81,7 @@ from . import fia as fia  # noqa: E402,F401
 from . import hps as hps  # noqa: E402,F401
 from . import plots as plots  # noqa: E402,F401
 from . import schema as schema  # noqa: E402,F401
+from . import selection as selection  # noqa: E402,F401
 from .plots import (  # noqa: E402
     PlotInventorySpec,
     build_inventory_release,
@@ -97,6 +98,13 @@ from .schema import (  # noqa: E402
     validate_inventory_release,
     write_inventory_release,
 )
+from .selection import (  # noqa: E402
+    ForestPlotTarget,
+    assign_holdout_split,
+    select_forest_plots,
+    selection_manifest,
+    write_selection_manifest,
+)
 
 __all__ = [
     "DatasetFetcher",
@@ -110,13 +118,19 @@ __all__ = [
     "build_inventory_release",
     "faib",
     "fia",
+    "ForestPlotTarget",
     "hps",
     "inventory_schema",
+    "assign_holdout_split",
+    "select_forest_plots",
+    "selection_manifest",
+    "write_selection_manifest",
     "materialize_tally_trees",
     "plots",
     "PlotInventorySpec",
     "read_inventory_release",
     "schema",
+    "selection",
     "validate_inventory_release",
     "write_inventory_release",
 ]
