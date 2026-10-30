@@ -150,10 +150,10 @@ real tree map. See `notes/phase7_research_forest_validation.md`.
   - [ ] Identify prepared DEM/CHM products and provenance. Deferred: no Gavin Lake product found.
   - [ ] Sample plots and synthetic trees through `nemora.lidar`.
   - [ ] Report native-resolution canopy and terrain metrics.
-- [ ] P7.4 Write the validation report and limitations (#24)
-  - [ ] Assemble metrics, uncertainty, and provenance tables.
-  - [ ] Write the report with explicit observed/fitted/synthetic labels.
-  - [ ] State what the validation does not establish.
+- [x] P7.4 Write the validation report and limitations (#24)
+  - [x] Assemble metrics, uncertainty, and provenance tables.
+  - [x] Write the report with explicit observed/fitted/synthetic labels.
+  - [x] State what the validation does not establish.
 
 ## Detailed Next Steps Notes
 1. **Distribution registry hardening**

@@ -635,3 +635,9 @@ python -m sphinx -b html docs _build/html -W
 - Audited the accessible FEMIC research-forest instances and prepared rasters for Gavin Lake and Malcolm Knapp.
 - Found no prepared Gavin Lake DEM/CHM product. The nearest AFRF prepared CHM is the Knifecreek pilot at about 52.04 N, roughly 47 km south of Gavin Lake; it was not substituted.
 - Deferred P7.3 rather than using a synthetic demo DEM or reprocessing raw LiDAR. Documented the gap, the decision, and unblocking options in `notes/reports/phase7_lidar_coverage.md`.
+
+## 2026-10-30 — P7.4 validation report
+
+- Wrote `notes/reports/phase7_validation.md`, combining the Gavin Lake plot selection, tree-detail resolution, stand validation, uncertainty, and the prepared-raster coverage gap.
+- The report marks P7.3 as deferred, records the negative stand-validation result, and separates observed, fitted, assumed, and synthetic evidence.
+- No operational, real-tree-map, or regulatory claim is made.
