@@ -739,3 +739,9 @@ python -m sphinx -b html docs _build/html -W
 - Wrote `notes/reports/phase10-closeout.md` with the calibration/handoff evidence package and the P11 multi-block/release-readiness recommendation.
 - Updated the roadmap to P10 `pr-open`; no merge has been performed.
 - The age-stratification density trade-off and non-independent work-required reconciliation remain explicit limits.
+
+## 2026-10-30 — Phase 11 activated
+
+- Closed P10 after squash-merging #40 as `1b36141`; the approved-head tree matched the merge tree.
+- Activated P11 "Multi-block validation and release readiness" with parent #41 and tasks #42-#45.
+- Recorded the one-block/one-landing scenario-set plan, independent yield check, sensitivity set, and release-readiness scope.

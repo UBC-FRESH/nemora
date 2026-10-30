@@ -13,7 +13,8 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 | P7 | #20 | `feature/p7-research-forest-validation` | complete |
 | P8 | #26 | `feature/p8-validation-refinement` | complete |
 | P9 | #31 | `feature/p9-cross-forest-handoff` | complete |
-| P10 | #36 | `feature/p10-calibration-handoff` | pr-open |
+| P10 | #36 | `feature/p10-calibration-handoff` | complete |
+| P11 | #41 | `feature/p11-multi-block-readiness` | active |
 
 ## Phase 0 — Foundations ✅ (complete)
 - Repository scaffolding, licensing, CI harness.
@@ -209,7 +210,7 @@ Nemora stand to FHOPS through a tested tree-inventory export. See
 
 Parent issue: #36
 Branch: `feature/p10-calibration-handoff`
-Status: pr-open
+Status: complete
 
 Goal: improve Malcolm Knapp transfer and harden the FHOPS scenario handoff
 without weakening provenance. See `notes/phase10_calibration_handoff.md`.
@@ -226,6 +227,33 @@ without weakening provenance. See `notes/phase10_calibration_handoff.md`.
   - [x] Ran calibrated and reference scenarios.
   - [x] Added calibrated-vs-reference rate sensitivity.
   - [x] Wrote `notes/reports/phase10_validation.md` and the phase close-out report.
+
+## Phase 11 — Multi-block validation and release readiness
+
+Parent issue: #41
+Branch: `feature/p11-multi-block-readiness`
+Status: active
+
+Goal: build a reproducible multi-block/multi-landing scenario set, add an
+independent yield check, run sensitivity, and prepare release/readiness docs.
+See `notes/phase11_multi_block_readiness.md`.
+
+- [ ] P11.1 Build the multi-block/multi-landing scenario set (#42)
+  - [ ] Select the block/landing set and register scenarios.
+  - [ ] Write the machine-readable catalog.
+  - [ ] Add a reproducibility test.
+- [ ] P11.2 Add independent yield validation and handoff hardening (#43)
+  - [ ] Choose and document an independent volume estimator.
+  - [ ] Compare estimate, work_required, and FHOPS processed volume.
+  - [ ] Add a regression test.
+- [ ] P11.3 Run sensitivity set and write the multi-block report (#44)
+  - [ ] Run calibrated/reference rates and truck-count sensitivity.
+  - [ ] Write the multi-block report.
+  - [ ] Record warnings and limits.
+- [ ] P11.4 Prepare release/readiness docs and close out (#45)
+  - [ ] Update release/readiness docs.
+  - [ ] Write the close-out report.
+  - [ ] Queue the phase PR.
 
 ## Detailed Next Steps Notes
 1. **Distribution registry hardening**
