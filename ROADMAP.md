@@ -11,7 +11,8 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 | --- | --- | --- | --- |
 | P6 | #15 | `feature/p6-plot-lidar-interfaces` | complete |
 | P7 | #20 | `feature/p7-research-forest-validation` | complete |
-| P8 | #26 | `feature/p8-validation-refinement` | pr-open |
+| P8 | #26 | `feature/p8-validation-refinement` | complete |
+| P9 | #31 | `feature/p9-cross-forest-handoff` | active |
 
 ## Phase 0 — Foundations ✅ (complete)
 - Repository scaffolding, licensing, CI harness.
@@ -160,7 +161,7 @@ real tree map. See `notes/phase7_research_forest_validation.md`.
 
 Parent issue: #26
 Branch: `feature/p8-validation-refinement`
-Status: pr-open
+Status: complete
 
 Goal: improve the Gavin Lake stand model and close the LidarBC coverage gaps
 without weakening provenance or making operational claims. See
@@ -179,6 +180,29 @@ without weakening provenance or making operational claims. See
   - [x] Rerun the stand validation with the selected empirical model and use the expanded LiDAR coverage.
   - [x] Report before/after metrics and uncertainty.
   - [x] Write `notes/reports/phase8_validation.md` and the phase close-out report.
+
+## Phase 9 — Cross-forest validation and FHOPS handoff
+
+Parent issue: #31
+Branch: `feature/p9-cross-forest-handoff`
+Status: active
+
+Goal: validate Malcolm Knapp with an explicit regional pool and hand the selected
+Nemora stand to FHOPS through a tested tree-inventory export. See
+`notes/phase9_cross_forest_handoff.md`.
+
+- [ ] P9.1 Validate Malcolm Knapp with an explicit regional pool (#32)
+  - [ ] Select local and regional CWHdm plots.
+  - [ ] Record pooling radius, filters, and split.
+  - [ ] Run cross-forest validation and report limits.
+- [ ] P9.2 Export the selected stand to FHOPS with round-trip tests (#33)
+  - [ ] Confirm the FHOPS tree inventory contract.
+  - [ ] Implement the export adapter.
+  - [ ] Add a round-trip validation test.
+- [ ] P9.3 Run the FHOPS tree-scale handoff and write the close-out report (#34)
+  - [ ] Run FHOPS on the exported inventory.
+  - [ ] Assemble the cross-forest comparison.
+  - [ ] Write the validation and close-out reports.
 
 ## Detailed Next Steps Notes
 1. **Distribution registry hardening**

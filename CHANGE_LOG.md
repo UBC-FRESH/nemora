@@ -681,3 +681,9 @@ python -m sphinx -b html docs _build/html -W
 - Wrote `notes/reports/phase8-closeout.md` with the P8 evidence package and the P9 cross-forest/FHOPS handoff recommendation.
 - Updated the roadmap to P8 `pr-open`; no merge has been performed.
 - The four residual LidarBC coverage gaps and the five-plot hold-out remain explicit limitations.
+
+## 2026-10-30 — Phase 9 activated
+
+- Closed P8 after squash-merging #30 as `da48075`; the approved-head tree matched the merge tree.
+- Activated P9 "Cross-forest validation and FHOPS handoff" with parent #31 and tasks #32-#34.
+- Recorded the Malcolm Knapp CWHdm regional-pool plan and the FHOPS tree-inventory handoff contract.
