@@ -238,10 +238,10 @@ Goal: build a reproducible multi-block/multi-landing scenario set, add an
 independent yield check, run sensitivity, and prepare release/readiness docs.
 See `notes/phase11_multi_block_readiness.md`.
 
-- [ ] P11.1 Build the multi-block/multi-landing scenario set (#42)
-  - [ ] Select the block/landing set and register scenarios.
-  - [ ] Write the machine-readable catalog.
-  - [ ] Add a reproducibility test.
+- [x] P11.1 Build the multi-block/multi-landing scenario set (#42)
+  - [x] Registered Gavin B01/L1 and Malcolm Knapp B02/L2 scenarios.
+  - [x] Wrote `notes/reports/phase11_scenario_catalog.json`.
+  - [x] Added `tests/test_phase11_scenario_catalog.py`.
 - [ ] P11.2 Add independent yield validation and handoff hardening (#43)
   - [ ] Choose and document an independent volume estimator.
   - [ ] Compare estimate, work_required, and FHOPS processed volume.

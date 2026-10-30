@@ -745,3 +745,10 @@ python -m sphinx -b html docs _build/html -W
 - Closed P10 after squash-merging #40 as `1b36141`; the approved-head tree matched the merge tree.
 - Activated P11 "Multi-block validation and release readiness" with parent #41 and tasks #42-#45.
 - Recorded the one-block/one-landing scenario-set plan, independent yield check, sensitivity set, and release-readiness scope.
+
+## 2026-10-30 — P11.1 multi-block scenario set
+
+- Added `scripts/build_phase11_scenarios.py` and `notes/reports/phase11_scenario_catalog.json`.
+- Built Gavin B01/L1 and Malcolm Knapp B02/L2 scenarios; both pins validate and both pass `fhops validate`.
+- Gavin uses the P9 inventory with reconciled 530.543340 m³; Malcolm Knapp uses a local six-plot empirical scenario and leaves `work_required` pending P11.2.
+- Added `notes/reports/phase11_scenarios.md` and a catalog regression test.

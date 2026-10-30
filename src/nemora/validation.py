@@ -22,6 +22,7 @@ __all__ = [
     "StandMetrics",
     "StandValidationResult",
     "compare_stand_models",
+    "generate_empirical_stand",
     "stand_metrics_from_trees",
     "validate_empirical_stand",
     "validate_plot_conditioned_stand",
@@ -302,6 +303,26 @@ def validate_plot_conditioned_stand(
         seed=seed,
         holdout_plots=holdout_plots,
         synthetic_trees=synthetic_trees,
+    )
+
+
+def generate_empirical_stand(
+    trees: pd.DataFrame,
+    *,
+    area_ha: float = 1.0,
+    seed: int = 20261030,
+) -> pd.DataFrame:
+    """Generate a one-hectare-equivalent empirical tree list.
+
+    This is a scenario/synthesis helper, not a validation result. It samples
+    training tree rows with replacement, weighted by ``tally``.
+    """
+    _require_tree_columns(trees, _TREE_COLUMNS)
+    metrics = _mean_metrics(list(_plot_metrics(trees).values()))
+    return _generate_empirical(
+        trees,
+        count=max(1, int(round(metrics.stems_per_ha * area_ha))),
+        seed=seed,
     )
 
 

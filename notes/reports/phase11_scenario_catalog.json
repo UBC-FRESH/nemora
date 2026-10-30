@@ -1,0 +1,33 @@
+{
+  "generated_utc": "2026-10-30T08:06:29.249154+00:00",
+  "notes": [
+    "FHOPS ground system runs one block/one landing at a time.",
+    "Gavin is the primary validation block; Malcolm Knapp is a synthetic transfer case.",
+    "Scenario and inventory bytes are local build artifacts; checksums identify them."
+  ],
+  "scenarios": [
+    {
+      "block_id": "B01",
+      "inventory_path": "build/phase9/fhops/tree_inventory.csv",
+      "inventory_sha256": "0c431c492d1875a104bc05fdc7174facc8c60291a974b446986ce0ac6bf0ca58",
+      "landing_id": "L1",
+      "notes": "Gavin Lake P8 empirical stand; one-hectare synthetic placement.",
+      "pin_valid": true,
+      "scenario_id": "gavin-empirical",
+      "scenario_path": "build/phase11/gavin/scenario/scenario.yaml",
+      "work_required_m3": 530.5433400362283
+    },
+    {
+      "block_id": "B02",
+      "inventory_path": "build/phase11/mkrf/inventory/tree_inventory.csv",
+      "inventory_sha256": "456b3e4573605de949a02b67a5506b30a5f55851610e3afd45813227deab3fa9",
+      "landing_id": "L2",
+      "notes": "Malcolm Knapp local six-plot empirical scenario; synthetic transfer case.",
+      "pin_valid": true,
+      "scenario_id": "mkrf-local-empirical",
+      "scenario_path": "build/phase11/mkrf/scenario/scenario.yaml",
+      "work_required_m3": null
+    }
+  ],
+  "schema_version": "nemora.scenario_catalog.v1"
+}
