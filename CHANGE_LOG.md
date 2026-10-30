@@ -783,3 +783,9 @@ python -m sphinx -b html docs _build/html -W
 - Closed P11 after squash-merging #46 as `5c17e7f`; the approved-head tree matched the merge tree.
 - Activated P12 "Release candidate and publication readiness" with parent #47 and tasks #48-#51.
 - Default candidate version is `0.1.0a1`; no tag or publication is approved by this activation.
+
+## 2026-10-30 — P12.1 candidate version freeze
+
+- Set `nemora.__version__` and the Sphinx release to `0.1.0a1`.
+- Added a version regression test.
+- No tag or publication is included.
