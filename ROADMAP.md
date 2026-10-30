@@ -12,7 +12,8 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 | P6 | #15 | `feature/p6-plot-lidar-interfaces` | complete |
 | P7 | #20 | `feature/p7-research-forest-validation` | complete |
 | P8 | #26 | `feature/p8-validation-refinement` | complete |
-| P9 | #31 | `feature/p9-cross-forest-handoff` | pr-open |
+| P9 | #31 | `feature/p9-cross-forest-handoff` | complete |
+| P10 | #36 | `feature/p10-calibration-handoff` | pr-open |
 
 ## Phase 0 — Foundations ✅ (complete)
 - Repository scaffolding, licensing, CI harness.
@@ -185,7 +186,7 @@ without weakening provenance or making operational claims. See
 
 Parent issue: #31
 Branch: `feature/p9-cross-forest-handoff`
-Status: pr-open
+Status: complete
 
 Goal: validate Malcolm Knapp with an explicit regional pool and hand the selected
 Nemora stand to FHOPS through a tested tree-inventory export. See
@@ -203,6 +204,28 @@ Nemora stand to FHOPS through a tested tree-inventory export. See
   - [x] Ran FHOPS 1.2.0 on 1,978 exported trees: 530.54 m³, 0 unreachable.
   - [x] Assembled the Gavin/Malcolm Knapp comparison.
   - [x] Wrote `notes/reports/phase9_validation.md` and the phase close-out report.
+
+## Phase 10 — Calibration and handoff hardening
+
+Parent issue: #36
+Branch: `feature/p10-calibration-handoff`
+Status: pr-open
+
+Goal: improve Malcolm Knapp transfer and harden the FHOPS scenario handoff
+without weakening provenance. See `notes/phase10_calibration_handoff.md`.
+
+- [x] P10.1 Stratify the CWHdm pool and rerun Malcolm Knapp (#37)
+  - [x] Inspected age/height distributions; age-first rule selected.
+  - [x] Recorded the 80–110 age rule before scoring.
+  - [x] Reran transfer; DBH/height/KS improved, density/BA worsened.
+- [x] P10.2 Harden FHOPS scenario registration and block reconciliation (#38)
+  - [x] Automate scenario pin/checksum checks.
+  - [x] Reconciled block `work_required` to 530.543 m³; warning removed.
+  - [x] Added `tests/test_phase10_fhops_scenario.py`.
+- [x] P10.3 Rerun cross-forest system comparison and close out (#39)
+  - [x] Ran calibrated and reference scenarios.
+  - [x] Added calibrated-vs-reference rate sensitivity.
+  - [x] Wrote `notes/reports/phase10_validation.md` and the phase close-out report.
 
 ## Detailed Next Steps Notes
 1. **Distribution registry hardening**
