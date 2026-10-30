@@ -694,3 +694,10 @@ python -m sphinx -b html docs _build/html -W
 - Added `scripts/validate_phase9_mkrf.py`; trained on 43 regional CWHdm plots and held out the 6 local mature plots.
 - Transfer result is negative: BA -7.4% and QMD -2.3% are close, but mean DBH is -18.0%, mean height -26.3%, and stems -20.5%. CWHdm alone is too coarse for local transfer.
 - Added `notes/reports/phase9_mkrf_validation.md`, `notes/reports/phase9_mkrf_validation.json`, and a regression check.
+
+## 2026-10-30 — P9.2 FHOPS tree-inventory handoff
+
+- Added `nemora.export.export_fhops_tree_inventory` and `scripts/export_phase9_fhops.py`.
+- Exported the 1,978-tree empirical Gavin Lake stand to `fhops.tree.inventory.v1` with synthetic one-hectare placement, block `B01`, metadata, and CSV checksum.
+- FHOPS `load_tree_inventory` accepts the export: 1,978 trees, 1 block, 8 species, no errors.
+- Added `tests/test_phase9_fhops_handoff.py` with a loader round-trip when FHOPS is available; added `notes/reports/phase9_fhops_handoff.md` and `notes/reports/phase9_fhops_export.json`.

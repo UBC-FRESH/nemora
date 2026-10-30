@@ -195,10 +195,10 @@ Nemora stand to FHOPS through a tested tree-inventory export. See
   - [x] Select local and 43-plot regional CWHdm pool.
   - [x] Record 50–100 km ring, filters, and local hold-out.
   - [x] Run empirical transfer validation; report negative DBH/height transfer.
-- [ ] P9.2 Export the selected stand to FHOPS with round-trip tests (#33)
-  - [ ] Confirm the FHOPS tree inventory contract.
-  - [ ] Implement the export adapter.
-  - [ ] Add a round-trip validation test.
+- [x] P9.2 Export the selected stand to FHOPS with round-trip tests (#33)
+  - [x] Confirm the FHOPS tree inventory fields and units.
+  - [x] Implement `nemora.export.export_fhops_tree_inventory`.
+  - [x] Add a round-trip validation test through the FHOPS loader.
 - [ ] P9.3 Run the FHOPS tree-scale handoff and write the close-out report (#34)
   - [ ] Run FHOPS on the exported inventory.
   - [ ] Assemble the cross-forest comparison.
