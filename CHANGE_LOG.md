@@ -863,3 +863,9 @@ python -m sphinx -b html docs _build/html -W
 
 - Wrote `notes/reports/phase14-closeout.md`; release verification passed, gaps deferred with triggers, and `0.1.0a1` enters maintenance mode.
 - PR #65 is queued; no tag or publication is included.
+
+## 2026-10-30 — P14 complete
+
+- Squash-merged #65 as `e374b5c`; tree matched the approved head `30d6ece`.
+- Marked P14 complete and entered maintenance mode at `0.1.0a1`.
+- No new tag or publication.
