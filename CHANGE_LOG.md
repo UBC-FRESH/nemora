@@ -733,3 +733,9 @@ python -m sphinx -b html docs _build/html -W
 - Reconciled `work_required` to 530.543340 m³; the FHOPS work-required warning is gone.
 - Ran calibrated and reference FHOPS scenarios: 530.54 m³ in both; makespan 115.456 h vs 115.774 h (+0.27%), 0 unreachable, no warnings. Skidder utilisation is materially rate-sensitive; makespan is truck-bound.
 - Added `notes/reports/phase10_fhops_scenario.md`, `notes/reports/phase10_validation.md`, and the rate summary JSON.
+
+## 2026-10-30 — P10 queued for close-out
+
+- Wrote `notes/reports/phase10-closeout.md` with the calibration/handoff evidence package and the P11 multi-block/release-readiness recommendation.
+- Updated the roadmap to P10 `pr-open`; no merge has been performed.
+- The age-stratification density trade-off and non-independent work-required reconciliation remain explicit limits.

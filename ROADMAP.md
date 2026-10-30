@@ -13,7 +13,7 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 | P7 | #20 | `feature/p7-research-forest-validation` | complete |
 | P8 | #26 | `feature/p8-validation-refinement` | complete |
 | P9 | #31 | `feature/p9-cross-forest-handoff` | complete |
-| P10 | #36 | `feature/p10-calibration-handoff` | active |
+| P10 | #36 | `feature/p10-calibration-handoff` | pr-open |
 
 ## Phase 0 — Foundations ✅ (complete)
 - Repository scaffolding, licensing, CI harness.
@@ -209,7 +209,7 @@ Nemora stand to FHOPS through a tested tree-inventory export. See
 
 Parent issue: #36
 Branch: `feature/p10-calibration-handoff`
-Status: active
+Status: pr-open
 
 Goal: improve Malcolm Knapp transfer and harden the FHOPS scenario handoff
 without weakening provenance. See `notes/phase10_calibration_handoff.md`.
@@ -225,7 +225,7 @@ without weakening provenance. See `notes/phase10_calibration_handoff.md`.
 - [x] P10.3 Rerun cross-forest system comparison and close out (#39)
   - [x] Ran calibrated and reference scenarios.
   - [x] Added calibrated-vs-reference rate sensitivity.
-  - [x] Wrote `notes/reports/phase10_validation.md`; close-out pending.
+  - [x] Wrote `notes/reports/phase10_validation.md` and the phase close-out report.
 
 ## Detailed Next Steps Notes
 1. **Distribution registry hardening**
