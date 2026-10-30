@@ -22,8 +22,9 @@ def _sgsr_available() -> bool:
     rscript = shutil.which("Rscript")
     if rscript is None:
         return False
-    completed = subprocess.run(  # noqa: S603 - only the discovered Rscript is executed
-        [
+    # Only the discovered Rscript is executed.
+    completed = subprocess.run(  # noqa: S603
+        [  # noqa: S603
             rscript,
             "-e",
             "quit(status=!requireNamespace('sgsR', quietly=TRUE))",
