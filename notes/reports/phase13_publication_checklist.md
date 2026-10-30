@@ -21,6 +21,7 @@ Status: prepared. Not published.
 - TestPyPI environment: `testpypi`
 - PyPI environment: `pypi`
 - OIDC trusted publishing; no tokens in the repository.
+- Attestations are temporarily disabled for the PyPI retry because Rekor returned HTTP 502 during signing; the OIDC trusted-publisher check still applies.
 - Tags ending in `-testpypi` run build → TestPyPI.
 - Final `v0.1.0a1` runs build → PyPI; TestPyPI is skipped.
 - PyPI publication is separately approved.
