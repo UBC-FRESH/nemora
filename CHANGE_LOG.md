@@ -687,3 +687,10 @@ python -m sphinx -b html docs _build/html -W
 - Closed P8 after squash-merging #30 as `da48075`; the approved-head tree matched the merge tree.
 - Activated P9 "Cross-forest validation and FHOPS handoff" with parent #31 and tasks #32-#34.
 - Recorded the Malcolm Knapp CWHdm regional-pool plan and the FHOPS tree-inventory handoff contract.
+
+## 2026-10-30 — P9.1 Malcolm Knapp regional validation
+
+- Added `min_distance_km` ring support to `ForestPlotTarget` and a `mkrf_regional` target for the 50–100 km CWHdm pool.
+- Added `scripts/validate_phase9_mkrf.py`; trained on 43 regional CWHdm plots and held out the 6 local mature plots.
+- Transfer result is negative: BA -7.4% and QMD -2.3% are close, but mean DBH is -18.0%, mean height -26.3%, and stems -20.5%. CWHdm alone is too coarse for local transfer.
+- Added `notes/reports/phase9_mkrf_validation.md`, `notes/reports/phase9_mkrf_validation.json`, and a regression check.

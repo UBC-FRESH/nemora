@@ -83,6 +83,7 @@ class ForestPlotTarget:
     min_projected_age: float = 60.0
     sample_type: str | None = "F"
     first_visit_only: bool = True
+    min_distance_km: float = 0.0
 
     def __post_init__(self) -> None:
         if not self.name.strip():
@@ -97,6 +98,8 @@ class ForestPlotTarget:
             raise ValueError("bec_codes must contain at least one code")
         if self.min_projected_age < 0.0 or not math.isfinite(self.min_projected_age):
             raise ValueError("min_projected_age must be finite and non-negative")
+        if self.min_distance_km < 0.0 or not math.isfinite(self.min_distance_km):
+            raise ValueError("min_distance_km must be finite and non-negative")
 
 
 RESEARCH_FOREST_TARGETS: dict[str, ForestPlotTarget] = {
@@ -113,6 +116,14 @@ RESEARCH_FOREST_TARGETS: dict[str, ForestPlotTarget] = {
         longitude=-122.551375,
         radius_km=50.0,
         bec_codes=("CWHdm",),
+    ),
+    "mkrf_regional": ForestPlotTarget(
+        name="Malcolm Knapp regional CWHdm pool",
+        latitude=49.30663,
+        longitude=-122.551375,
+        radius_km=100.0,
+        bec_codes=("CWHdm",),
+        min_distance_km=50.0,
     ),
 }
 
@@ -198,6 +209,7 @@ def select_forest_plots(
         merged["bec"].isin(target.bec_codes)
         & (merged["PROJ_AGE_1"] >= target.min_projected_age)
         & (merged["distance_km"] <= target.radius_km)
+        & (merged["distance_km"] >= target.min_distance_km)
     )
     if target.first_visit_only:
         mask &= merged["FIRST_MSMT"].eq("Y")
@@ -412,6 +424,7 @@ def selection_manifest(
             "min_projected_age": target.min_projected_age,
             "sample_type": target.sample_type,
             "first_visit_only": target.first_visit_only,
+            "min_distance_km": target.min_distance_km,
         },
         "filters": {
             "holdout_fraction": holdout_fraction,

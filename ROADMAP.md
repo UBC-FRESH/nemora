@@ -191,10 +191,10 @@ Goal: validate Malcolm Knapp with an explicit regional pool and hand the selecte
 Nemora stand to FHOPS through a tested tree-inventory export. See
 `notes/phase9_cross_forest_handoff.md`.
 
-- [ ] P9.1 Validate Malcolm Knapp with an explicit regional pool (#32)
-  - [ ] Select local and regional CWHdm plots.
-  - [ ] Record pooling radius, filters, and split.
-  - [ ] Run cross-forest validation and report limits.
+- [x] P9.1 Validate Malcolm Knapp with an explicit regional pool (#32)
+  - [x] Select local and 43-plot regional CWHdm pool.
+  - [x] Record 50–100 km ring, filters, and local hold-out.
+  - [x] Run empirical transfer validation; report negative DBH/height transfer.
 - [ ] P9.2 Export the selected stand to FHOPS with round-trip tests (#33)
   - [ ] Confirm the FHOPS tree inventory contract.
   - [ ] Implement the export adapter.
