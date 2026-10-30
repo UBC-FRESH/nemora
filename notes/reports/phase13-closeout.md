@@ -14,7 +14,7 @@ Approve these actions. The agent carries them out in this order, and reads back 
 
 1. Squash-merge pull request #58, and delete the branch `feature/p13-publication`.
 2. Close parent issue #53 with a closeout comment that cites the merge commit.
-3. Leave the `v0.1.0a1` tag and GitHub release in place on `471fe82`; after the merge that commit remains in `main` history.
+3. Leave the `v0.1.0a1` tag and GitHub release in place; the tag was corrected to the squash merge commit `9327266` so the release targets `main`.
 4. Launch P14 "Post-release maintenance and next validation cycle" only if the maintainer wants another phase.
 
 Settings changes, each with its exact command. Each one runs only after its own approval.
@@ -28,7 +28,7 @@ Settings changes, each with its exact command. Each one runs only after its own 
 | Release workflow with OIDC trusted publishing | `.github/workflows/release.yaml`; TestPyPI/PyPI runs green | met |
 | TestPyPI publication | run 41031560895; clean install/CLI/pip check | met |
 | PyPI publication | run 41032225262; clean install/CLI/pip check | met |
-| Tag and GitHub release | `v0.1.0a1` on `471fe82`; release assets match PyPI | met |
+| Tag and GitHub release | `v0.1.0a1` corrected to `9327266`; release assets match PyPI | met |
 | No credentials in repository | workflow uses OIDC | met |
 | No operational claim | release notes and docs | met |
 
@@ -64,7 +64,7 @@ Settings changes, each with its exact command. Each one runs only after its own 
 | --- | --- | --- |
 | First PyPI attempt failed before upload | Rekor returned HTTP 502 during attestation signing | Retried with optional attestations disabled; OIDC trusted publishing remained active; PyPI still returned 404 before the successful retry |
 | Sdist archive hash differs from the local candidate | Rebuilt archive timestamps | Wheel hash matches; sdist content installs cleanly; PyPI hash is recorded |
-| Tag was moved from the first failed run to the attestation-fix commit before any upload | No PyPI artifact existed yet | PyPI returned 404; successful upload used tag `v0.1.0a1` on `471fe82` |
+| Tag was moved twice | First to the attestation-fix commit; after squash merge, corrected to `9327266` so it targets `main` | A duplicate tag-triggered workflow was cancelled; no additional upload occurred |
 | Old local feature branches remain | `git branch -d` refused after squash merges | Left in place; not force-deleted without approval |
 
 ## 6. Next phase

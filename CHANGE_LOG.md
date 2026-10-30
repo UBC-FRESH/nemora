@@ -834,3 +834,9 @@ python -m sphinx -b html docs _build/html -W
 - Wrote `notes/reports/phase13-closeout.md` with publication URLs, hashes, CI runs, and the Rekor/attestation deviation.
 - `0.1.0a1` is live on TestPyPI and PyPI; GitHub release assets match the PyPI hashes.
 - The phase PR is queued; no further publication is pending.
+
+## 2026-10-30 — P13 post-release correction
+
+- Tag `v0.1.0a1` corrected from `471fe82` to the squash merge commit `9327266` so the release targets `main`.
+- A duplicate tag-triggered workflow was cancelled; no additional upload occurred.
+- Marked P13 complete in the roadmap and corrected the close-out report's tag statement.

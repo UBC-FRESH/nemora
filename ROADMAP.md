@@ -16,7 +16,7 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 | P10 | #36 | `feature/p10-calibration-handoff` | complete |
 | P11 | #41 | `feature/p11-multi-block-readiness` | complete |
 | P12 | #47 | `feature/p12-release-candidate` | complete |
-| P13 | #53 | `feature/p13-publication` | pr-open |
+| P13 | #53 | `feature/p13-publication` | complete |
 
 ## Phase 0 — Foundations ✅ (complete)
 - Repository scaffolding, licensing, CI harness.
@@ -284,7 +284,7 @@ tagging or publishing until separately approved. See
 
 Parent issue: #53
 Branch: `feature/p13-publication`
-Status: pr-open
+Status: complete
 
 Goal: prepare and execute the `0.1.0a1` publication with separate explicit
 approval gates for TestPyPI and PyPI. See `notes/phase13_publication.md`.
