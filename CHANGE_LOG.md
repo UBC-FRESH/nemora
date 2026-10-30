@@ -840,3 +840,26 @@ python -m sphinx -b html docs _build/html -W
 - Tag `v0.1.0a1` corrected from `471fe82` to the squash merge commit `9327266` so the release targets `main`.
 - A duplicate tag-triggered workflow was cancelled; no additional upload occurred.
 - Marked P13 complete in the roadmap and corrected the close-out report's tag statement.
+
+## 2026-10-30 — Phase 14 activated
+
+- Closed P13 after squash-merging #58 as `9327266` and correction PR #59 as `cedb66f`.
+- Activated P14 "Post-release stabilization and validation closure" with parent #60 and tasks #61-#64.
+- Corrected stale roadmap checkboxes for P11-P13.
+
+## 2026-10-30 — P14.1 post-release verification
+
+- Base and `[lidar]` PyPI installs pass: version 0.1.0a1, CLI, `pip check`.
+- PyPI, TestPyPI, GitHub Pages docs, and release notes return 200.
+- GitHub release assets match PyPI hashes; no packaging defect found.
+
+## 2026-10-30 — P14.2/P14.3 validation closure and version decision
+
+- Deferred Malcolm Knapp calibration, LidarBC coverage, and independent-yield reconciliation with explicit triggers.
+- Decided to remain at `0.1.0a1` in maintenance mode; no `0.1.0b1`/`0.1.0` now.
+- No tag or publication follows from the decision.
+
+## 2026-10-30 — P14 queued for close-out
+
+- Wrote `notes/reports/phase14-closeout.md`; release verification passed, gaps deferred with triggers, and `0.1.0a1` enters maintenance mode.
+- PR #65 is queued; no tag or publication is included.

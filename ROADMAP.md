@@ -17,6 +17,7 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 | P11 | #41 | `feature/p11-multi-block-readiness` | complete |
 | P12 | #47 | `feature/p12-release-candidate` | complete |
 | P13 | #53 | `feature/p13-publication` | complete |
+| P14 | #60 | `feature/p14-post-release` | pr-open |
 
 ## Phase 0 — Foundations ✅ (complete)
 - Repository scaffolding, licensing, CI harness.
@@ -252,7 +253,7 @@ See `notes/phase11_multi_block_readiness.md`.
   - [x] Ran calibrated/reference and one-vs-two-truck sensitivity.
   - [x] Wrote `notes/reports/phase11_validation.md`.
   - [x] Recorded MKRf work_required warning and all limits.
-- [ ] P11.4 Prepare release/readiness docs and close out (#45)
+- [x] P11.4 Prepare release/readiness docs and close out (#45)
   - [x] Added FHOPS handoff how-to/API docs.
   - [x] Write the close-out report.
   - [x] Queue the phase PR.
@@ -267,16 +268,16 @@ Goal: prepare a `0.1.0a1` release candidate and publication checklist without
 tagging or publishing until separately approved. See
 `notes/phase12_release_candidate.md`.
 
-- [ ] P12.1 Freeze the candidate version and run release gates (#48)
-  - [ ] Update version-bearing files and tests.
-  - [ ] Run the full gate set.
+- [x] P12.1 Freeze the candidate version and run release gates (#48)
+  - [x] Update version-bearing files and tests.
+  - [x] Run the full gate set.
 - [x] P12.2 Build and smoke-test the candidate artifacts (#49)
   - [x] Built wheel/sdist; fixed sdist junk via Hatch include/exclude.
   - [x] Clean-wheel install, version, CLI, and pip check pass.
 - [x] P12.3 Write release notes and publication checklist (#50)
   - [x] Drafted `docs/releases/v0.1.0a1.md`.
   - [x] Wrote the publication checklist; no commands executed.
-- [ ] P12.4 Close out and request publication approval (#51)
+- [x] P12.4 Close out and request publication approval (#51)
   - [x] Write the close-out report.
   - [x] Queue the phase PR and request a separate publication decision.
 
@@ -292,16 +293,39 @@ approval gates for TestPyPI and PyPI. See `notes/phase13_publication.md`.
 - [x] P13.1 Add the release workflow and trusted-publisher checklist (#54)
   - [x] Added `.github/workflows/release.yaml`.
   - [x] Separated TestPyPI/PyPI environments.
-  - [ ] Document external publisher settings.
+  - [x] Documented external publisher settings.
 - [x] P13.2 Publish to TestPyPI and verify clean install (#55)
   - [x] TestPyPI approval received.
   - [x] Published; clean install and CLI pass.
 - [x] P13.3 Publish to PyPI, tag, and create the GitHub release (#56)
   - [x] PyPI approval received.
   - [x] Published; tag/release and install verified.
-- [ ] P13.4 Run post-publication verification and close out (#57)
+- [x] P13.4 Run post-publication verification and close out (#57)
   - [x] Verified TestPyPI, PyPI, tag, release assets, and installs.
   - [x] Wrote `notes/reports/phase13-closeout.md`.
+
+## Phase 14 — Post-release stabilization and validation closure
+
+Parent issue: #60
+Branch: `feature/p14-post-release`
+Status: pr-open
+
+Goal: stabilize `0.1.0a1`, close or defer validation gaps, and decide the next
+version path. See `notes/phase14_post_release.md`.
+
+- [x] P14.1 Verify release, extras, docs, and packaging (#61)
+  - [x] Clean base install verified.
+  - [x] Clean lidar-extra install verified.
+  - [x] Docs, release assets, and public surfaces return 200.
+- [x] P14.2 Review and close or defer validation gaps (#62)
+  - [x] Malcolm Knapp: defer with trigger.
+  - [x] LidarBC and yield: defer/retain with triggers.
+- [x] P14.3 Decide the next version path (#63)
+  - [x] Decision: remain `0.1.0a1` in maintenance.
+  - [x] Listed new-version triggers and approval boundary.
+- [ ] P14.4 Close out and record maintenance state (#64)
+  - [x] Wrote `notes/reports/phase14-closeout.md`.
+  - [x] Queued PR #65.
 
 ## Detailed Next Steps Notes
 1. **Distribution registry hardening**
