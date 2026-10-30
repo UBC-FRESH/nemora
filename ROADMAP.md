@@ -199,10 +199,10 @@ Nemora stand to FHOPS through a tested tree-inventory export. See
   - [x] Confirm the FHOPS tree inventory fields and units.
   - [x] Implement `nemora.export.export_fhops_tree_inventory`.
   - [x] Add a round-trip validation test through the FHOPS loader.
-- [ ] P9.3 Run the FHOPS tree-scale handoff and write the close-out report (#34)
-  - [ ] Run FHOPS on the exported inventory.
-  - [ ] Assemble the cross-forest comparison.
-  - [ ] Write the validation and close-out reports.
+- [x] P9.3 Run the FHOPS tree-scale handoff and write the close-out report (#34)
+  - [x] Ran FHOPS 1.2.0 on 1,978 exported trees: 530.54 m³, 0 unreachable.
+  - [x] Assembled the Gavin/Malcolm Knapp comparison.
+  - [x] Wrote `notes/reports/phase9_validation.md`; close-out pending.
 
 ## Detailed Next Steps Notes
 1. **Distribution registry hardening**

@@ -701,3 +701,9 @@ python -m sphinx -b html docs _build/html -W
 - Exported the 1,978-tree empirical Gavin Lake stand to `fhops.tree.inventory.v1` with synthetic one-hectare placement, block `B01`, metadata, and CSV checksum.
 - FHOPS `load_tree_inventory` accepts the export: 1,978 trees, 1 block, 8 species, no errors.
 - Added `tests/test_phase9_fhops_handoff.py` with a loader round-trip when FHOPS is available; added `notes/reports/phase9_fhops_handoff.md` and `notes/reports/phase9_fhops_export.json`.
+
+## 2026-10-30 — P9.3 FHOPS handoff run
+
+- Ran FHOPS 1.2.0 on the 1,978-tree exported Gavin inventory: 530.54 m³ processed, 0 unreachable trees, 115.46 h makespan, 106 truck loads, max landing inventory 14.89 m³.
+- Recorded the expected fixture work-required warning and the cross-forest comparison. Malcolm Knapp regional transfer is limited: BA/QMD are close, DBH -18.0% and height -26.3%.
+- Added `notes/reports/phase9_validation.md` and `notes/reports/phase9_fhops_system_summary.json`; no FHOPS core changes.
