@@ -777,3 +777,34 @@ python -m sphinx -b html docs _build/html -W
 - Wrote `notes/reports/phase11-closeout.md` with the multi-block/yield/sensitivity evidence and the P12 release-candidate recommendation.
 - Updated the roadmap to P11 `pr-open`; no merge or publication has been performed.
 - MKRf work_required warning, independent-yield discrepancy, and truck-bound makespan remain explicit.
+
+## 2026-10-30 — Phase 12 activated
+
+- Closed P11 after squash-merging #46 as `5c17e7f`; the approved-head tree matched the merge tree.
+- Activated P12 "Release candidate and publication readiness" with parent #47 and tasks #48-#51.
+- Default candidate version is `0.1.0a1`; no tag or publication is approved by this activation.
+
+## 2026-10-30 — P12.1 candidate version freeze
+
+- Set `nemora.__version__` and the Sphinx release to `0.1.0a1`.
+- Added a version regression test.
+- No tag or publication is included.
+
+## 2026-10-30 — P12.2 candidate artifacts
+
+- Built `nemora-0.1.0a1` wheel and sdist; `twine check` passes.
+- Added explicit Hatch sdist include/exclude rules; the sdist dropped from 70 MB to 1.6 MB with no build/docs/reference-paper artifacts.
+- Clean venv wheel install passes: import version 0.1.0a1, `nemora --help`, `nemora --version`, and `pip check`.
+- No upload, tag, or release was performed.
+
+## 2026-10-30 — P12.3 release notes and publication checklist
+
+- Added `docs/releases/v0.1.0a1.md` and linked it from the docs index.
+- Added `notes/reports/phase12_publication_checklist.md` with exact tag/upload commands and the trusted-publishing prerequisite.
+- Recorded the current blocker: the repository has no release workflow yet; publication needs a separately approved workflow or manual token path.
+
+## 2026-10-30 — P12 queued for close-out
+
+- Wrote `notes/reports/phase12-closeout.md` with the candidate artifact hashes, gates, and the no-tag/no-publish boundary.
+- The close-out report recommends P13 release publication only after a separate explicit approval.
+- Current blocker: no release workflow/trusted-publisher configuration exists yet.

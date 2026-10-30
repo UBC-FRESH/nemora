@@ -67,6 +67,32 @@ path = "src/nemora/__init__.py"
 [tool.hatch.build.targets.wheel]
 packages = ["src/nemora"]
 
+[tool.hatch.build.targets.sdist]
+include = [
+  "/src",
+  "/tests",
+  "/docs",
+  "/scripts",
+  "/examples",
+  "/README.md",
+  "/CHANGE_LOG.md",
+  "/ROADMAP.md",
+  "/CITATION.cff",
+  "/LICENSE",
+  "/pyproject.toml",
+  "/requirements-dev.txt",
+  "/.readthedocs.yaml",
+]
+exclude = [
+  "/build",
+  "/_build",
+  "/dist",
+  "/reference-papers",
+  "/docs/_build",
+  ".coverage",
+  "**/__pycache__",
+]
+
 [tool.pytest.ini_options]
 minversion = "7.0"
 addopts = "-ra --cov=nemora --cov-report=term-missing"

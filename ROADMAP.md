@@ -14,7 +14,8 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 | P8 | #26 | `feature/p8-validation-refinement` | complete |
 | P9 | #31 | `feature/p9-cross-forest-handoff` | complete |
 | P10 | #36 | `feature/p10-calibration-handoff` | complete |
-| P11 | #41 | `feature/p11-multi-block-readiness` | pr-open |
+| P11 | #41 | `feature/p11-multi-block-readiness` | complete |
+| P12 | #47 | `feature/p12-release-candidate` | pr-open |
 
 ## Phase 0 — Foundations ✅ (complete)
 - Repository scaffolding, licensing, CI harness.
@@ -232,7 +233,7 @@ without weakening provenance. See `notes/phase10_calibration_handoff.md`.
 
 Parent issue: #41
 Branch: `feature/p11-multi-block-readiness`
-Status: pr-open
+Status: complete
 
 Goal: build a reproducible multi-block/multi-landing scenario set, add an
 independent yield check, run sensitivity, and prepare release/readiness docs.
@@ -254,6 +255,29 @@ See `notes/phase11_multi_block_readiness.md`.
   - [x] Added FHOPS handoff how-to/API docs.
   - [x] Write the close-out report.
   - [x] Queue the phase PR.
+
+## Phase 12 — Release candidate and publication readiness
+
+Parent issue: #47
+Branch: `feature/p12-release-candidate`
+Status: pr-open
+
+Goal: prepare a `0.1.0a1` release candidate and publication checklist without
+tagging or publishing until separately approved. See
+`notes/phase12_release_candidate.md`.
+
+- [ ] P12.1 Freeze the candidate version and run release gates (#48)
+  - [ ] Update version-bearing files and tests.
+  - [ ] Run the full gate set.
+- [x] P12.2 Build and smoke-test the candidate artifacts (#49)
+  - [x] Built wheel/sdist; fixed sdist junk via Hatch include/exclude.
+  - [x] Clean-wheel install, version, CLI, and pip check pass.
+- [x] P12.3 Write release notes and publication checklist (#50)
+  - [x] Drafted `docs/releases/v0.1.0a1.md`.
+  - [x] Wrote the publication checklist; no commands executed.
+- [ ] P12.4 Close out and request publication approval (#51)
+  - [x] Write the close-out report.
+  - [x] Queue the phase PR and request a separate publication decision.
 
 ## Detailed Next Steps Notes
 1. **Distribution registry hardening**
