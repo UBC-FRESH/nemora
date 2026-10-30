@@ -840,3 +840,9 @@ python -m sphinx -b html docs _build/html -W
 - Tag `v0.1.0a1` corrected from `471fe82` to the squash merge commit `9327266` so the release targets `main`.
 - A duplicate tag-triggered workflow was cancelled; no additional upload occurred.
 - Marked P13 complete in the roadmap and corrected the close-out report's tag statement.
+
+## 2026-10-30 — Phase 14 activated
+
+- Closed P13 after squash-merging #58 as `9327266` and correction PR #59 as `cedb66f`.
+- Activated P14 "Post-release stabilization and validation closure" with parent #60 and tasks #61-#64.
+- Corrected stale roadmap checkboxes for P11-P13.
