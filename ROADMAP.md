@@ -15,7 +15,8 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 | P9 | #31 | `feature/p9-cross-forest-handoff` | complete |
 | P10 | #36 | `feature/p10-calibration-handoff` | complete |
 | P11 | #41 | `feature/p11-multi-block-readiness` | complete |
-| P12 | #47 | `feature/p12-release-candidate` | pr-open |
+| P12 | #47 | `feature/p12-release-candidate` | complete |
+| P13 | #53 | `feature/p13-publication` | pr-open |
 
 ## Phase 0 — Foundations ✅ (complete)
 - Repository scaffolding, licensing, CI harness.
@@ -260,7 +261,7 @@ See `notes/phase11_multi_block_readiness.md`.
 
 Parent issue: #47
 Branch: `feature/p12-release-candidate`
-Status: pr-open
+Status: complete
 
 Goal: prepare a `0.1.0a1` release candidate and publication checklist without
 tagging or publishing until separately approved. See
@@ -278,6 +279,29 @@ tagging or publishing until separately approved. See
 - [ ] P12.4 Close out and request publication approval (#51)
   - [x] Write the close-out report.
   - [x] Queue the phase PR and request a separate publication decision.
+
+## Phase 13 — Release publication
+
+Parent issue: #53
+Branch: `feature/p13-publication`
+Status: pr-open
+
+Goal: prepare and execute the `0.1.0a1` publication with separate explicit
+approval gates for TestPyPI and PyPI. See `notes/phase13_publication.md`.
+
+- [x] P13.1 Add the release workflow and trusted-publisher checklist (#54)
+  - [x] Added `.github/workflows/release.yaml`.
+  - [x] Separated TestPyPI/PyPI environments.
+  - [ ] Document external publisher settings.
+- [x] P13.2 Publish to TestPyPI and verify clean install (#55)
+  - [x] TestPyPI approval received.
+  - [x] Published; clean install and CLI pass.
+- [x] P13.3 Publish to PyPI, tag, and create the GitHub release (#56)
+  - [x] PyPI approval received.
+  - [x] Published; tag/release and install verified.
+- [ ] P13.4 Run post-publication verification and close out (#57)
+  - [x] Verified TestPyPI, PyPI, tag, release assets, and installs.
+  - [x] Wrote `notes/reports/phase13-closeout.md`.
 
 ## Detailed Next Steps Notes
 1. **Distribution registry hardening**

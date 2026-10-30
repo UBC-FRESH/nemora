@@ -808,3 +808,29 @@ python -m sphinx -b html docs _build/html -W
 - Wrote `notes/reports/phase12-closeout.md` with the candidate artifact hashes, gates, and the no-tag/no-publish boundary.
 - The close-out report recommends P13 release publication only after a separate explicit approval.
 - Current blocker: no release workflow/trusted-publisher configuration exists yet.
+
+## 2026-10-30 — Phase 13 activated
+
+- Closed P12 after squash-merging #52 as `a513bc7`; the approved-head tree matched the merge tree.
+- Activated P13 "Release publication" with parent #53 and tasks #54-#57.
+- Recorded separate approval gates for TestPyPI and PyPI/tag publication.
+
+## 2026-10-30 — P13.1 release workflow and checklist
+
+- Added `.github/workflows/release.yaml` with build, TestPyPI, and PyPI jobs using OIDC trusted publishing and separate environments.
+- Added `notes/reports/phase13_publication_checklist.md` with candidate hashes, external settings to confirm, and separate approval gates.
+- Added a workflow contract test. No tag or publication was performed.
+
+## 2026-10-30 — P13.2/P13.3 published 0.1.0a1
+
+- TestPyPI: https://test.pypi.org/project/nemora/0.1.0a1/ — run 41031560895 green; clean install, CLI, and pip check pass.
+- PyPI: https://pypi.org/project/nemora/0.1.0a1/ — run 41032225262 green; clean install, CLI, and pip check pass.
+- GitHub release: https://github.com/UBC-FRESH/nemora/releases/tag/v0.1.0a1 with PyPI artifacts.
+- First PyPI attempt failed before upload on Rekor HTTP 502; retry disabled optional attestations while retaining OIDC trusted publishing.
+- Wheel SHA-256 matched the approved candidate; sdist archive hash differs due rebuild but installs cleanly.
+
+## 2026-10-30 — P13 queued for close-out
+
+- Wrote `notes/reports/phase13-closeout.md` with publication URLs, hashes, CI runs, and the Rekor/attestation deviation.
+- `0.1.0a1` is live on TestPyPI and PyPI; GitHub release assets match the PyPI hashes.
+- The phase PR is queued; no further publication is pending.
