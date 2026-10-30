@@ -310,6 +310,7 @@ def validate_empirical_stand(
     holdout_trees: pd.DataFrame,
     *,
     area_ha: float = 1.0,
+    bootstrap_replicates: int = 100,
     seed: int = 20261030,
 ) -> StandValidationResult:
     """Validate a plot-level empirical stand against held-out plots.
@@ -337,6 +338,12 @@ def validate_empirical_stand(
         pd.to_numeric(holdout_trees["tally"], errors="coerce").fillna(1.0).to_numpy(dtype=float),
     )
     tv = _species_tv(synthetic.species_proportions, holdout.species_proportions)
+    uncertainty, successful = _bootstrap_empirical_uncertainty(
+        training_trees,
+        area_ha=area_ha,
+        replicates=bootstrap_replicates,
+        seed=seed,
+    )
     return StandValidationResult(
         training=training,
         holdout=holdout,
@@ -346,9 +353,9 @@ def validate_empirical_stand(
         species_tv_distance=tv,
         fit_parameters={},
         height_fit={},
-        uncertainty={},
-        bootstrap_replicates=0,
-        successful_bootstrap=0,
+        uncertainty=uncertainty,
+        bootstrap_replicates=bootstrap_replicates,
+        successful_bootstrap=successful,
         seed=seed,
         holdout_plots=holdout_plots,
         synthetic_trees=synthetic_trees,
@@ -453,6 +460,7 @@ def compare_stand_models(
             training_trees,
             holdout_trees,
             area_ha=area_ha,
+            bootstrap_replicates=0,
             seed=seed,
         ),
     )
@@ -767,6 +775,66 @@ def _species_tv(
 ) -> float:
     keys = set(synthetic) | set(holdout)
     return float(0.5 * sum(abs(synthetic.get(key, 0.0) - holdout.get(key, 0.0)) for key in keys))
+
+
+def _bootstrap_empirical_uncertainty(
+    training_trees: pd.DataFrame,
+    *,
+    area_ha: float,
+    replicates: int,
+    seed: int,
+) -> tuple[dict[str, dict[str, float]], int]:
+    if replicates < 1:
+        return {}, 0
+    plot_ids = sorted(training_trees["plot_id"].astype(str).unique())
+    if len(plot_ids) < 2:
+        return {}, 0
+    rng = np.random.default_rng(seed + 2)
+    samples: dict[str, list[float]] = {
+        "stems_per_ha": [],
+        "basal_area_m2_per_ha": [],
+        "qmd_cm": [],
+        "mean_dbh_cm": [],
+        "mean_height_m": [],
+    }
+    successful = 0
+    for index in range(replicates):
+        sampled_ids = rng.choice(plot_ids, size=len(plot_ids), replace=True)
+        pieces = []
+        for sample_index, plot_id in enumerate(sampled_ids):
+            frame = training_trees.loc[training_trees["plot_id"].astype(str) == plot_id].copy()
+            frame["plot_id"] = f"{plot_id}__empirical{sample_index}"
+            pieces.append(frame)
+        sample = pd.concat(pieces, ignore_index=True)
+        try:
+            training_metrics = _mean_metrics(list(_plot_metrics(sample).values()))
+            synthetic_trees = _generate_empirical(
+                sample,
+                count=max(1, int(round(training_metrics.stems_per_ha * area_ha))),
+                seed=seed + index + 1,
+            )
+            synthetic = stand_metrics_from_trees(synthetic_trees, area_ha=area_ha)
+        except ValueError:
+            continue
+        successful += 1
+        samples["stems_per_ha"].append(synthetic.stems_per_ha)
+        samples["basal_area_m2_per_ha"].append(synthetic.basal_area_m2_per_ha)
+        samples["qmd_cm"].append(synthetic.qmd_cm)
+        samples["mean_dbh_cm"].append(synthetic.mean_dbh_cm)
+        if synthetic.mean_height_m is not None:
+            samples["mean_height_m"].append(synthetic.mean_height_m)
+    uncertainty: dict[str, dict[str, float]] = {}
+    for key, values in samples.items():
+        if not values:
+            continue
+        array = np.asarray(values, dtype=float)
+        uncertainty[key] = {
+            "p05": float(np.percentile(array, 5.0)),
+            "median": float(np.percentile(array, 50.0)),
+            "p95": float(np.percentile(array, 95.0)),
+            "replicates": float(array.size),
+        }
+    return uncertainty, successful
 
 
 def _bootstrap_uncertainty(
