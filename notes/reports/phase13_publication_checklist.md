@@ -10,7 +10,9 @@ Status: prepared. Not published.
 - Wheel: `nemora-0.1.0a1-py3-none-any.whl`
   - SHA-256: `67034381f2cbfe3d10faeaaef55046c075332c785cf1819e6cc2399d83db2def`
 - Sdist: `nemora-0.1.0a1.tar.gz`
-  - SHA-256: `2923e42084e740d3e2aeb141358329d531fb2dfb7c52a9c790584a451ce4faec`
+  - Build SHA-256: `2923e42084e740d3e2aeb141358329d531fb2dfb7c52a9c790584a451ce4faec`
+  - TestPyPI SHA-256: `7fc39a8911c78da85aa437e53ae243f1f4268d51166b00e525166d34042712cd`
+  - The sdist archive hash changes with build timestamps; content was install-verified.
 
 ## Workflow
 
@@ -19,8 +21,9 @@ Status: prepared. Not published.
 - TestPyPI environment: `testpypi`
 - PyPI environment: `pypi`
 - OIDC trusted publishing; no tokens in the repository.
-- Tag runs build → TestPyPI only.
-- PyPI publication is a separate, separately approved step; it is not chained to the tag run.
+- Tags ending in `-testpypi` run build → TestPyPI.
+- Final `v0.1.0a1` runs build → PyPI; TestPyPI is skipped.
+- PyPI publication is separately approved.
 
 ## External settings the maintainer must confirm
 
@@ -35,12 +38,9 @@ Status: prepared. Not published.
 1. Merge the approved P13 PR.
 2. Confirm the external trusted-publisher settings.
 3. Approve TestPyPI publication explicitly.
-4. Tag `v0.1.0a1` on the approved merged commit and watch the TestPyPI workflow:
-   - build;
-   - `publish-testpypi`;
-   - stop and verify TestPyPI before any PyPI step.
+4. TestPyPI verification tag `v0.1.0a1-testpypi` published and verified.
 5. Approve PyPI publication explicitly.
-6. Add/execute the separately approved PyPI publication path; do not reuse the TestPyPI tag run.
+6. Tag `v0.1.0a1` on the approved commit; the workflow skips TestPyPI and publishes PyPI.
 7. Create the GitHub release; verify installs and release assets.
 
 ## Approval boundary
