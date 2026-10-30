@@ -245,3 +245,24 @@ def test_resolve_tree_detail_requires_live_status_column() -> None:
             _tree_detail().drop(columns=["LV_D"]),
             _selected_for_trees(),
         )
+
+
+def test_select_forest_plots_supports_a_distance_ring() -> None:
+    target = ForestPlotTarget(
+        name="ring",
+        latitude=0.0,
+        longitude=0.0,
+        radius_km=10.0,
+        bec_codes=("AAA1", "BBB1"),
+        min_distance_km=2.0,
+    )
+
+    selected = select_forest_plots(
+        _site_header(),
+        _plot_header(),
+        _sample_by_visit(),
+        target=target,
+    )
+
+    assert selected["plot_id"].tolist() == ["C2_v1_p11"]
+    assert selected["distance_km"].min() > 2.0

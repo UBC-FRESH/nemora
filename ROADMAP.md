@@ -11,7 +11,8 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 | --- | --- | --- | --- |
 | P6 | #15 | `feature/p6-plot-lidar-interfaces` | complete |
 | P7 | #20 | `feature/p7-research-forest-validation` | complete |
-| P8 | #26 | `feature/p8-validation-refinement` | pr-open |
+| P8 | #26 | `feature/p8-validation-refinement` | complete |
+| P9 | #31 | `feature/p9-cross-forest-handoff` | pr-open |
 
 ## Phase 0 — Foundations ✅ (complete)
 - Repository scaffolding, licensing, CI harness.
@@ -160,7 +161,7 @@ real tree map. See `notes/phase7_research_forest_validation.md`.
 
 Parent issue: #26
 Branch: `feature/p8-validation-refinement`
-Status: pr-open
+Status: complete
 
 Goal: improve the Gavin Lake stand model and close the LidarBC coverage gaps
 without weakening provenance or making operational claims. See
@@ -179,6 +180,29 @@ without weakening provenance or making operational claims. See
   - [x] Rerun the stand validation with the selected empirical model and use the expanded LiDAR coverage.
   - [x] Report before/after metrics and uncertainty.
   - [x] Write `notes/reports/phase8_validation.md` and the phase close-out report.
+
+## Phase 9 — Cross-forest validation and FHOPS handoff
+
+Parent issue: #31
+Branch: `feature/p9-cross-forest-handoff`
+Status: pr-open
+
+Goal: validate Malcolm Knapp with an explicit regional pool and hand the selected
+Nemora stand to FHOPS through a tested tree-inventory export. See
+`notes/phase9_cross_forest_handoff.md`.
+
+- [x] P9.1 Validate Malcolm Knapp with an explicit regional pool (#32)
+  - [x] Select local and 43-plot regional CWHdm pool.
+  - [x] Record 50–100 km ring, filters, and local hold-out.
+  - [x] Run empirical transfer validation; report negative DBH/height transfer.
+- [x] P9.2 Export the selected stand to FHOPS with round-trip tests (#33)
+  - [x] Confirm the FHOPS tree inventory fields and units.
+  - [x] Implement `nemora.export.export_fhops_tree_inventory`.
+  - [x] Add a round-trip validation test through the FHOPS loader.
+- [x] P9.3 Run the FHOPS tree-scale handoff and write the close-out report (#34)
+  - [x] Ran FHOPS 1.2.0 on 1,978 exported trees: 530.54 m³, 0 unreachable.
+  - [x] Assembled the Gavin/Malcolm Knapp comparison.
+  - [x] Wrote `notes/reports/phase9_validation.md` and the phase close-out report.
 
 ## Detailed Next Steps Notes
 1. **Distribution registry hardening**

@@ -681,3 +681,35 @@ python -m sphinx -b html docs _build/html -W
 - Wrote `notes/reports/phase8-closeout.md` with the P8 evidence package and the P9 cross-forest/FHOPS handoff recommendation.
 - Updated the roadmap to P8 `pr-open`; no merge has been performed.
 - The four residual LidarBC coverage gaps and the five-plot hold-out remain explicit limitations.
+
+## 2026-10-30 — Phase 9 activated
+
+- Closed P8 after squash-merging #30 as `da48075`; the approved-head tree matched the merge tree.
+- Activated P9 "Cross-forest validation and FHOPS handoff" with parent #31 and tasks #32-#34.
+- Recorded the Malcolm Knapp CWHdm regional-pool plan and the FHOPS tree-inventory handoff contract.
+
+## 2026-10-30 — P9.1 Malcolm Knapp regional validation
+
+- Added `min_distance_km` ring support to `ForestPlotTarget` and a `mkrf_regional` target for the 50–100 km CWHdm pool.
+- Added `scripts/validate_phase9_mkrf.py`; trained on 43 regional CWHdm plots and held out the 6 local mature plots.
+- Transfer result is negative: BA -7.4% and QMD -2.3% are close, but mean DBH is -18.0%, mean height -26.3%, and stems -20.5%. CWHdm alone is too coarse for local transfer.
+- Added `notes/reports/phase9_mkrf_validation.md`, `notes/reports/phase9_mkrf_validation.json`, and a regression check.
+
+## 2026-10-30 — P9.2 FHOPS tree-inventory handoff
+
+- Added `nemora.export.export_fhops_tree_inventory` and `scripts/export_phase9_fhops.py`.
+- Exported the 1,978-tree empirical Gavin Lake stand to `fhops.tree.inventory.v1` with synthetic one-hectare placement, block `B01`, metadata, and CSV checksum.
+- FHOPS `load_tree_inventory` accepts the export: 1,978 trees, 1 block, 8 species, no errors.
+- Added `tests/test_phase9_fhops_handoff.py` with a loader round-trip when FHOPS is available; added `notes/reports/phase9_fhops_handoff.md` and `notes/reports/phase9_fhops_export.json`.
+
+## 2026-10-30 — P9.3 FHOPS handoff run
+
+- Ran FHOPS 1.2.0 on the 1,978-tree exported Gavin inventory: 530.54 m³ processed, 0 unreachable trees, 115.46 h makespan, 106 truck loads, max landing inventory 14.89 m³.
+- Recorded the expected fixture work-required warning and the cross-forest comparison. Malcolm Knapp regional transfer is limited: BA/QMD are close, DBH -18.0% and height -26.3%.
+- Added `notes/reports/phase9_validation.md` and `notes/reports/phase9_fhops_system_summary.json`; no FHOPS core changes.
+
+## 2026-10-30 — P9 queued for close-out
+
+- Wrote `notes/reports/phase9-closeout.md` with the cross-forest and FHOPS handoff evidence package and the P10 calibration/handoff hardening recommendation.
+- Updated the roadmap to P9 `pr-open`; no merge has been performed.
+- The Malcolm Knapp regional transfer and FHOPS fixture warning remain explicit limits.

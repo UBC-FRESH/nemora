@@ -12,10 +12,12 @@ The checked-in script defines two targets:
 | --- | --- | --- | --- |
 | `gavin` | 52.462616, -121.763919 | 25 km | `ICHmk3`, `SBSdw1` |
 | `mkrf` | 49.306630, -122.551375 | 50 km | `CWHdm` |
+| `mkrf_regional` | 49.306630, -122.551375 | 50-100 km ring | `CWHdm` |
 
 The default path starts with Gavin Lake when its local sample can support a
 train/hold-out split. Malcolm Knapp is the fallback, with the wider radius
-recorded explicitly.
+recorded explicitly. `mkrf_regional` is a 50-100 km ring used as a training pool
+when the six local mature plots are too few for fitting.
 
 ## Run the selection
 

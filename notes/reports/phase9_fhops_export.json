@@ -1,0 +1,29 @@
+{
+  "block_id": "B01",
+  "forest": "Alex Fraser Research Forest, Gavin Lake",
+  "holdout_plots": 5,
+  "inventory_relpath": "build/phase9/fhops/tree_inventory.csv",
+  "inventory_sha256": "0c431c492d1875a104bc05fdc7174facc8c60291a974b446986ce0ac6bf0ca58",
+  "metadata_relpath": "build/phase9/fhops/tree_inventory.meta.json",
+  "model": "empirical",
+  "stand_metrics": {
+    "basal_area_m2_per_ha": 47.53916751194697,
+    "mean_dbh_cm": 14.018301314459048,
+    "mean_height_m": 14.665369059656218,
+    "qmd_cm": 17.493137178094962,
+    "species_proportions": {
+      "AC": 0.0005055611729019212,
+      "AT": 0.2320525783619818,
+      "BL": 0.05712841253791709,
+      "EP": 0.016683518705763397,
+      "FD": 0.38018200202224467,
+      "PL": 0.07937310414560161,
+      "SW": 0.1789686552072801,
+      "W": 0.0551061678463094
+    },
+    "stems_per_ha": 1978.0,
+    "trees": 1978
+  },
+  "training_plots": 15,
+  "tree_count": 1978
+}
