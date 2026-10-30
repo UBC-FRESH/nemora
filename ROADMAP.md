@@ -5,6 +5,12 @@ meta-package. It is intentionally aggressive—fit is sprinting to alpha—while
 will land in sequenced phases. The plan is updated alongside daily work; if something feels out of
 date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 
+## Issue Tracker Map
+
+| Phase | Parent issue | Branch | Status |
+| --- | --- | --- | --- |
+| P6 | #15 | `feature/p6-plot-lidar-interfaces` | active |
+
 ## Phase 0 — Foundations ✅ (complete)
 - Repository scaffolding, licensing, CI harness.
 - Initial documentation + contribution standards.
@@ -96,6 +102,30 @@ fixture is deterministic and runs through ws4 build/simulate; the ingest schema
 rejects a missing key and reproduces the existing output; the sampling wrapper
 is reproducible; each child has a test that can fail and a docs note.
 
+## Phase 6 — Plot resolution and LiDAR observation interfaces
+
+Parent issue: #15
+Branch: `feature/p6-plot-lidar-interfaces`
+Status: active
+
+Goal: make Nemora the home for generic plot resolution/materialization and
+LiDAR observation sampling while keeping raw LiDAR production in FEMIC/WS4.
+See `notes/adr/0001-plot-lidar-boundaries.md` and
+`notes/phase6_plot_lidar_interfaces.md`.
+
+- [x] P6.1 Record the plot/LiDAR boundary and API plan (#16)
+  - [x] Audit the existing Nemora, WS4, and FEMIC surfaces.
+  - [x] Write the ADR and phase plan.
+  - [x] Add the Phase 6 roadmap and issue links.
+- [x] P6.2 Add plot resolution and tally materialization helpers (#17)
+  - [x] Add `nemora.ingest.plots` with mapped-table resolution.
+  - [x] Add opt-in tally materialization with deterministic tree IDs.
+  - [x] Add tests and inventory-schema documentation.
+- [x] P6.3 Add optional LiDAR raster and canopy metrics adapter (#18)
+  - [x] Add `nemora.lidar` raster sampling and canopy metrics.
+  - [x] Add synthetic raster tests and optional-dependency guidance.
+  - [x] Add API/how-to documentation and the `lidar` extra.
+
 ## Detailed Next Steps Notes
 1. **Distribution registry hardening**
    - [x] Inventory bounds/defaults/extras scattered across fit, sampling, and ingest helpers; relocate the metadata into `src/nemora/distributions` and surface it through helper APIs.
@@ -146,6 +176,11 @@ is reproducible; each child has a test that can fail and a docs note.
    - [x] Return allocation, sample coordinates, structural strata, and versions.
    - [x] Add the deterministic metric example and real/skipped integration tests.
    - [x] Document installation, reproducibility, and maintenance cost.
+11. **P6 plot/LiDAR boundary**
+   - [x] Record the ADR and phase plan.
+   - [x] Add mapped plot release resolution and tally materialization.
+   - [x] Add optional raster sampling and canopy metrics.
+   - [x] Keep LiDAR catalog/materialization/terrain/ITD production in FEMIC/WS4.
 
 ## Backlog & Ideas
 - [ ] Investigate GPU acceleration for large tally batches.
