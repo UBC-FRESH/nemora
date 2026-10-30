@@ -796,3 +796,9 @@ python -m sphinx -b html docs _build/html -W
 - Added explicit Hatch sdist include/exclude rules; the sdist dropped from 70 MB to 1.6 MB with no build/docs/reference-paper artifacts.
 - Clean venv wheel install passes: import version 0.1.0a1, `nemora --help`, `nemora --version`, and `pip check`.
 - No upload, tag, or release was performed.
+
+## 2026-10-30 — P12.3 release notes and publication checklist
+
+- Added `docs/releases/v0.1.0a1.md` and linked it from the docs index.
+- Added `notes/reports/phase12_publication_checklist.md` with exact tag/upload commands and the trusted-publishing prerequisite.
+- Recorded the current blocker: the repository has no release workflow yet; publication needs a separately approved workflow or manual token path.

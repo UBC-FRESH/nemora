@@ -272,9 +272,9 @@ tagging or publishing until separately approved. See
 - [x] P12.2 Build and smoke-test the candidate artifacts (#49)
   - [x] Built wheel/sdist; fixed sdist junk via Hatch include/exclude.
   - [x] Clean-wheel install, version, CLI, and pip check pass.
-- [ ] P12.3 Write release notes and publication checklist (#50)
-  - [ ] Draft release notes.
-  - [ ] Write tag/trusted-publishing commands without executing.
+- [x] P12.3 Write release notes and publication checklist (#50)
+  - [x] Drafted `docs/releases/v0.1.0a1.md`.
+  - [x] Wrote the publication checklist; no commands executed.
 - [ ] P12.4 Close out and request publication approval (#51)
   - [ ] Write the close-out report.
   - [ ] Queue the phase PR and request a separate publication decision.
