@@ -858,3 +858,8 @@ python -m sphinx -b html docs _build/html -W
 - Deferred Malcolm Knapp calibration, LidarBC coverage, and independent-yield reconciliation with explicit triggers.
 - Decided to remain at `0.1.0a1` in maintenance mode; no `0.1.0b1`/`0.1.0` now.
 - No tag or publication follows from the decision.
+
+## 2026-10-30 — P14 queued for close-out
+
+- Wrote `notes/reports/phase14-closeout.md`; release verification passed, gaps deferred with triggers, and `0.1.0a1` enters maintenance mode.
+- PR #65 is queued; no tag or publication is included.
