@@ -1,0 +1,10 @@
+{
+  "block_id": "B01",
+  "inventory_path": "build/phase9/fhops/tree_inventory.csv",
+  "inventory_sha256": "0c431c492d1875a104bc05fdc7174facc8c60291a974b446986ce0ac6bf0ca58",
+  "metadata_path": "build/phase9/fhops/tree_inventory.meta.json",
+  "metadata_sha256": "38657c2cf2b8d69c1e0411fbd9e345455e7b35f7ee305c409fb8d5b7fa4ba52c",
+  "pin_valid": true,
+  "scenario_path": "build/phase10/fhops/scenario/scenario.yaml",
+  "work_required_m3": 530.5433400362283
+}

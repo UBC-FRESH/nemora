@@ -726,3 +726,10 @@ python -m sphinx -b html docs _build/html -W
 - Ran age-stratified regional transfer: 15 regional plots vs 43 in P9.
 - Composite score improved from 0.929 to 0.758 and DBH KS from 0.277 to 0.116, but stems/ha worsened from -20.5% to -38.8% and BA from -7.4% to -18.1%.
 - Reported the trade-off in `notes/reports/phase10_mkrf_stratified.md`; do not use it for system comparison without a density constraint.
+
+## 2026-10-30 — P10.2/P10.3 FHOPS handoff hardening and rate sensitivity
+
+- Added `nemora.fhops_handoff` and `scripts/register_phase10_fhops.py`; scenario pin/checksum validation and block reconciliation are automated.
+- Reconciled `work_required` to 530.543340 m³; the FHOPS work-required warning is gone.
+- Ran calibrated and reference FHOPS scenarios: 530.54 m³ in both; makespan 115.456 h vs 115.774 h (+0.27%), 0 unreachable, no warnings. Skidder utilisation is materially rate-sensitive; makespan is truck-bound.
+- Added `notes/reports/phase10_fhops_scenario.md`, `notes/reports/phase10_validation.md`, and the rate summary JSON.

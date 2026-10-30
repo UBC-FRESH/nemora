@@ -218,14 +218,14 @@ without weakening provenance. See `notes/phase10_calibration_handoff.md`.
   - [x] Inspected age/height distributions; age-first rule selected.
   - [x] Recorded the 80–110 age rule before scoring.
   - [x] Reran transfer; DBH/height/KS improved, density/BA worsened.
-- [ ] P10.2 Harden FHOPS scenario registration and block reconciliation (#38)
-  - [ ] Automate scenario pin/checksum checks.
-  - [ ] Reconcile or explain block `work_required`.
-  - [ ] Add a handoff regression test.
-- [ ] P10.3 Rerun cross-forest system comparison and close out (#39)
-  - [ ] Run the reconciled FHOPS scenario.
-  - [ ] Add rate-sensitivity evidence.
-  - [ ] Write the validation and close-out reports.
+- [x] P10.2 Harden FHOPS scenario registration and block reconciliation (#38)
+  - [x] Automate scenario pin/checksum checks.
+  - [x] Reconciled block `work_required` to 530.543 m³; warning removed.
+  - [x] Added `tests/test_phase10_fhops_scenario.py`.
+- [x] P10.3 Rerun cross-forest system comparison and close out (#39)
+  - [x] Ran calibrated and reference scenarios.
+  - [x] Added calibrated-vs-reference rate sensitivity.
+  - [x] Wrote `notes/reports/phase10_validation.md`; close-out pending.
 
 ## Detailed Next Steps Notes
 1. **Distribution registry hardening**
