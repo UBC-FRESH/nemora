@@ -269,9 +269,9 @@ tagging or publishing until separately approved. See
 - [ ] P12.1 Freeze the candidate version and run release gates (#48)
   - [ ] Update version-bearing files and tests.
   - [ ] Run the full gate set.
-- [ ] P12.2 Build and smoke-test the candidate artifacts (#49)
-  - [ ] Build wheel/sdist.
-  - [ ] Clean-wheel install and smoke tests.
+- [x] P12.2 Build and smoke-test the candidate artifacts (#49)
+  - [x] Built wheel/sdist; fixed sdist junk via Hatch include/exclude.
+  - [x] Clean-wheel install, version, CLI, and pip check pass.
 - [ ] P12.3 Write release notes and publication checklist (#50)
   - [ ] Draft release notes.
   - [ ] Write tag/trusted-publishing commands without executing.

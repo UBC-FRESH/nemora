@@ -789,3 +789,10 @@ python -m sphinx -b html docs _build/html -W
 - Set `nemora.__version__` and the Sphinx release to `0.1.0a1`.
 - Added a version regression test.
 - No tag or publication is included.
+
+## 2026-10-30 — P12.2 candidate artifacts
+
+- Built `nemora-0.1.0a1` wheel and sdist; `twine check` passes.
+- Added explicit Hatch sdist include/exclude rules; the sdist dropped from 70 MB to 1.6 MB with no build/docs/reference-paper artifacts.
+- Clean venv wheel install passes: import version 0.1.0a1, `nemora --help`, `nemora --version`, and `pip check`.
+- No upload, tag, or release was performed.
