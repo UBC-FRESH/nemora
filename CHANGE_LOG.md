@@ -713,3 +713,9 @@ python -m sphinx -b html docs _build/html -W
 - Wrote `notes/reports/phase9-closeout.md` with the cross-forest and FHOPS handoff evidence package and the P10 calibration/handoff hardening recommendation.
 - Updated the roadmap to P9 `pr-open`; no merge has been performed.
 - The Malcolm Knapp regional transfer and FHOPS fixture warning remain explicit limits.
+
+## 2026-10-30 — Phase 10 activated
+
+- Closed P9 after squash-merging #35 as `87dc80b`; the approved-head tree matched the merge tree.
+- Activated P10 "Calibration and handoff hardening" with parent #36 and tasks #37-#39.
+- Recorded the age/height stratification plan and the FHOPS scenario pin/reconciliation plan.
