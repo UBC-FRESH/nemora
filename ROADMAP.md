@@ -251,7 +251,7 @@ See `notes/phase11_multi_block_readiness.md`.
   - [x] Wrote `notes/reports/phase11_validation.md`.
   - [x] Recorded MKRf work_required warning and all limits.
 - [ ] P11.4 Prepare release/readiness docs and close out (#45)
-  - [ ] Update release/readiness docs.
+  - [x] Added FHOPS handoff how-to/API docs.
   - [ ] Write the close-out report.
   - [ ] Queue the phase PR.
 

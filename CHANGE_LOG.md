@@ -766,3 +766,8 @@ python -m sphinx -b html docs _build/html -W
 - Truck count dominates makespan: Gavin 115.456 h -> 58.304 h; Malcolm Knapp 129.756 h -> 65.839 h. Rate-model differences are small at one truck.
 - Gavin runs are warning-free; MKRf retains the expected work_required mismatch from the independent estimate.
 - Added `notes/reports/phase11_validation.md` and `notes/reports/phase11_sensitivity.json`.
+
+## 2026-10-30 — P11.4 handoff docs
+
+- Added `docs/howto/fhops_handoff.md` and `docs/api/handoff.md` covering export, scenario registration, independent yield checks, FHOPS run, and limits.
+- Updated the how-to and API indexes. No release tag or publication is included.
