@@ -752,3 +752,10 @@ python -m sphinx -b html docs _build/html -W
 - Built Gavin B01/L1 and Malcolm Knapp B02/L2 scenarios; both pins validate and both pass `fhops validate`.
 - Gavin uses the P9 inventory with reconciled 530.543340 m³; Malcolm Knapp uses a local six-plot empirical scenario and leaves `work_required` pending P11.2.
 - Added `notes/reports/phase11_scenarios.md` and a catalog regression test.
+
+## 2026-10-30 — P11.2 independent yield check
+
+- Added `nemora.yield_check` with a paraboloid-style independent volume estimate and comparison helper.
+- Gavin estimate is 417.64 m³ vs FHOPS 530.54 m³ (-21.3%); the discrepancy is retained as evidence, not forced to match.
+- Malcolm Knapp `work_required` reconciled to 471.614268 m³; scenario pin remains valid.
+- Added `scripts/check_phase11_yield.py`, `notes/reports/phase11_yield_check.md`, and regression tests.

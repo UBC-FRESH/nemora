@@ -1,0 +1,33 @@
+{
+  "caveat": "Paraboloid-style independent check; not a taper model or operational yield estimate.",
+  "estimator": {
+    "form_factor": 0.5,
+    "formula": "V = pi/4 * D^2 * H_m * form_factor; H_m defaults to 0.70 * total height",
+    "mean_volume_m3": 0.21114076472039028,
+    "merchantable_height_ratio": 0.7,
+    "total_volume_m3": 417.636432616932,
+    "tree_count": 1978
+  },
+  "gavin": {
+    "estimate_m3": 417.636432616932,
+    "estimate_vs_processed_relative": -0.21281373056456884,
+    "estimate_vs_registered_relative": -0.21281373056456884,
+    "fhops_processed_m3": 530.5433400362283,
+    "registered_vs_processed_relative": 0.0,
+    "registered_work_required_m3": 530.5433400362283
+  },
+  "mkrf": {
+    "estimate_m3": 471.6142680361856,
+    "estimate_vs_registered_relative": 0.0,
+    "registered_work_required_m3": 471.6142680361856
+  },
+  "mkrf_registration": {
+    "block_id": "B02",
+    "inventory_path": "build/phase11/mkrf/inventory/tree_inventory.csv",
+    "inventory_sha256": "456b3e4573605de949a02b67a5506b30a5f55851610e3afd45813227deab3fa9",
+    "metadata_path": "build/phase11/mkrf/inventory/tree_inventory.meta.json",
+    "metadata_sha256": "b39076fba11d240740f01de02d0d907c60e1571c3f4d051be3c2dadfdc9d937c",
+    "scenario_path": "build/phase11/mkrf/scenario/scenario.yaml",
+    "work_required_m3": 471.6142680361856
+  }
+}

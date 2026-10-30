@@ -242,10 +242,10 @@ See `notes/phase11_multi_block_readiness.md`.
   - [x] Registered Gavin B01/L1 and Malcolm Knapp B02/L2 scenarios.
   - [x] Wrote `notes/reports/phase11_scenario_catalog.json`.
   - [x] Added `tests/test_phase11_scenario_catalog.py`.
-- [ ] P11.2 Add independent yield validation and handoff hardening (#43)
-  - [ ] Choose and document an independent volume estimator.
-  - [ ] Compare estimate, work_required, and FHOPS processed volume.
-  - [ ] Add a regression test.
+- [x] P11.2 Add independent yield validation and handoff hardening (#43)
+  - [x] Chose and documented a paraboloid-style estimator.
+  - [x] Compared Gavin estimate (-21.3% vs FHOPS) and reconciled MKRf work_required.
+  - [x] Added `tests/test_phase11_yield_check.py`.
 - [ ] P11.3 Run sensitivity set and write the multi-block report (#44)
   - [ ] Run calibrated/reference rates and truck-count sensitivity.
   - [ ] Write the multi-block report.

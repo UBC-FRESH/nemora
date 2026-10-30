@@ -26,8 +26,13 @@
       "pin_valid": true,
       "scenario_id": "mkrf-local-empirical",
       "scenario_path": "build/phase11/mkrf/scenario/scenario.yaml",
-      "work_required_m3": null
+      "work_required_m3": 471.6142680361856,
+      "work_required_source": "independent paraboloid estimate (P11.2)"
     }
   ],
-  "schema_version": "nemora.scenario_catalog.v1"
+  "schema_version": "nemora.scenario_catalog.v1",
+  "yield_check": {
+    "gavin_estimate_m3": 417.636432616932,
+    "mkrf_estimate_m3": 471.6142680361856
+  }
 }
