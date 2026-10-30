@@ -17,7 +17,7 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 | P11 | #41 | `feature/p11-multi-block-readiness` | complete |
 | P12 | #47 | `feature/p12-release-candidate` | complete |
 | P13 | #53 | `feature/p13-publication` | complete |
-| P14 | #60 | `feature/p14-post-release` | pr-open |
+| P14 | #60 | `feature/p14-post-release` | complete |
 
 ## Phase 0 — Foundations ✅ (complete)
 - Repository scaffolding, licensing, CI harness.
@@ -308,7 +308,7 @@ approval gates for TestPyPI and PyPI. See `notes/phase13_publication.md`.
 
 Parent issue: #60
 Branch: `feature/p14-post-release`
-Status: pr-open
+Status: complete
 
 Goal: stabilize `0.1.0a1`, close or defer validation gaps, and decide the next
 version path. See `notes/phase14_post_release.md`.
