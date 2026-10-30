@@ -648,3 +648,36 @@ python -m sphinx -b html docs _build/html -W
 - Materialized 16 DEM/DSM pairs (32 tiles) with `femic.lidar.materialization.materialize_lidar_selection`, derived CHM/slope with `femic.lidar.canopy` and `femic.lidar.terrain`, and sampled plots plus the synthetic-stand centre with `nemora.lidar`.
 - 15 of 20 selected plots have valid canopy/slope samples; 4 have no tile-index hit and 1 has no valid sampled pixels. Results are in `notes/reports/phase7_lidar_metrics.json` and the corrected `notes/reports/phase7_lidar_coverage.md`.
 - The earlier P7.3 deferral is withdrawn; the remaining limitation is partial coverage, not missing data.
+
+## 2026-10-30 — Phase 8 activated
+
+- Closed P7 after squash-merging #25 as `003506c`; the approved-head tree matched the merge tree.
+- Activated P8 "Validation refinement and LiDAR coverage expansion" with parent #26 and tasks #27-#29.
+- Recorded the refinement plan: species-stratified/mixture/plot-level model comparison, LidarBC coverage expansion for four missing plots and one nodata plot, and a before/after validation report.
+
+## 2026-10-30 — P8.1 model refinement comparison
+
+- Added `compare_stand_models`, `validate_species_weibull_stand`, and `validate_empirical_stand` to `nemora.validation`.
+- Compared pooled Weibull, species-stratified Weibull, and empirical resampling on the same Gavin Lake held-out plots. The empirical candidate won: score 0.319 vs 0.545 pooled and 0.734 species-stratified; DBH KS 0.094 vs 0.201; species TV 0.143 vs 0.217.
+- Species-stratified fitting overfit rare species and worsened BA/QMD; retained as a negative result.
+- Added `scripts/compare_phase8_models.py`, `notes/reports/phase8_model_refinement.md`, and `notes/reports/phase8_model_comparison.json`. Height refinement and bootstrap uncertainty for the selected model remain before P8.3.
+
+## 2026-10-30 — P8.2 LidarBC coverage expansion
+
+- Re-queried public LidarBC coverage for the four missing Gavin Lake plots and the nodata plot at 1/3/10/25 km.
+- Resolved `4032469-PSP1_v1_p1` using the alternate `093a031_3_2_1` tile already materialized in P7; no new download was needed.
+- The other four plots have no indexed tile footprint containing the point even at 25 km. They remain explicit coverage gaps. 16/20 plots now have valid canopy/slope samples.
+- Updated `notes/reports/phase8_lidar_metrics.json`, added `notes/reports/phase8_lidar_coverage.md`, and added a regression check for the coverage summary.
+
+## 2026-10-30 — P8.3 refined validation rerun
+
+- Reran Gavin Lake with the selected empirical model: BA error improved from +28.8% to +16.8%, QMD from +14.7% to +9.2%, mean DBH from -5.7% to -2.4%, and mean height from -2.3% to +0.6%.
+- DBH KS improved from 0.201 to 0.094; species TV distance from 0.217 to 0.143.
+- Added 100-replicate empirical bootstrap intervals and the P8 before/after report.
+- LiDAR coverage is 16/20 plots valid; four plots remain outside indexed LidarBC coverage. No operational or real-tree-map claim is made.
+
+## 2026-10-30 — P8 queued for close-out
+
+- Wrote `notes/reports/phase8-closeout.md` with the P8 evidence package and the P9 cross-forest/FHOPS handoff recommendation.
+- Updated the roadmap to P8 `pr-open`; no merge has been performed.
+- The four residual LidarBC coverage gaps and the five-plot hold-out remain explicit limitations.

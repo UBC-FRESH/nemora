@@ -10,7 +10,8 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 | Phase | Parent issue | Branch | Status |
 | --- | --- | --- | --- |
 | P6 | #15 | `feature/p6-plot-lidar-interfaces` | complete |
-| P7 | #20 | `feature/p7-research-forest-validation` | pr-open |
+| P7 | #20 | `feature/p7-research-forest-validation` | complete |
+| P8 | #26 | `feature/p8-validation-refinement` | pr-open |
 
 ## Phase 0 — Foundations ✅ (complete)
 - Repository scaffolding, licensing, CI harness.
@@ -131,7 +132,7 @@ See `notes/adr/0001-plot-lidar-boundaries.md` and
 
 Parent issue: #20
 Branch: `feature/p7-research-forest-validation`
-Status: pr-open
+Status: complete
 
 Goal: produce a reviewed, reproducible validation package for one or both research
 forests using public FAIB plots and prepared FEMIC/LidarBC rasters, without claiming a
@@ -154,6 +155,30 @@ real tree map. See `notes/phase7_research_forest_validation.md`.
   - [x] Assemble metrics, uncertainty, and provenance tables.
   - [x] Write the report with explicit observed/fitted/synthetic labels.
   - [x] State what the validation does not establish.
+
+## Phase 8 — Validation refinement and LiDAR coverage expansion
+
+Parent issue: #26
+Branch: `feature/p8-validation-refinement`
+Status: pr-open
+
+Goal: improve the Gavin Lake stand model and close the LidarBC coverage gaps
+without weakening provenance or making operational claims. See
+`notes/phase8_validation_refinement.md`.
+
+- [x] P8.1 Compare refined stand models on held-out Gavin Lake plots (#27)
+  - [x] Implement species-stratified DBH fitting.
+  - [x] Evaluate a plot-level empirical alternative; mixture remains future work.
+  - [x] Height refinement: selected empirical candidate preserves observed DBH/height pairs; species-specific parametric height remains future work.
+  - [x] Select the empirical candidate by held-out performance.
+- [x] P8.2 Expand LidarBC coverage and resolve the remaining raster gaps (#28)
+  - [x] Re-query the catalogue for the four missing plots at 1/3/10/25 km.
+  - [x] Resolve the nodata plot with an already-materialized alternate tile; no new download required.
+  - [x] Explain the four residual coverage gaps and resolve the nodata plot.
+- [x] P8.3 Rerun validation, update the report, and close out (#29)
+  - [x] Rerun the stand validation with the selected empirical model and use the expanded LiDAR coverage.
+  - [x] Report before/after metrics and uncertainty.
+  - [x] Write `notes/reports/phase8_validation.md` and the phase close-out report.
 
 ## Detailed Next Steps Notes
 1. **Distribution registry hardening**

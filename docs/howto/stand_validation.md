@@ -48,6 +48,23 @@ stems/ha. Each synthetic tree has `tally=1`.
 `result.comparison_frame()` returns the metric table. `result.to_dict()` returns
 the JSON-ready payload used by the Phase 7 report.
 
+## Compare candidate models
+
+Use `compare_stand_models` when more than one model is plausible:
+
+```python
+from nemora.validation import compare_stand_models
+
+comparison = compare_stand_models(training_trees, holdout_trees, seed=20261030)
+print(comparison.comparison_frame())
+print(comparison.selected)
+```
+
+The current candidates are pooled Weibull, species-stratified Weibull, and
+empirical resampling. The score combines mean absolute relative error over the
+stand metrics with weighted DBH KS and species TV distance. Selection is by
+held-out score, not by visual fit.
+
 ## Limits
 
 The fit currently ignores species-specific DBH and height relationships, spatial

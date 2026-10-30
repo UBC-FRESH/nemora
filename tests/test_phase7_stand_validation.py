@@ -7,7 +7,9 @@ import pandas as pd
 import pytest
 
 from nemora.validation import (
+    compare_stand_models,
     stand_metrics_from_trees,
+    validate_empirical_stand,
     validate_plot_conditioned_stand,
 )
 
@@ -104,3 +106,34 @@ def test_validate_plot_conditioned_stand_requires_tree_columns() -> None:
             _training_trees().drop(columns=["tally"]),
             _holdout_trees(),
         )
+
+
+def test_compare_stand_models_reports_candidates_and_selection() -> None:
+    comparison = compare_stand_models(
+        _training_trees(),
+        _holdout_trees(),
+        seed=7,
+    )
+
+    assert {result.model for result in comparison.results} == {
+        "pooled_weibull",
+        "species_weibull",
+        "empirical",
+    }
+    assert set(comparison.scores) == {
+        "pooled_weibull",
+        "species_weibull",
+        "empirical",
+    }
+    assert comparison.selected in comparison.scores
+    assert not comparison.comparison_frame().empty
+    assert comparison.to_dict()["selected"] == comparison.selected
+
+
+def test_empirical_stand_is_deterministic() -> None:
+    first = validate_empirical_stand(_training_trees(), _holdout_trees(), seed=13)
+    second = validate_empirical_stand(_training_trees(), _holdout_trees(), seed=13)
+
+    assert first.model == "empirical"
+    assert first.fit_parameters == {}
+    pd.testing.assert_frame_equal(first.synthetic_trees, second.synthetic_trees)
