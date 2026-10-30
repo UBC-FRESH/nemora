@@ -9,7 +9,7 @@ date, check `notes/nemora_modular_reorg_plan.md` for the latest detail.
 
 | Phase | Parent issue | Branch | Status |
 | --- | --- | --- | --- |
-| P6 | #15 | `feature/p6-plot-lidar-interfaces` | active |
+| P6 | #15 | `feature/p6-plot-lidar-interfaces` | pr-open |
 
 ## Phase 0 — Foundations ✅ (complete)
 - Repository scaffolding, licensing, CI harness.
@@ -106,7 +106,7 @@ is reproducible; each child has a test that can fail and a docs note.
 
 Parent issue: #15
 Branch: `feature/p6-plot-lidar-interfaces`
-Status: active
+Status: pr-open
 
 Goal: make Nemora the home for generic plot resolution/materialization and
 LiDAR observation sampling while keeping raw LiDAR production in FEMIC/WS4.
